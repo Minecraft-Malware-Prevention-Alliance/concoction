@@ -8,8 +8,8 @@ import info.mmpa.concoction.result.ArchiveScanResults;
 
 public class Concoction {
     public static Map<String, ArchiveScanResults> scanDirectory(File file) {
-    	HashMap<String, ArchiveScanResults> results = new HashMap<>();
-    	// TODO
-    	return results;
+        HashMap<String, ArchiveScanResults> results = new HashMap<>();
+        // TODO
+        return results;
     }
 }

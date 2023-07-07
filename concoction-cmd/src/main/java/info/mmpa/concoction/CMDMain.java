@@ -18,14 +18,14 @@ public class CMDMain implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-    	Map<String, ArchiveScanResults> results = Concoction.scanDirectory(file);
-    	
-    	if (results.isEmpty()) {
-    		return CommandLine.ExitCode.OK;
-    	} else {
-    		new HumanReadablePrinter(results).print(new PrintWriter(System.out));
-    		return 1;
-    	}
+        Map<String, ArchiveScanResults> results = Concoction.scanDirectory(file);
+
+        if (results.isEmpty()) {
+            return CommandLine.ExitCode.OK;
+        } else {
+            new HumanReadablePrinter(results).print(new PrintWriter(System.out));
+            return 1;
+        }
     }
 
     public static void main(String[] args) {
