@@ -1,8 +1,12 @@
 package info.mmpa.concoction;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
+import info.mmpa.concoction.result.ArchiveScanResults;
+import info.mmpa.concoction.result.printer.HumanReadablePrinter;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -14,7 +18,14 @@ public class CMDMain implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        return Concoction.scanDirectory(file) ? 1 : CommandLine.ExitCode.OK;
+    	Map<String, ArchiveScanResults> results = Concoction.scanDirectory(file);
+    	
+    	if (results.isEmpty()) {
+    		return CommandLine.ExitCode.OK;
+    	} else {
+    		new HumanReadablePrinter(results).print(new PrintWriter(System.out));
+    		return 1;
+    	}
     }
 
     public static void main(String[] args) {
