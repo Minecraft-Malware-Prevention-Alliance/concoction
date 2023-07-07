@@ -1,0 +1,57 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+apply plugin: 'java'
+
+group = 'info.mmpa.concoction'
+version = project.version
+
+final def build_release = System.getenv("BUILD_RELEASE") == "true"
+
+// Add snapshot suffix to version if not building a release.
+// To build a release, set the environment variable BUILD_RELEASE to true.
+if (!build_release) {
+    version += "-SNAPSHOT"
+}
+
+final def compiler = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(8)
+}
+
+// Tells Gradle to use the previously defined Java 8 compatible JDK.
+java {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    toolchain {
+        compiler
+    }
+}
+
+// Tells Gradle to always compile with the previously defined Java 8 compatible JDK.
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = compiler
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.xxdark:ssvm:1.9.0.3'
+}

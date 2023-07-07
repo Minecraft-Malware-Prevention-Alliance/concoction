@@ -1,0 +1,74 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+apply plugin: 'java'
+
+group = 'info.mmpa.concoction'
+version = project.version
+
+final def build_release = System.getenv("BUILD_RELEASE") == "true"
+
+// Add snapshot suffix to version if not building a release.
+// To build a release, set the environment variable BUILD_RELEASE to true.
+if (!build_release) {
+    version += "-SNAPSHOT"
+}
+
+final def compiler = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(8)
+}
+
+// Tells Gradle to use the previously defined Java 8 compatible JDK.
+java {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    toolchain {
+        compiler
+    }
+}
+
+// Tells Gradle to always compile with the previously defined Java 8 compatible JDK.
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = compiler
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation project(':concoction-lib')
+
+    implementation 'info.picocli:picocli:4.7.4'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.4'
+
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'org.slf4j:slf4j-jdk14:2.0.7'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'info.mmpa.concoction.CMDMain'
+        )
+    }
+}
+
+build.finalizedBy(shadowJar)
