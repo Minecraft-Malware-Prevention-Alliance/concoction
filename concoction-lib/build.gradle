@@ -18,11 +18,14 @@ dependencies {
     api asm_commons
     api asm_tree
     api asm_util
-    api cafedude
     api lljzip
     api collections
     api jackson
     api slf4jLogging
+
+    // TODO: Change to api when cafedude 2.0.0 is released on maven
+    implementation cafedude
+    shaded cafedude
 
     // Dependencies not forced on consumers
     implementation jsr305
