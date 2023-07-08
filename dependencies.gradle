@@ -1,0 +1,23 @@
+def asmVersion = '9.5'
+def cafeDudeVersion = '1.10.2'
+def junitVersion = '5.9.2'
+
+project.ext {
+    // Bytecode parsing and analysis
+    asm = "org.ow2.asm:asm:$asmVersion"
+    asm_analysis = "org.ow2.asm:asm-analysis:$asmVersion"
+    asm_commons = "org.ow2.asm:asm-commons:$asmVersion"
+    asm_tree = "org.ow2.asm:asm-tree:$asmVersion"
+    asm_util = "org.ow2.asm:asm-util:$asmVersion"
+    cafedude = "com.github.Col-E:CAFED00D:$cafeDudeVersion"
+    ssvm = 'com.github.xxDark.SSVM:mirrors:bfe381fad0' // TODO: When 2.X series makes releases, use those
+
+    // Misc utils
+    jackson = 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
+    slf4jLogging = 'org.slf4j:slf4j-jdk14:2.0.7'
+
+    // Testing
+    junit_api = "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    junit_engine = "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    junit_params = "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+}

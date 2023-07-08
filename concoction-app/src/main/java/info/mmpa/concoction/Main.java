@@ -12,7 +12,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "Concoction", mixinStandardHelpOptions = true, version = "Concoction v1.0.0", description = "Dynamic Shared Malware Scanner")
-public class CMDMain implements Callable<Integer> {
+public class Main implements Callable<Integer> {
     @Parameters(index = "0", description = "The file / directory to scan")
     private File file;
 
@@ -29,7 +29,7 @@ public class CMDMain implements Callable<Integer> {
     }
 
     public static void main(String[] args) {
-        final int exitCode = new CommandLine(new CMDMain()).execute(args);
+        final int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
     }
 }

@@ -1,2 +1,2 @@
 rootProject.name = 'concoction'
-include('concoction-lib', 'concoction-cmd')
+include('concoction-lib', 'concoction-app')

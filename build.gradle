@@ -1,0 +1,57 @@
+// All projects share the same group and version info
+allprojects {
+    group 'info.mmpa'
+    version '1.0.0-SNAPSHOT'
+}
+
+// Sub-projects all are at a minimum Java based and thus can be configured with common Java attributes
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    // Shared common dependency definitions
+    apply from: rootProject.file('dependencies.gradle')
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+
+    // Configure Java version and compiler details
+    def compiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+    java {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        toolchain {
+            compiler
+        }
+    }
+    tasks.withType(JavaCompile).configureEach {
+        javaCompiler = compiler
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+        options.encoding = 'UTF-8'
+        options.incremental = true
+    }
+
+    // Test framework setup
+    test {
+        useJUnitPlatform()
+
+        systemProperty 'junit.jupiter.execution.parallel.enabled', true
+        systemProperty 'junit.jupiter.execution.parallel.mode.default', 'concurrent'
+
+        testLogging {
+            events 'passed', 'skipped', 'failed'
+        }
+    }
+    plugins.withType(JavaPlugin).configureEach {
+        dependencies {
+            testImplementation junit_api
+            testImplementation junit_params
+            testRuntimeOnly junit_engine
+        }
+    }
+}

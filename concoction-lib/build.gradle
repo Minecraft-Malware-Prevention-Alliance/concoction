@@ -1,58 +1,57 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
+import java.nio.file.Files
 
 plugins {
+    // Plugin generates version info class.
+    id 'com.peterabeles.gversion' version '1.10'
     id 'java-library'
-    id 'maven-publish'
-}
-
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
-}
-
-apply plugin: 'java'
-
-group = 'info.mmpa.concoction'
-version = project.version
-
-final def build_release = System.getenv("BUILD_RELEASE") == "true"
-
-// Add snapshot suffix to version if not building a release.
-// To build a release, set the environment variable BUILD_RELEASE to true.
-if (!build_release) {
-    version += "-SNAPSHOT"
-}
-
-final def compiler = javaToolchains.compilerFor {
-    languageVersion = JavaLanguageVersion.of(8)
-}
-
-// Tells Gradle to use the previously defined Java 8 compatible JDK.
-java {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-    toolchain {
-        compiler
-    }
-}
-
-// Tells Gradle to always compile with the previously defined Java 8 compatible JDK.
-tasks.withType(JavaCompile).configureEach {
-    javaCompiler = compiler
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-}
-
-repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-    implementation 'com.github.xxdark:ssvm:1.9.0.3'
+    api asm
+    api asm_analysis
+    api asm_commons
+    api asm_tree
+    api asm_util
+    api cafedude
+    api jackson
+    api slf4jLogging
+    api ssvm // TODO: For making the maven release artifact, we want to shade SSVM and JLinker since they are not on Maven central
+}
+
+// Force generation of gversion data class when the version information is not up-to-date
+tasks.register('conditionalBuildConfigUpdate') {
+    if (!isBuildConfigUpToDate()) {
+        finalizedBy createVersionFile
+    }
+}
+project.compileJava.dependsOn('conditionalBuildConfigUpdate')
+gversion {
+    srcDir = "src/generated/java/"
+    classPackage = "info.mmpa.concoction"
+    className = "ConcoctionBuildConfig"
+    dateFormat = "yyyy MM/dd HH:mm"
+    debug = true
+    language = "java"
+    explicitType = false
+    annotate = false
+}
+sourceSets {
+    // Need to add the generated class to the source set
+    main {
+        java {
+            srcDirs 'src/generated/java', 'src/main/java'
+        }
+    }
+}
+
+private boolean isBuildConfigUpToDate() {
+    File buildConfigPath = project.file(gversion.srcDir +
+            gversion.classPackage.replace('.', '/') + '/' +
+            gversion.className + ".java")
+    if (buildConfigPath.exists()) {
+        String text = Files.readString(buildConfigPath.toPath())
+        if (text.contains('VERSION = "' + project.version + '"'))
+            return true
+    }
+    return false
 }
