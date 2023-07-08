@@ -93,7 +93,7 @@ public abstract class ArchiveReader {
 		@Nonnull
 		@Override
 		public ClassesAndFiles read(@Nonnull Path path) throws IOException {
-			ZipArchive archive = ZipIO.readJvm(path);
+			ZipArchive archive = ZipIO.readStandard(path);
 			ZipArchive filtered = filter(archive);
 			return fromArchive(filtered);
 		}
@@ -101,7 +101,7 @@ public abstract class ArchiveReader {
 		@Nonnull
 		@Override
 		public ClassesAndFiles read(@Nonnull byte[] raw) throws IOException {
-			ZipArchive archive = ZipIO.readJvm(raw);
+			ZipArchive archive = ZipIO.readStandard(raw);
 			ZipArchive filtered = filter(archive);
 			return fromArchive(filtered);
 		}
@@ -143,6 +143,8 @@ public abstract class ArchiveReader {
 		}
 
 		private static void deduplicate(@Nonnull ZipArchive filtered) {
+			// TODO: Sanity check with a sample that removing the last occurrence of duplicate paths is correct
+			//   if not, remove the first and keep the latest index then.
 			int i = 0;
 			Set<String> names = new HashSet<>();
 			List<ZipPart> parts = filtered.getParts();
