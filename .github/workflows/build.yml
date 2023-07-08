@@ -19,7 +19,6 @@ permissions:
 jobs:
   test:
     name: Run test suite
-    needs: setup
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +42,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test
       - name: Upload test results
-        if: always()
+        if: false # TODO: Revert to 'always()' after the repo is public
         uses: actions/upload-artifact@v3
         with:
           name: Test artifacts
@@ -56,7 +55,7 @@ jobs:
   publish-test-results:
     name: Publish tests results
     needs: test
-    if: always()
+    if: false # TODO: Revert to 'always()' after the repo is public
     runs-on: ubuntu-latest
     permissions:
       checks: write
