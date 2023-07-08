@@ -1,0 +1,53 @@
+project:
+  name: concoction
+  description: A dynamic shared malware scanner.
+  longDescription: A dynamic shared malware scanner.
+  links:
+    homepage: https://github.com/Minecraft-Malware-Prevention-Alliance/concoction
+  authors:
+    - Ned Loynd
+    - Matt Coley
+  license: MIT
+  inceptionYear: 2023
+  stereotype: none
+  java:
+    version: 8
+    groupId: info.mmpa
+    artifactId: concoction
+
+release:
+  github:
+    overwrite: true
+    tagName: '{{projectVersion}}'
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+
+distributions:
+  dist:
+    type: SINGLE_JAR
+    artifacts:
+      - path: concoction-lib/build/libs/concoction-{{projectVersion}}.jar
+
+signing:
+  active: RELEASE
+  mode: MEMORY
+  armored: true
+  verify: true
+  artifacts: true
+  checksums: true
+  files: false
+
+deploy:
+  maven:
+    nexus2:
+      maven-central:
+        active: RELEASE
+        url: https://s01.oss.sonatype.org/service/local
+        applyMavenCentralRules: true
+        stagingRepositories:
+          - concoction-lib/build/staging-deploy
+        closeRepository: true
+        releaseRepository: true
