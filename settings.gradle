@@ -1,2 +1,3 @@
 rootProject.name = 'concoction'
 include('concoction-lib', 'concoction-app')
+project(":concoction-lib").name = 'concoction'

@@ -1,6 +1,7 @@
 def asmVersion = '9.5'
 def cafeDudeVersion = '1.10.2'
 def junitVersion = '5.9.2'
+def ssvmVersion = 'bfe381fad0'
 
 project.ext {
     // Bytecode parsing and analysis
@@ -10,7 +11,10 @@ project.ext {
     asm_tree = "org.ow2.asm:asm-tree:$asmVersion"
     asm_util = "org.ow2.asm:asm-util:$asmVersion"
     cafedude = "com.github.Col-E:CAFED00D:$cafeDudeVersion"
-    ssvm = 'com.github.xxDark.SSVM:mirrors:bfe381fad0' // TODO: When 2.X series makes releases, use those
+    jlinker = 'com.github.xxDark:jlinker:1.0.6'
+    ssvm_core = "com.github.xxDark.SSVM:ssvm-core:$ssvmVersion"
+    ssvm_invoke = "com.github.xxDark.SSVM:ssvm-invoke:$ssvmVersion"
+    ssvm_io = "com.github.xxDark.SSVM:ssvm-io:$ssvmVersion"
 
     // Misc utils
     jackson = 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'

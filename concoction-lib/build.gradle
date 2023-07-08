@@ -4,6 +4,12 @@ plugins {
     // Plugin generates version info class.
     id 'com.peterabeles.gversion' version '1.10'
     id 'java-library'
+    id 'maven-publish'
+}
+
+configurations {
+    shaded
+    shaded.transitive = false
 }
 
 dependencies {
@@ -15,7 +21,17 @@ dependencies {
     api cafedude
     api jackson
     api slf4jLogging
-    api ssvm // TODO: For making the maven release artifact, we want to shade SSVM and JLinker since they are not on Maven central
+
+    // JLinker and SSVM are not yet published to maven central.
+    // To allow users to easily consume our artifact we will shade them into the output
+    // and not refer to them as 'api' dependencies as that would make clients attempt to resolve it.
+    implementation ssvm_core
+    implementation ssvm_invoke
+    implementation ssvm_io
+    shaded jlinker
+    shaded ssvm_core
+    shaded ssvm_invoke
+    shaded ssvm_io
 }
 
 // Force generation of gversion data class when the version information is not up-to-date
@@ -54,4 +70,96 @@ private boolean isBuildConfigUpToDate() {
             return true
     }
     return false
+}
+
+// Configure publishing for generation of 'pom.xml'
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            version = project.version
+            artifactId = 'concoction'
+            from components.java
+
+            pom {
+                name = 'concoction'
+                description = 'A dynamic shared malware scanner.'
+                url = 'https://github.com/Minecraft-Malware-Prevention-Alliance/concoction'
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://spdx.org/licenses/MIT.html'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'NeRdTheNed'
+                        name = 'Ned Loynd'
+                        email = 'ned@loynd.com'
+                    }
+                    developer {
+                        id = 'mcoley'
+                        name = 'Matt Coley'
+                        email = 'mcoley2@gmu.edu'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Minecraft-Malware-Prevention-Alliance/concoction.git'
+                    developerConnection = 'scm:git:ssh://github.com:Minecraft-Malware-Prevention-Alliance/concoction.git'
+                    url = 'https://github.com/Minecraft-Malware-Prevention-Alliance/concoction/'
+                }
+            }
+        }
+    }
+
+    // We will create a local repository to dump publishing output into.
+    // When we publish to maven central we just upload the whole directory.
+    // It includes all the jars, hashes, etc we need for that.
+    repositories {
+        maven {
+            name = 'staging_deploy'
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }
+}
+
+// Get gradle to shut up about duplicates
+tasks.withType(Jar).all {
+    duplicatesStrategy 'exclude'
+}
+
+// Get gradle to shut up about output directory dependency conflicts.
+// Its just complaining they both touch the /classes/ dir.
+javadoc {
+    dependsOn(tasks.named('generatePomFileForMavenPublication'))
+    source = sourceSets.main.allJava
+}
+
+// Hack to generate POM files for the output.
+tasks.named('generatePomFileForMavenPublication').configure {
+    onlyIf { project.gradle.startParameter.taskNames.contains(':concoction:publish') }
+
+    destination = project.file('build/classes/java/main/META-INF/maven/info.mmpa/concoction/pom.xml')
+    def properties = project.file('build/classes/java/main/META-INF/maven/info.mmpa/concoction/pom.properties')
+
+    // Hack to also generate the pom-properties file.
+    doLast {
+        List<String> lines = [
+                "# Generated",
+                "groupId=info.mmpa",
+                "artifactId=concoction",
+                "version=${project.version}"
+        ] as String[]
+        properties.text = lines.join('\n')
+    }
+}
+
+// Make it so that jar-generating tasks requires generating POM files first.
+jar {
+    dependsOn(tasks.named('generatePomFileForMavenPublication'))
+
+    // Also bundle shaded artifacts into our artifact.
+    from {
+        configurations.shaded.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

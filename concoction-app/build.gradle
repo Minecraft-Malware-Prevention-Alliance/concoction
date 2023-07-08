@@ -3,8 +3,11 @@ plugins {
 }
 
 dependencies {
-    implementation project(':concoction-lib')
+    implementation project(':concoction')
     implementation 'info.picocli:picocli:4.7.4'
+    implementation ssvm_core
+    implementation ssvm_invoke
+    implementation ssvm_io
     annotationProcessor 'info.picocli:picocli-codegen:4.7.4'
 }
 
