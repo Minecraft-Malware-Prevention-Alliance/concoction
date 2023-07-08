@@ -1,5 +1,6 @@
 # Contribution guide
 
+We use SSVM as normal bytecode signatures are just not enough, obfuscator detections are allowed, It doesnt matter.
 > TODO: Elaborate on process
 
 ## Adding yourself as a developer
