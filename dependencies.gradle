@@ -19,6 +19,8 @@ project.ext {
     // Misc utils
     jackson = 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
     slf4jLogging = 'org.slf4j:slf4j-jdk14:2.0.7'
+    jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
+    lljzip = 'software.coley:lljzip:2.1.1'
 
     // Testing
     junit_api = "org.junit.jupiter:junit-jupiter-api:$junitVersion"

@@ -19,8 +19,12 @@ dependencies {
     api asm_tree
     api asm_util
     api cafedude
+    api lljzip
     api jackson
     api slf4jLogging
+
+    // Dependencies not forced on consumers
+    implementation jsr305
 
     // JLinker and SSVM are not yet published to maven central.
     // To allow users to easily consume our artifact we will shade them into the output
