@@ -30,7 +30,7 @@ public class ClassesAndFiles {
 	 */
 	public void addClass(@Nonnull String path, @Nonnull byte[] raw) throws NotAClassException {
 		try {
-			verifyAndAddClass(path, raw);
+			verifyAndAddClass(raw);
 		} catch (Throwable t) {
 			// Class was not parsed fully by ASM.
 			// Maybe its using anti-asm exploits? Attempt to fix with cafedue.
@@ -42,20 +42,21 @@ public class ClassesAndFiles {
 				byte[] patched = writer.write(file);
 
 				// Should be good to go now.
-				verifyAndAddClass(path, patched);
+				verifyAndAddClass(patched);
 			} catch (Throwable t2) {
 				// Still not valid. Either this is not a class,
 				// or we have a new anti-asm exploit to fix upstream in cafedude.
-				throw new NotAClassException(t2);
+				throw new NotAClassException(path, t2);
 			}
 		}
 	}
 
-	private void verifyAndAddClass(@Nonnull String path, @Nonnull byte[] raw) {
+	private void verifyAndAddClass(@Nonnull byte[] raw) {
 		// Our classes must be parsed with ASM for later SSVM integration.
 		ClassReader reader = new ClassReader(raw);
+		String className = reader.getClassName();
 		reader.accept(new ClassWriter(0), 0);
-		classes.put(path, raw);
+		classes.put(className, raw);
 	}
 
 	/**

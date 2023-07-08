@@ -13,6 +13,7 @@ import static java.util.stream.Stream.of;
  * the accuracy of the scan if needed.
  *
  * @see ModelSource Single component type that builds up the model.
+ * @see ModelBuilder For creating new {@link ApplicationModel} instances.
  */
 public interface ApplicationModel {
 	/**

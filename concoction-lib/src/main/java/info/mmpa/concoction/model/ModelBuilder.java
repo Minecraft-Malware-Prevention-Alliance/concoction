@@ -1,6 +1,7 @@
 package info.mmpa.concoction.model;
 
 import info.mmpa.concoction.input.archive.ArchiveLoadContext;
+import info.mmpa.concoction.model.impl.BasicModelBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -54,4 +55,12 @@ public interface ModelBuilder {
 	 */
 	@Nonnull
 	ApplicationModel build() throws InvalidModelException;
+
+	/**
+	 * @return New builder instance.
+	 */
+	@Nonnull
+	static ModelBuilder create() {
+		return new BasicModelBuilder();
+	}
 }

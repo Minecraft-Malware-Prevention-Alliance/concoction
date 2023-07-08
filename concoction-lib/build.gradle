@@ -20,6 +20,7 @@ dependencies {
     api asm_util
     api cafedude
     api lljzip
+    api collections
     api jackson
     api slf4jLogging
 
