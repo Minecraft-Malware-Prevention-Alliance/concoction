@@ -3,11 +3,14 @@ package info.mmpa.concoction.scan.standard;
 import info.mmpa.concoction.model.ApplicationModel;
 import info.mmpa.concoction.model.ModelSource;
 import info.mmpa.concoction.model.path.ClassPathElement;
+import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.scan.model.method.MethodMatchingModel;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -17,14 +20,14 @@ import java.util.Map;
  * Basic ASM pattern matching based scanning.
  */
 public class StandardScan {
-	private final List<StandardDetectionMatcher> matchers;
+	private final List<MethodMatchingModel> models;
 
 	/**
-	 * @param matchers
-	 * 		List of detection matchers to scan with.
+	 * @param models
+	 * 		List of detection models to scan for.
 	 */
-	public StandardScan(@Nonnull List<StandardDetectionMatcher> matchers) {
-		this.matchers = matchers;
+	public StandardScan(@Nonnull List<MethodMatchingModel> models) {
+		this.models = models;
 	}
 
 	@Nonnull
@@ -38,20 +41,13 @@ public class StandardScan {
 			String className = classEntry.getKey();
 			ClassPathElement classPath = sourcePath.child(className);
 			try {
-				ClassNode node = node(classEntry.getValue());
-				matchers.forEach(matcher -> {
-					try {
-						matcher.scan(sink, classPath, node);
-					} catch (Throwable ex) {
-						// Pipe errors to sink.
-						//
-						// Ideally matchers handle errors themselves properly, but if they don't we can at least
-						// fall back here and report the issue at the class-level.
-						// Handling it this way allows other classes to be scanned, even if earlier classes in the
-						// scan order fail.
-						sink.error(classPath, ex);
-					}
-				});
+				ClassNode classNode = node(classEntry.getValue());
+				for (MethodNode methodNode : classNode.methods) {
+					MethodPathElement methodPath = classPath.child(methodNode);
+					if (methodNode.instructions == null) continue;
+					for (MethodMatchingModel matchingModel : models)
+						matchingModel.match(sink, methodPath, classNode, methodNode);
+				}
 			} catch (Throwable ex) {
 				// Pipe errors to sink.
 				//
