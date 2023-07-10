@@ -1,6 +1,5 @@
 package info.mmpa.concoction.scan;
 
-import dev.xdark.ssvm.util.IOUtil;
 import example.RuntimeExec;
 import info.mmpa.concoction.model.ApplicationModel;
 import info.mmpa.concoction.model.ModelSource;
@@ -11,6 +10,7 @@ import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
 import info.mmpa.concoction.scan.standard.StandardScan;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import software.coley.collections.Maps;
 
@@ -70,6 +70,6 @@ public class InstructionMatchingTests {
 		String className = type.getName();
 		InputStream is = ClassLoader.getSystemResourceAsStream(className.replace('.', '/') + ".class");
 		if (is == null) throw new IOException(className + " not found");
-		return IOUtil.readAll(is);
+		return IOUtils.toByteArray(is);
 	}
 }

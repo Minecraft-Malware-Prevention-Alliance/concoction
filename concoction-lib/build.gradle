@@ -41,6 +41,9 @@ dependencies {
     shaded ssvm_core
     shaded ssvm_invoke
     shaded ssvm_io
+
+    // Test-support libraries
+    testImplementation io
 }
 
 // Force generation of gversion data class when the version information is not up-to-date
