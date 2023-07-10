@@ -85,7 +85,8 @@ public class InstructionsMatchingModel {
 						// Match broken, jump back to where the match began plus one index
 						// and reset the matcher index. This allows items matched by 'i > 0' to
 						// be checked against for 'i -1 > 0' matchers on the next go.
-						i = matchStart + 1;
+						if (matchStart != i)
+							i = matchStart + 1;
 						matchIndex = 0;
 					}
 				}
@@ -112,7 +113,8 @@ public class InstructionsMatchingModel {
 				// Match found, jump back to where the match began plus one index
 				// and reset the matcher index. This allows items matched by 'i > 0' to
 				// be checked against for 'i -1 > 0' matchers on the next go.
-				i = matchStart + 1;
+				if (matchStart != i)
+					i = matchStart + 1;
 				matchIndex = 0;
 			}
 		}
