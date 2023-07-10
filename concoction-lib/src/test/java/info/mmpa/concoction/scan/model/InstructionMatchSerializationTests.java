@@ -9,8 +9,8 @@ import software.coley.collections.Maps;
 import java.util.Arrays;
 import java.util.List;
 
-import static info.mmpa.concoction.util.Serialization.*;
 import static info.mmpa.concoction.scan.model.TextMatchMode.EQUALS;
+import static info.mmpa.concoction.util.TestSerialization.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

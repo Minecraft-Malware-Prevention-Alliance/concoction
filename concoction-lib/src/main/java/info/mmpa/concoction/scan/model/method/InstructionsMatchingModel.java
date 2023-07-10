@@ -1,18 +1,24 @@
 package info.mmpa.concoction.scan.model.method;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.util.Serialization;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import software.coley.collections.delegate.DelegatingList;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,9 +41,38 @@ public class InstructionsMatchingModel {
 	public InstructionsMatchingModel(@JsonProperty("archetype") @Nonnull DetectionArchetype archetype,
 									 @JsonProperty("variants") @Nonnull Map<String, List<InstructionMatchEntry>> variants) {
 		this.archetype = archetype;
-		this.variants = variants.entrySet().stream()
+		this.variants = Collections.unmodifiableMap(variants.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey,
-						e -> new InstructionMatchingList(e.getValue())));
+						e -> new InstructionMatchingList(e.getValue()))));
+	}
+
+	/**
+	 * @param path
+	 * 		Path to json file representing a {@link InstructionsMatchingModel}.
+	 *
+	 * @return Parsed model from json.
+	 *
+	 * @throws IOException
+	 * 		When the file cannot be read from,
+	 * 		or the json is malformed and cannot deserialize into the model format.
+	 */
+	@Nonnull
+	public static InstructionsMatchingModel fromJson(@Nonnull Path path) throws IOException {
+		return fromJson(new String(Files.readAllBytes(path)));
+	}
+
+	/**
+	 * @param json
+	 * 		Json to deserialize.
+	 *
+	 * @return Parsed model from json.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the json is malformed and cannot deserialize into the model format.
+	 */
+	@Nonnull
+	public static InstructionsMatchingModel fromJson(@Nonnull String json) throws JsonProcessingException {
+		return Serialization.deserializeModel(json);
 	}
 
 	/**
@@ -90,6 +125,19 @@ public class InstructionsMatchingModel {
 				if (matcher.match(methodNode, insn)) {
 					// Match sequence at index is good, move on to next match entry.
 					matchIndex++;
+
+					// Check if the match is complete.
+					if (matchIndex >= matchTargetLength) {
+						// Report the detection
+						sink.add(path, archetype, new Detection(archetype, path));
+
+						// Match found, jump back to where the match began plus one index
+						// and reset the matcher index. This allows items matched by 'i > 0' to
+						// be checked against for 'i -1 > 0' matchers on the next go.
+						if (matchStart != i)
+							i = matchStart + 1;
+						matchIndex = 0;
+					}
 				} else {
 					// Allow wildcard to pick up the slack
 					if (matchWildcardIndex++ < matchWildcardLength) {
@@ -116,19 +164,6 @@ public class InstructionsMatchingModel {
 						Integer.MAX_VALUE :
 						wildcardMultiMatcher.getCount();
 				matchIndex++;
-			}
-
-			// Check if the match is complete.
-			if (matchIndex >= matchTargetLength) {
-				// Report the detection
-				sink.add(path, archetype, new Detection(archetype, path));
-
-				// Match found, jump back to where the match began plus one index
-				// and reset the matcher index. This allows items matched by 'i > 0' to
-				// be checked against for 'i -1 > 0' matchers on the next go.
-				if (matchStart != i)
-					i = matchStart + 1;
-				matchIndex = 0;
 			}
 		}
 	}

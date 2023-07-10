@@ -10,10 +10,8 @@ import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 /**
- * Serialization utils for testing.
+ * Serialization utils.
  */
 public class Serialization {
 	private static final ObjectMapper mapper = new ObjectMapper();
@@ -30,15 +28,13 @@ public class Serialization {
 	 * 		Value to serialize.
 	 *
 	 * @return JSON string of value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the value cannot be serialized.
 	 */
 	@Nonnull
-	public static String serialize(@Nonnull Object value) {
-		try {
-			return mapper.writeValueAsString(value);
-		} catch (JsonProcessingException ex) {
-			fail(ex);
-			throw new IllegalStateException(ex);
-		}
+	public static String serialize(@Nonnull Object value) throws JsonProcessingException {
+		return mapper.writeValueAsString(value);
 	}
 
 	/**
@@ -48,7 +44,7 @@ public class Serialization {
 	 * @return Deserialized value.
 	 */
 	@Nonnull
-	public static InstructionsMatchingModel deserializeModel(@Nonnull String text) {
+	public static InstructionsMatchingModel deserializeModel(@Nonnull String text) throws JsonProcessingException {
 		return deserialize(InstructionsMatchingModel.class, text);
 	}
 
@@ -59,7 +55,7 @@ public class Serialization {
 	 * @return Deserialized value.
 	 */
 	@Nonnull
-	public static InstructionMatchEntry deserializeEntry(@Nonnull String text) {
+	public static InstructionMatchEntry deserializeEntry(@Nonnull String text) throws JsonProcessingException {
 		return deserialize(InstructionMatchEntry.class, text);
 	}
 
@@ -74,12 +70,7 @@ public class Serialization {
 	 * @return Deserialized value.
 	 */
 	@Nonnull
-	public static <T> T deserialize(@Nullable Class<T> type, @Nonnull String text) {
-		try {
-			return mapper.readValue(text, type);
-		} catch (JsonProcessingException ex) {
-			fail(ex);
-			throw new IllegalStateException(ex);
-		}
+	public static <T> T deserialize(@Nullable Class<T> type, @Nonnull String text) throws JsonProcessingException {
+		return mapper.readValue(text, type);
 	}
 }

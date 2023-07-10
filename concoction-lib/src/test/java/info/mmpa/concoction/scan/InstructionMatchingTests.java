@@ -19,13 +19,14 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.NavigableSet;
 import java.util.Set;
 
-import static info.mmpa.concoction.util.Casting.cast;
-import static info.mmpa.concoction.util.Serialization.deserializeModel;
+import static info.mmpa.concoction.util.Unchecked.cast;
+import static info.mmpa.concoction.util.TestSerialization.deserializeModel;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InstructionMatchingTests {
@@ -57,8 +58,8 @@ public class InstructionMatchingTests {
 
 	@Nonnull
 	private static Results results(@Nonnull String modelName, @Nonnull Class<?> type) throws IOException {
-		String json = new String(Files.readAllBytes(Paths.get("src/test/resources/models/" + modelName)));
-		InstructionsMatchingModel model = deserializeModel(json);
+		Path path = Paths.get("src/test/resources/models/" + modelName);
+		InstructionsMatchingModel model = InstructionsMatchingModel.fromJson(path);
 		StandardScan scan = new StandardScan(Collections.singletonList(model));
 		return scan.accept(appModel(type));
 	}
