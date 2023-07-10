@@ -13,6 +13,7 @@ import info.mmpa.concoction.scan.standard.StandardScan;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import software.coley.collections.Maps;
+import software.coley.collections.Sets;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -21,11 +22,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.NavigableSet;
+import java.util.Set;
 
 import static info.mmpa.concoction.util.Casting.cast;
 import static info.mmpa.concoction.util.Serialization.deserializeModel;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InstructionMatchingTests {
 	// TODO: Create more test cases
@@ -37,14 +38,18 @@ public class InstructionMatchingTests {
 			Results results = results("Runtime_exec.json", RuntimeExec.class);
 			NavigableSet<Detection> detections = results.detections();
 
-			// Should be one result
-			assertEquals(1, detections.size());
+			// There are four sample methods which exhibit match-worthy behavior.
+			assertEquals(4, detections.size());
 
-			// Should be in the example class's calc method
-			Detection detection = detections.iterator().next();
-			MethodPathElement path = cast(detection.path());
-			assertEquals("example/RuntimeExec", path.getClassName());
-			assertEquals("calc()V", path.localDisplay());
+			// We should have one match in each of these methods.
+			Set<String> remainingMatches = Sets.ofVar("calc1", "calc2", "calc3", "calc4");
+			for (Detection detection : detections) {
+				MethodPathElement path = cast(detection.path());
+				String detectionMethodName = path.getMethodName();
+				if (!remainingMatches.remove(detectionMethodName))
+					fail("Match in unexpected method: " + detectionMethodName);
+			}
+			assertTrue(remainingMatches.isEmpty());
 		} catch (IOException ex) {
 			fail(ex);
 		}

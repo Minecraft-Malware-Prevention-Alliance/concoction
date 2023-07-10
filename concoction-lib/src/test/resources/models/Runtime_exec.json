@@ -4,9 +4,32 @@
     "identifier": "runtime-exec",
     "description": "Runtime.getRuntime().exec(...) can be used to run applications on the system"
   },
-  "entries": [
-    { "op": "EQUALS INVOKESTATIC", "args": "EQUALS getRuntime()Ljava/lang/Runtime;"  },
-    { "op": "EQUALS LDC" },
-    { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
-  ]
+  "variants": {
+    "1": [
+      { "op": "EQUALS INVOKESTATIC", "args": "EQUALS getRuntime()Ljava/lang/Runtime;"  },
+      { "op": "EQUALS LDC" },
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+    ],
+    "2": [
+      { "op": "EQUALS INVOKESTATIC", "args": "EQUALS getRuntime()Ljava/lang/Runtime;"  },
+      "**",
+      { "op": "EQUALS LDC" },
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+    ],
+    "3": [
+      {
+        "ANY": [
+          { "op": "STARTS_WITH GET", "args": "ENDS_WITH Ljava/lang/Runtime;"  },
+          { "op": "STARTS_WITH INVOKE", "args": "ENDS_WITH )Ljava/lang/Runtime;"  }
+        ]
+      },
+      { "op": "EQUALS LDC" },
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+    ],
+    "4": [
+      { "op": "EQUALS CHECKCAST", "args": "EQUALS java/lang/Runtime"  },
+      { "op": "EQUALS LDC" },
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+    ]
+  }
 }

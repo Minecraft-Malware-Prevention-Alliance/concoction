@@ -10,30 +10,34 @@ import info.mmpa.concoction.output.ResultsSink;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+import software.coley.collections.delegate.DelegatingList;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Model representing a signature comprised of one or more instruction matchers.
+ * Model representing pattern matching for a {@link DetectionArchetype detection archetype}.
+ * The model may have one or more variants describing different signature techniques.
  */
 public class InstructionsMatchingModel {
 	private final DetectionArchetype archetype;
-	@JsonDeserialize(contentUsing = InstructionMatchEntryDeserializer.class)
-	@JsonSerialize(contentUsing = InstructionMatchEntrySerializer.class)
-	private final List<InstructionMatchEntry> entries;
+	private final Map<String, InstructionMatchingList> variants;
 
 	/**
 	 * @param archetype
 	 * 		Information about what the signature is matching.
-	 * @param entries
-	 * 		List of instruction matchers forming a single signature.
+	 * @param variants
+	 * 		Map of variants to detect the pattern.
+	 * 		Map values are lists of instruction matchers forming a single signature.
 	 */
 	public InstructionsMatchingModel(@JsonProperty("archetype") @Nonnull DetectionArchetype archetype,
-									 @JsonProperty("entries") @Nonnull List<InstructionMatchEntry> entries) {
+									 @JsonProperty("variants") @Nonnull Map<String, List<InstructionMatchEntry>> variants) {
 		this.archetype = archetype;
-		this.entries = Collections.unmodifiableList(entries);
+		this.variants = variants.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey,
+						e -> new InstructionMatchingList(e.getValue())));
 	}
 
 	/**
@@ -51,6 +55,15 @@ public class InstructionsMatchingModel {
 		// Skip methods without code
 		if (methodNode.instructions == null) return;
 
+		// Scan with each variant
+		for (List<InstructionMatchEntry> entries : variants.values())
+			matchVariant(sink, path, methodNode, entries);
+	}
+
+	private void matchVariant(@Nonnull ResultsSink sink,
+							  @Nonnull MethodPathElement path,
+							  @Nonnull MethodNode methodNode,
+							  @Nonnull List<InstructionMatchEntry> entries) {
 		// Iterate over instructions and match against the matcher entries.
 		// A match will be reported if all entries successfully match in a row for some range of instructions.
 		//
@@ -129,11 +142,12 @@ public class InstructionsMatchingModel {
 	}
 
 	/**
-	 * @return List of instruction matchers forming a single signature.
+	 * @return Map of variants to detect the pattern.
+	 * Map values are lists of instruction matchers forming a single signature.
 	 */
 	@Nonnull
-	public List<InstructionMatchEntry> getEntries() {
-		return entries;
+	public Map<String, ? extends List<InstructionMatchEntry>> getVariants() {
+		return variants;
 	}
 
 	@Override
@@ -143,18 +157,31 @@ public class InstructionsMatchingModel {
 
 		InstructionsMatchingModel that = (InstructionsMatchingModel) o;
 
-		return entries.equals(that.entries);
+		return variants.equals(that.variants);
 	}
 
 	@Override
 	public int hashCode() {
-		return entries.hashCode();
+		return variants.hashCode();
 	}
 
 	@Override
 	public String toString() {
 		return "InstructionsMatchingModel{" +
 				"archetype=" + archetype +
-				", entries[" + entries.size() + "]}";
+				", variants[" + variants.size() + "]}";
+	}
+
+	/**
+	 * Hack to get JSON deserialization enough type information to deserialize otherwise nebulous
+	 * typing for {@link #variants}. Since the public getter only exposes {@link List} its not
+	 * a hindrance to the public API.
+	 */
+	@JsonDeserialize(contentUsing = InstructionMatchEntryDeserializer.class)
+	@JsonSerialize(contentUsing = InstructionMatchEntrySerializer.class)
+	private static class InstructionMatchingList extends DelegatingList<InstructionMatchEntry> {
+		public InstructionMatchingList(@Nonnull List<InstructionMatchEntry> delegate) {
+			super(delegate);
+		}
 	}
 }

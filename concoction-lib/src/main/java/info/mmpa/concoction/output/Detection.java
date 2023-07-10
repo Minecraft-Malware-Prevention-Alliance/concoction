@@ -63,4 +63,12 @@ public class Detection implements Comparable<Detection> {
 		result = 31 * result + path.hashCode();
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return "Detection{" +
+				"archetype=" + archetype +
+				", path=" + path +
+				'}';
+	}
 }

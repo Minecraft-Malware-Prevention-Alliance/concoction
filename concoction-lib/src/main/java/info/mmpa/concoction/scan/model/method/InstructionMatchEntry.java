@@ -7,8 +7,19 @@ import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Outline of instruction level matching.
+ */
 @JsonSerialize(using = InstructionMatchEntrySerializer.class)
 @JsonDeserialize(using = InstructionMatchEntryDeserializer.class)
 public interface InstructionMatchEntry {
+	/**
+	 * @param method
+	 * 		Method containing the instruction.
+	 * @param insn
+	 * 		Instruction to match.
+	 *
+	 * @return {@code true} on match.
+	 */
 	boolean match(@Nonnull MethodNode method, @Nonnull AbstractInsnNode insn);
 }

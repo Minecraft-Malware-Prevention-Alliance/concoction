@@ -4,6 +4,7 @@ import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.SusLevel;
 import info.mmpa.concoction.scan.model.method.*;
 import org.junit.jupiter.api.Test;
+import software.coley.collections.Maps;
 
 import java.util.Arrays;
 import java.util.List;
@@ -105,7 +106,7 @@ public class InstructionMatchSerializationTests {
 				new Instruction("LDC", null, EQUALS, null),
 				new Instruction("INVOKEVIRTUAL", "exec(Ljava/lang/String;)Ljava/lang/Process;", EQUALS, EQUALS)
 		);
-		InstructionsMatchingModel model = new InstructionsMatchingModel(archetype, entries);
+		InstructionsMatchingModel model = new InstructionsMatchingModel(archetype, Maps.of("key", entries));
 
 		// Serialize, deserialize, and compare equality
 		String serialized = serialize(model);
