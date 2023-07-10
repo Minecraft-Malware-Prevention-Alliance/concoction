@@ -1,0 +1,12 @@
+{
+  "archetype": {
+    "level": "MAXIMUM",
+    "identifier": "runtime-exec",
+    "description": "Runtime.getRuntime().exec(...) can be used to run applications on the system"
+  },
+  "entries": [
+    { "op": "EQUALS INVOKESTATIC", "args": "EQUALS getRuntime()Ljava/lang/Runtime;"  },
+    { "op": "EQUALS LDC" },
+    { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+  ]
+}

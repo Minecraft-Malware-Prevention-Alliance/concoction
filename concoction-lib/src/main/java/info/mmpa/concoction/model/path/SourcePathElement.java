@@ -35,6 +35,14 @@ public class SourcePathElement extends AbstractPathElement {
 		return children.computeIfAbsent(className, n -> new ClassPathElement(this, n));
 	}
 
+	/**
+	 * @return Model source path element value.
+	 */
+	@Nonnull
+	public ModelSource getSource() {
+		return source;
+	}
+
 	@Nullable
 	@Override
 	public PathElement parent() {

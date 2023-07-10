@@ -33,6 +33,7 @@ public class InstructionMatchEntryDeserializer extends StdDeserializer<Instructi
 		return deserializeNode(jp, node);
 	}
 
+	@Nonnull
 	private InstructionMatchEntry deserializeNode(JsonParser jp, JsonNode node) throws JacksonException {
 		if (node.isTextual()) {
 			// Must be wildcard
@@ -61,9 +62,12 @@ public class InstructionMatchEntryDeserializer extends StdDeserializer<Instructi
 				}
 
 			} else {
+				// Should be a multi-instruction if no other case applies.
+				// Determine which mode by its name.
 				for (MultiInstruction.MultiMatchMode mode : MultiInstruction.MultiMatchMode.values()) {
 					JsonNode modeNode = node.get(mode.name());
 					if (modeNode != null && modeNode.isArray()) {
+						// Mode found, now extract the entries and create the multi-matcher.
 						List<InstructionMatchEntry> entries = new ArrayList<>(modeNode.size());
 						for (JsonNode arrayItem : modeNode) {
 							entries.add(deserializeNode(jp, arrayItem));
@@ -82,8 +86,8 @@ public class InstructionMatchEntryDeserializer extends StdDeserializer<Instructi
 		int splitIndex = input.indexOf(' ');
 		if (splitIndex <= 0)
 			throw new JsonMappingException(jp, "opcode or argument was not in expected format of: '<mode> <input>");
-		split[0] = input.substring(0, splitIndex);
-		split[1] = input.substring(splitIndex + 1);
+		split[0] = input.substring(0, splitIndex); // text match mode
+		split[1] = input.substring(splitIndex + 1); // text input
 		return split;
 	}
 }

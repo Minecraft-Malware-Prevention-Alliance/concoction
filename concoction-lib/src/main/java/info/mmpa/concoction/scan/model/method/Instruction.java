@@ -32,7 +32,7 @@ import java.util.Objects;
  *     for different circumstances.</li>
  * </ul>
  */
-public class Instruction implements InstructionMatchEntry {
+public final class Instruction implements InstructionMatchEntry {
 	private final String opcode;
 	private final String arguments;
 	private final TextMatchMode opcodeMatching;

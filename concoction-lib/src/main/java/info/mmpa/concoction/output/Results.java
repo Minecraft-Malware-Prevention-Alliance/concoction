@@ -1,18 +1,22 @@
 package info.mmpa.concoction.output;
 
 import info.mmpa.concoction.model.path.PathElement;
+import info.mmpa.concoction.util.MultiIterator;
 import software.coley.collections.Sets;
 import software.coley.collections.delegate.DelegatingNavigableMap;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Type alias for the extended class, which has a long generic signature.
  * <br>
  * We can also provide some additional custom utility methods.
  */
-public class Results extends DelegatingNavigableMap<PathElement, Map<DetectionArchetype, Set<Detection>>> {
+public class Results extends DelegatingNavigableMap<PathElement, Map<DetectionArchetype, Set<Detection>>>
+		implements Iterable<Detection> {
 	/**
 	 * @param map
 	 * 		Backing results map.
@@ -44,5 +48,27 @@ public class Results extends DelegatingNavigableMap<PathElement, Map<DetectionAr
 			});
 		}
 		return new Results(merged);
+	}
+
+	/**
+	 * @return Flat set representation of all found detections.
+	 */
+	@Nonnull
+	public NavigableSet<Detection> detections() {
+		Spliterator<Detection> spliterator = Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
+		NavigableSet<Detection> set = StreamSupport.stream(spliterator, false)
+				.collect(Collectors.toCollection(TreeSet::new));
+		return Collections.unmodifiableNavigableSet(set);
+	}
+
+	@Override
+	public Iterator<Detection> iterator() {
+		MultiIterator<Detection> it = new MultiIterator<>();
+		for (Map<DetectionArchetype, Set<Detection>> value : values()) {
+			for (Set<Detection> detections : value.values()) {
+				it.add(detections.iterator());
+			}
+		}
+		return it;
 	}
 }

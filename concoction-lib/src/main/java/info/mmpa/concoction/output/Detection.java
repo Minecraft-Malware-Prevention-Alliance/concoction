@@ -1,14 +1,66 @@
 package info.mmpa.concoction.output;
 
-import javax.annotation.Nullable;
+import info.mmpa.concoction.model.path.PathElement;
+
+import javax.annotation.Nonnull;
 
 /**
- * Detection instance of a {@link DetectionArchetype}.
+ * Outlines a single detection found by a scanner.
  */
-public interface Detection {
+public class Detection implements Comparable<Detection> {
+	private final DetectionArchetype archetype;
+	private final PathElement path;
+
 	/**
-	 * @return Description of the local detection details, if any.
+	 * @param archetype
+	 * 		Detection archetype.
+	 * @param path
+	 * 		Path to detection.
 	 */
-	@Nullable
-	String describe();
+	public Detection(@Nonnull DetectionArchetype archetype, @Nonnull PathElement path) {
+		this.archetype = archetype;
+		this.path = path;
+	}
+
+	/**
+	 * @return Detection archetype.
+	 */
+	@Nonnull
+	public DetectionArchetype archetype() {
+		return archetype;
+	}
+
+	/**
+	 * @return Path to detection.
+	 */
+	@Nonnull
+	public PathElement path() {
+		return path;
+	}
+
+	@Override
+	public int compareTo(Detection o) {
+		int cmp = path.compareTo(o.path);
+		if (cmp == 0)
+			cmp = archetype.compareTo(o.archetype);
+		return cmp;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Detection detection = (Detection) o;
+
+		if (!archetype.equals(detection.archetype)) return false;
+		return path.equals(detection.path);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = archetype.hashCode();
+		result = 31 * result + path.hashCode();
+		return result;
+	}
 }

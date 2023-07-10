@@ -1,18 +1,19 @@
 package info.mmpa.concoction.output;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
+
 import javax.annotation.Nonnull;
 
 /**
- * Outlines a 'kind' of detection.
+ * Outlines a description of something to detect.
+ *
+ * @see InstructionsMatchingModel Detection for method instructions.
  */
 public class DetectionArchetype implements Comparable<DetectionArchetype> {
-	// Known detection archetypes
-	public static DetectionArchetype EXAMPLE =
-			new DetectionArchetype(SusLevel.MAXIMUM, "Example", "If you see this, you're pretty boned");
-	// Instance values
 	private final SusLevel level;
 	private final String identifier;
-	private final transient String description;
+	private final String description;
 
 	/**
 	 * @param level
@@ -22,9 +23,9 @@ public class DetectionArchetype implements Comparable<DetectionArchetype> {
 	 * @param description
 	 * 		A description of what the detection means.
 	 */
-	protected DetectionArchetype(@Nonnull SusLevel level,
-							  @Nonnull String identifier,
-							  @Nonnull String description) {
+	public DetectionArchetype(@JsonProperty("level") @Nonnull SusLevel level,
+							  @JsonProperty("identifier") @Nonnull String identifier,
+							  @JsonProperty("description") @Nonnull String description) {
 		this.level = level;
 		this.identifier = identifier;
 		this.description = description;
@@ -66,12 +67,14 @@ public class DetectionArchetype implements Comparable<DetectionArchetype> {
 
 		DetectionArchetype detection = (DetectionArchetype) o;
 
+		// Description not relevant for equality
 		if (level != detection.level) return false;
 		return identifier.equals(detection.identifier);
 	}
 
 	@Override
 	public int hashCode() {
+		// Description not relevant for hashing
 		int result = level.hashCode();
 		result = 31 * result + identifier.hashCode();
 		return result;

@@ -4,7 +4,6 @@ import info.mmpa.concoction.model.ModelSource;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +51,23 @@ public class ClassPathElement extends AbstractPathElement {
 		return child(method.name, method.desc);
 	}
 
-	@Nullable
+	/**
+	 * @return Class name path element value.
+	 */
+	@Nonnull
+	public String getClassName() {
+		return className;
+	}
+
+	/**
+	 * @return Model source path element value.
+	 */
+	@Nonnull
+	public ModelSource getSource() {
+		return parent.getSource();
+	}
+
+	@Nonnull
 	@Override
 	public PathElement parent() {
 		return parent;

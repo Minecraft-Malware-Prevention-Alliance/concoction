@@ -16,8 +16,8 @@ import static java.util.Collections.unmodifiableList;
  * @see NoneMultiInstruction
  */
 public abstract class MultiInstruction implements InstructionMatchEntry {
-	@JsonDeserialize(contentAs = InstructionMatchEntryDeserializer.class)
-	@JsonSerialize(contentAs = InstructionMatchEntrySerializer.class)
+	@JsonDeserialize(contentUsing = InstructionMatchEntryDeserializer.class)
+	@JsonSerialize(contentUsing = InstructionMatchEntrySerializer.class)
 	protected final List<InstructionMatchEntry> entries;
 	protected final MultiMatchMode mode;
 

@@ -7,7 +7,7 @@ import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
-import info.mmpa.concoction.scan.model.method.MethodMatchingModel;
+import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -20,14 +20,14 @@ import java.util.Map;
  * Basic ASM pattern matching based scanning.
  */
 public class StandardScan {
-	private final List<MethodMatchingModel> models;
+	private final List<InstructionsMatchingModel> instructionsMatchingModels;
 
 	/**
-	 * @param models
+	 * @param instructionsMatchingModels
 	 * 		List of detection models to scan for.
 	 */
-	public StandardScan(@Nonnull List<MethodMatchingModel> models) {
-		this.models = models;
+	public StandardScan(@Nonnull List<InstructionsMatchingModel> instructionsMatchingModels) {
+		this.instructionsMatchingModels = instructionsMatchingModels;
 	}
 
 	@Nonnull
@@ -42,10 +42,17 @@ public class StandardScan {
 			ClassPathElement classPath = sourcePath.child(className);
 			try {
 				ClassNode classNode = node(classEntry.getValue());
+
+				// TODO: Class structure matchers
+				//  - Field values
+				//  - Declaration patterns (fields and methods)
+				//  - Useful for detecting things like the windows registry class everyone pastes
+
+				// Run per-method matchers (instruction matching models)
 				for (MethodNode methodNode : classNode.methods) {
 					MethodPathElement methodPath = classPath.child(methodNode);
 					if (methodNode.instructions == null) continue;
-					for (MethodMatchingModel matchingModel : models)
+					for (InstructionsMatchingModel matchingModel : instructionsMatchingModels)
 						matchingModel.match(sink, methodPath, classNode, methodNode);
 				}
 			} catch (Throwable ex) {

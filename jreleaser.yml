@@ -1,7 +1,7 @@
 project:
   name: concoction
-  description: A dynamic shared malware scanner.
-  longDescription: A dynamic shared malware scanner.
+  description: Java malware scanner.
+  longDescription: A shared Java malware scanner capable of static and dynamic analysis.
   links:
     homepage: https://github.com/Minecraft-Malware-Prevention-Alliance/concoction
   authors:

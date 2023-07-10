@@ -6,7 +6,7 @@ import picocli.CommandLine.Command;
 import java.util.concurrent.Callable;
 
 @Command(name = "Concoction", mixinStandardHelpOptions = true,
-		version = "Concoction v" + ConcoctionBuildConfig.VERSION,
+		version = ConcoctionBuildConfig.VERSION,
 		description = "Dynamic Shared Malware Scanner")
 public class Main implements Callable<Integer> {
 

@@ -4,6 +4,7 @@ plugins {
     // Plugin generates version info class.
     id 'com.peterabeles.gversion' version '1.10'
     id 'java-library'
+    id 'java-test-fixtures'
     id 'maven-publish'
 }
 
@@ -91,7 +92,7 @@ publishing {
 
             pom {
                 name = 'concoction'
-                description = 'A dynamic shared malware scanner.'
+                description = 'A shared Java malware scanner capable of static and dynamic analysis..'
                 url = 'https://github.com/Minecraft-Malware-Prevention-Alliance/concoction'
                 licenses {
                     license {

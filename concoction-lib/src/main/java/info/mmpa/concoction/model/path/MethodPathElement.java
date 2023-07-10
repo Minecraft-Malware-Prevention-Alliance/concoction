@@ -1,7 +1,8 @@
 package info.mmpa.concoction.model.path;
 
+import info.mmpa.concoction.model.ModelSource;
+
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,7 +28,39 @@ public class MethodPathElement extends AbstractPathElement {
 		this.methodDesc = methodDesc;
 	}
 
-	@Nullable
+	/**
+	 * @return Method element value's name.
+	 */
+	@Nonnull
+	public String getMethodName() {
+		return methodName;
+	}
+
+	/**
+	 * @return Method element value's descriptor.
+	 */
+	@Nonnull
+	public String getMethodDesc() {
+		return methodDesc;
+	}
+
+	/**
+	 * @return Class name path element value.
+	 */
+	@Nonnull
+	public String getClassName() {
+		return parent.getClassName();
+	}
+
+	/**
+	 * @return Model source path element value.
+	 */
+	@Nonnull
+	public ModelSource getSource() {
+		return parent.getSource();
+	}
+
+	@Nonnull
 	@Override
 	public PathElement parent() {
 		return parent;
