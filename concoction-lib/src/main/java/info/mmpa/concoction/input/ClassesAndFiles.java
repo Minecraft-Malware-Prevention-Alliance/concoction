@@ -55,7 +55,7 @@ public class ClassesAndFiles {
 		// Our classes must be parsed with ASM for later SSVM integration.
 		ClassReader reader = new ClassReader(raw);
 		String className = reader.getClassName();
-		reader.accept(new ClassWriter(0), 0);
+		reader.accept(new ClassWriter(0), ClassReader.SKIP_FRAMES);
 		classes.put(className, raw);
 	}
 
