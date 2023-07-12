@@ -8,7 +8,7 @@ import info.mmpa.concoction.model.impl.BasicModelSource;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
-import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.scan.standard.StandardScan;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import software.coley.collections.Sets;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -26,7 +25,6 @@ import java.util.NavigableSet;
 import java.util.Set;
 
 import static info.mmpa.concoction.util.Unchecked.cast;
-import static info.mmpa.concoction.util.TestSerialization.deserializeModel;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InstructionMatchingTests {

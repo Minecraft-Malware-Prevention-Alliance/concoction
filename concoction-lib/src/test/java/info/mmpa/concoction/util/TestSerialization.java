@@ -1,7 +1,7 @@
 package info.mmpa.concoction.util;
 
-import info.mmpa.concoction.scan.model.method.InstructionMatchEntry;
-import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.insn.InstructionMatchEntry;
+import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import org.junit.jupiter.api.Assertions;
 
 import javax.annotation.Nonnull;

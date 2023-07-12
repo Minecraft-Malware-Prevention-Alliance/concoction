@@ -1,7 +1,7 @@
 package info.mmpa.concoction.output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 
 import javax.annotation.Nonnull;
 

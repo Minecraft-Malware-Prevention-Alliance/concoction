@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.model.method;
+package info.mmpa.concoction.scan.model.insn;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;

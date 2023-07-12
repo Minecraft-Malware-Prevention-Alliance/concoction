@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.model.method;
+package info.mmpa.concoction.scan.model.insn;
 
 import info.mmpa.concoction.scan.model.TextMatchMode;
 import org.objectweb.asm.tree.AbstractInsnNode;

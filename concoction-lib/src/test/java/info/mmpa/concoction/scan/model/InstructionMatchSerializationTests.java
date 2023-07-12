@@ -2,7 +2,7 @@ package info.mmpa.concoction.scan.model;
 
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.SusLevel;
-import info.mmpa.concoction.scan.model.method.*;
+import info.mmpa.concoction.scan.model.insn.*;
 import org.junit.jupiter.api.Test;
 import software.coley.collections.Maps;
 

@@ -3,9 +3,9 @@ package info.mmpa.concoction.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import info.mmpa.concoction.scan.model.method.InstructionMatchEntry;
-import info.mmpa.concoction.scan.model.method.InstructionMatchEntryDeserializer;
-import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.insn.InstructionMatchEntry;
+import info.mmpa.concoction.scan.model.insn.InstructionMatchEntryDeserializer;
+import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

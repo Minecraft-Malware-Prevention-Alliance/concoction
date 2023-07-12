@@ -7,7 +7,7 @@ import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
-import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.util.AsmUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
