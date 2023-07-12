@@ -4,7 +4,9 @@ import info.mmpa.concoction.model.ApplicationModel;
 import info.mmpa.concoction.model.ModelSource;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Basic application model implementation.
@@ -12,6 +14,7 @@ import java.util.Collection;
 public class BasicApplicationModel implements ApplicationModel {
 	private final ModelSource primarySource;
 	private final Collection<ModelSource> supportingSources;
+	private final ModelSource flatView;
 
 	/**
 	 * @param primarySource
@@ -23,6 +26,12 @@ public class BasicApplicationModel implements ApplicationModel {
 								 @Nonnull Collection<ModelSource> supportingSources) {
 		this.primarySource = primarySource;
 		this.supportingSources = supportingSources;
+
+		// Create flat view of all sources
+		List<ModelSource> sources = new ArrayList<>(1 + supportingSources.size());
+		sources.add(primarySource);
+		sources.addAll(supportingSources);
+		flatView = new MultiModelSource("flattened", sources);
 	}
 
 	@Nonnull
@@ -35,6 +44,12 @@ public class BasicApplicationModel implements ApplicationModel {
 	@Override
 	public Collection<ModelSource> supportingSources() {
 		return supportingSources;
+	}
+
+	@Nonnull
+	@Override
+	public ModelSource flatView() {
+		return flatView;
 	}
 
 	@Override

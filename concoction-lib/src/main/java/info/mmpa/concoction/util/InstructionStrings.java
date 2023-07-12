@@ -50,7 +50,7 @@ public class InstructionStrings {
 	 */
 	@Nullable
 	public static String insnToArgsString(@Nonnull AbstractInsnNode insn) {
-		// TODO: Implement sensible toString for different insns
+		// TODO #3: Implement sensible toString for different insns
 		//  - May want to use a 3rd party formatter like JASM for consistency and easy integration
 		//     (like pasting from recaf's assembler, which uses JASM)
 		return null;

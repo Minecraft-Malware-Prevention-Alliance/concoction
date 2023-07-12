@@ -30,9 +30,6 @@ import static info.mmpa.concoction.util.TestSerialization.deserializeModel;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InstructionMatchingTests {
-	// TODO: Create more test cases
-	//  - Should first properly implement the 'InstructionStrings' handling
-
 	@Test
 	void test() {
 		try {

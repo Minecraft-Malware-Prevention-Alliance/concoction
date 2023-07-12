@@ -56,6 +56,10 @@ public class ClassesAndFiles {
 		ClassReader reader = new ClassReader(raw);
 		String className = reader.getClassName();
 		reader.accept(new ClassWriter(0), ClassReader.SKIP_FRAMES);
+
+		// If we get here, it means the class can be fully parsed and written back
+		// so, it must be valid enough for our purposes. Otherwise, an exception would
+		// have been thrown by ASM.
 		classes.put(className, raw);
 	}
 

@@ -8,7 +8,7 @@ import info.mmpa.concoction.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
 import info.mmpa.concoction.scan.model.method.InstructionsMatchingModel;
-import org.objectweb.asm.ClassReader;
+import info.mmpa.concoction.util.AsmUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -30,6 +30,12 @@ public class StandardScan {
 		this.instructionsMatchingModels = instructionsMatchingModels;
 	}
 
+	/**
+	 * @param model
+	 * 		Model to scan.
+	 *
+	 * @return Detection results found in the model's primary source.
+	 */
 	@Nonnull
 	public Results accept(@Nonnull ApplicationModel model) {
 		ResultsSink sink = new ResultsSink();
@@ -41,12 +47,9 @@ public class StandardScan {
 			String className = classEntry.getKey();
 			ClassPathElement classPath = sourcePath.child(className);
 			try {
-				ClassNode classNode = node(classEntry.getValue());
+				ClassNode classNode = AsmUtil.node(classEntry.getValue());
 
-				// TODO: Class structure matchers
-				//  - Field values
-				//  - Declaration patterns (fields and methods)
-				//  - Useful for detecting things like the windows registry class everyone pastes
+				// TODO #4: Class structure matchers
 
 				// Run per-method matchers (instruction matching models)
 				for (MethodNode methodNode : classNode.methods) {
@@ -66,13 +69,5 @@ public class StandardScan {
 
 		// Build results from what we found
 		return sink.buildResults();
-	}
-
-	@Nonnull
-	private static ClassNode node(@Nonnull byte[] value) {
-		// Frames are useless to us, and we can save performance by skipping them too.
-		ClassNode node = new ClassNode();
-		new ClassReader(value).accept(node, ClassReader.SKIP_FRAMES);
-		return node;
 	}
 }

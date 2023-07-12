@@ -43,4 +43,11 @@ public interface ApplicationModel {
 		return concat(of(primarySource()), supportingSources().stream())
 				.collect(Collectors.toList());
 	}
+
+	/**
+	 * @return Flat representation of classes and resources from the {@link #primarySource() primary source} and
+	 * {@link #supportingSources() all supporting sources}.
+	 */
+	@Nonnull
+	ModelSource flatView();
 }
