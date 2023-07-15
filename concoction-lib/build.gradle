@@ -77,7 +77,7 @@ private boolean isBuildConfigUpToDate() {
             gversion.classPackage.replace('.', '/') + '/' +
             gversion.className + ".java")
     if (buildConfigPath.exists()) {
-        String text = Files.readString(buildConfigPath.toPath())
+        String text = new String(Files.readAllBytes(buildConfigPath.toPath()))
         if (text.contains('VERSION = "' + project.version + '"'))
             return true
     }
