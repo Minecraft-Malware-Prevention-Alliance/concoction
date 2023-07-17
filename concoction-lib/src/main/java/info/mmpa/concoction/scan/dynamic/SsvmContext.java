@@ -3,13 +3,16 @@ package info.mmpa.concoction.scan.dynamic;
 import dev.xdark.ssvm.VirtualMachine;
 import dev.xdark.ssvm.api.VMInterface;
 import dev.xdark.ssvm.classloading.SupplyingClassLoaderInstaller;
+import dev.xdark.ssvm.filesystem.FileManager;
 import dev.xdark.ssvm.invoke.InvocationUtil;
 import dev.xdark.ssvm.thread.OSThread;
 import info.mmpa.concoction.model.ApplicationModel;
 import info.mmpa.concoction.model.ModelSource;
+import org.objectweb.asm.Opcodes;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -33,9 +36,12 @@ public class SsvmContext {
 	public SsvmContext(@Nonnull ApplicationModel model) {
 		// Create and initialize the VM.
 		VirtualMachine vm = new VirtualMachine() {
-			// TODO: Override file manager to create dummy file handles
-			//  - Default yields same file handle for all operations, which is not great
+			@Override
+			protected FileManager createFileManager() {
+				return new CustomFileManager();
+			}
 		};
+		vm.getProperties().put("java.class.path", ""); // Hide class path of concoction from the VM
 		vm.bootstrap();
 
 		// Configure method enter-exit listeners for matching scoped call rules
@@ -92,5 +98,20 @@ public class SsvmContext {
 	@Nonnull
 	public InvocationUtil getInvoker() {
 		return invoker;
+	}
+
+	static {
+		try {
+			String version = System.getProperty("java.class.version");
+			if (Double.parseDouble(version) >= Opcodes.V9) {
+				// Accessed reflectively since this only needs to be done on Java 9+
+				// and references to new module classes will fail on Java 8
+				Method deencapsulate = Class.forName("dev.xdark.deencapsulation.Deencapsulation")
+						.getDeclaredMethod("deencapsulate", Class.class);
+				deencapsulate.invoke(null, SsvmContext.class);
+			}
+		} catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 }

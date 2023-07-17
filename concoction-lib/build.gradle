@@ -37,6 +37,8 @@ dependencies {
     implementation ssvm_core
     implementation ssvm_invoke
     implementation ssvm_io
+    implementation deencapsulation
+    shaded deencapsulation
     shaded jlinker
     shaded ssvm_core
     shaded ssvm_invoke

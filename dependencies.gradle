@@ -1,6 +1,6 @@
 def asmVersion = '9.5'
 def cafeDudeVersion = '1.10.2'
-def ssvmVersion = 'b31ead3b4e'
+def ssvmVersion = '0a83bc9233'
 def junitVersion = '5.9.2'
 def jacksonVersion = '2.15.2'
 
@@ -21,6 +21,7 @@ project.ext {
     collections = 'software.coley:extra-collections:1.2.3'
     io = 'commons-io:commons-io:2.13.0'
     jackson = "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    deencapsulation = 'com.github.xxDark:deencapsulation:462873c7b3'
 
     slf4jLogging = 'org.slf4j:slf4j-jdk14:2.0.7'
     jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
