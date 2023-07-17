@@ -45,7 +45,7 @@ public class EntryPoint implements Comparable<EntryPoint> {
 	 * 		When the entry point's declaring class could not be found/loaded.
 	 */
 	public void invoke(@Nonnull SsvmContext context) throws ClassNotFoundException {
-		InstanceClass ownerClass = context.getLoaderHelper().loadClass(className);
+		InstanceClass ownerClass = context.getLoaderHelper().loadClass(className.replace('/', '.'));
 		JavaMethod method = ownerClass.getMethod(methodName, methodDescriptor);
 		InvocationUtil invoker = context.getInvoker();
 		char retType = methodDescriptor.charAt(methodDescriptor.lastIndexOf(')') + 1);

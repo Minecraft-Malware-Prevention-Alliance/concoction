@@ -1,23 +1,17 @@
 package info.mmpa.concoction.scan;
 
 import example.RuntimeExec;
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelSource;
-import info.mmpa.concoction.model.impl.BasicApplicationModel;
-import info.mmpa.concoction.model.impl.BasicModelSource;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.scan.standard.StandardScan;
-import org.apache.commons.io.IOUtils;
+import info.mmpa.concoction.util.TestUtils;
 import org.junit.jupiter.api.Test;
-import software.coley.collections.Maps;
 import software.coley.collections.Sets;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -56,21 +50,6 @@ public class InstructionMatchingTests {
 		Path path = Paths.get("src/test/resources/models/" + modelName);
 		InstructionsMatchingModel model = InstructionsMatchingModel.fromJson(path);
 		StandardScan scan = new StandardScan(Collections.singletonList(model));
-		return scan.accept(appModel(type));
-	}
-
-	@Nonnull
-	private static ApplicationModel appModel(@Nonnull Class<?> type) throws IOException {
-		String internalName = type.getName().replace('.', '/');
-		ModelSource model = new BasicModelSource("test", Maps.of(internalName, code(type)), Collections.emptyMap());
-		return new BasicApplicationModel(model, Collections.emptyList());
-	}
-
-	@Nonnull
-	private static byte[] code(@Nonnull Class<?> type) throws IOException {
-		String className = type.getName();
-		InputStream is = ClassLoader.getSystemResourceAsStream(className.replace('.', '/') + ".class");
-		if (is == null) throw new IOException(className + " not found");
-		return IOUtils.toByteArray(is);
+		return scan.accept(TestUtils.appModel(type));
 	}
 }

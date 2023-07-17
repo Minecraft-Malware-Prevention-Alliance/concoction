@@ -2,17 +2,15 @@ package info.mmpa.concoction.scan.model.insn;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.scan.model.MatchingModel;
 import info.mmpa.concoction.util.Serialization;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
-import software.coley.collections.delegate.DelegatingList;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -24,10 +22,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Model representing pattern matching for a {@link DetectionArchetype detection archetype}.
+ * Model representing pattern matching for a {@link DetectionArchetype detection archetype} against a series of
+ * instructions in method bodies.
+ * <br>
  * The model may have one or more variants describing different signature techniques.
  */
-public class InstructionsMatchingModel {
+public class InstructionsMatchingModel implements MatchingModel<InstructionMatchingList> {
 	private final DetectionArchetype archetype;
 	private final Map<String, InstructionMatchingList> variants;
 
@@ -168,20 +168,15 @@ public class InstructionsMatchingModel {
 		}
 	}
 
-	/**
-	 * @return Information about what the signature is matching.
-	 */
 	@Nonnull
+	@Override
 	public DetectionArchetype getArchetype() {
 		return archetype;
 	}
 
-	/**
-	 * @return Map of variants to detect the pattern.
-	 * Map values are lists of instruction matchers forming a single signature.
-	 */
 	@Nonnull
-	public Map<String, ? extends List<InstructionMatchEntry>> getVariants() {
+	@Override
+	public Map<String, InstructionMatchingList> getVariants() {
 		return variants;
 	}
 
@@ -205,18 +200,5 @@ public class InstructionsMatchingModel {
 		return "InstructionsMatchingModel{" +
 				"archetype=" + archetype +
 				", variants[" + variants.size() + "]}";
-	}
-
-	/**
-	 * Hack to get JSON deserialization enough type information to deserialize otherwise nebulous
-	 * typing for {@link #variants}. Since the public getter only exposes {@link List} its not
-	 * a hindrance to the public API.
-	 */
-	@JsonDeserialize(contentUsing = InstructionMatchEntryDeserializer.class)
-	@JsonSerialize(contentUsing = InstructionMatchEntrySerializer.class)
-	private static class InstructionMatchingList extends DelegatingList<InstructionMatchEntry> {
-		public InstructionMatchingList(@Nonnull List<InstructionMatchEntry> delegate) {
-			super(delegate);
-		}
 	}
 }
