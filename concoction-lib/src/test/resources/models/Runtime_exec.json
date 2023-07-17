@@ -6,15 +6,15 @@
   },
   "variants": {
     "1": [
-      { "op": "EQUALS INVOKESTATIC", "args": "EQUALS getRuntime()Ljava/lang/Runtime;"  },
+      { "op": "EQUALS INVOKESTATIC", "args": "EQUALS java/lang/Runtime.getRuntime()Ljava/lang/Runtime;"  },
       { "op": "EQUALS LDC" },
-      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS java/lang/Runtime.exec(Ljava/lang/String;)Ljava/lang/Process;" }
     ],
     "2": [
-      { "op": "EQUALS INVOKESTATIC", "args": "EQUALS getRuntime()Ljava/lang/Runtime;"  },
+      { "op": "EQUALS INVOKESTATIC", "args": "EQUALS java/lang/Runtime.getRuntime()Ljava/lang/Runtime;"  },
       "**",
       { "op": "EQUALS LDC" },
-      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS java/lang/Runtime.exec(Ljava/lang/String;)Ljava/lang/Process;" }
     ],
     "3": [
       {
@@ -24,12 +24,12 @@
         ]
       },
       { "op": "EQUALS LDC" },
-      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS java/lang/Runtime.exec(Ljava/lang/String;)Ljava/lang/Process;" }
     ],
     "4": [
       { "op": "EQUALS CHECKCAST", "args": "EQUALS java/lang/Runtime"  },
       { "op": "EQUALS LDC" },
-      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS exec(Ljava/lang/String;)Ljava/lang/Process;" }
+      { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS java/lang/Runtime.exec(Ljava/lang/String;)Ljava/lang/Process;" }
     ]
   }
 }

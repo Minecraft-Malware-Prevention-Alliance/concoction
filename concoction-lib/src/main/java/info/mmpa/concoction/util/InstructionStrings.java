@@ -1,7 +1,9 @@
 package info.mmpa.concoction.util;
 
 import me.coley.cafedude.classfile.instruction.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +52,47 @@ public class InstructionStrings {
 	 */
 	@Nullable
 	public static String insnToArgsString(@Nonnull AbstractInsnNode insn) {
-		// TODO #3: Implement sensible toString for different insns
-		//  - May want to use a 3rd party formatter like JASM for consistency and easy integration
-		//     (like pasting from recaf's assembler, which uses JASM)
+		switch (insn.getType()) {
+			case AbstractInsnNode.INT_INSN:
+				IntInsnNode intNode = (IntInsnNode) insn;
+				return String.valueOf(intNode.operand);
+			case AbstractInsnNode.VAR_INSN:
+				VarInsnNode varNode = (VarInsnNode) insn;
+				return String.valueOf(varNode.var);
+			case AbstractInsnNode.TYPE_INSN:
+				TypeInsnNode typeNode = (TypeInsnNode) insn;
+				return typeNode.desc;
+			case AbstractInsnNode.FIELD_INSN:
+				FieldInsnNode fieldNode = (FieldInsnNode) insn;
+				return fieldNode.owner + "." + fieldNode.name + " " + fieldNode.desc;
+			case AbstractInsnNode.METHOD_INSN:
+				MethodInsnNode methodNode = (MethodInsnNode) insn;
+				return methodNode.owner + "." + methodNode.name + methodNode.desc;
+			case AbstractInsnNode.INVOKE_DYNAMIC_INSN:
+			case AbstractInsnNode.LDC_INSN:
+				LdcInsnNode ldcNode = (LdcInsnNode) insn;
+				Object cst = ldcNode.cst;
+				if (cst instanceof String) {
+					return "\"" + cst + "\"";
+				} else if (cst instanceof Type) {
+					Type cstType = (Type) cst;
+					return cstType.getDescriptor();
+				} else if (cst instanceof Handle) {
+					Handle cstHandle = (Handle) cst;
+					if (cstHandle.getDesc().charAt(0) == '(') {
+						return cstHandle.getOwner() + "." + cstHandle.getName() + cstHandle.getDesc();
+					} else {
+						return cstHandle.getOwner() + "." + cstHandle.getName() + " " + cstHandle.getDesc();
+					}
+				}
+				return cst.toString();
+			case AbstractInsnNode.IINC_INSN:
+				IincInsnNode iincNode = (IincInsnNode) insn;
+				return iincNode.var + " " + iincNode.incr;
+			case AbstractInsnNode.MULTIANEWARRAY_INSN:
+				MultiANewArrayInsnNode multiNode = (MultiANewArrayInsnNode) insn;
+				return multiNode.desc + " " + multiNode.dims;
+		}
 		return null;
 	}
 }
