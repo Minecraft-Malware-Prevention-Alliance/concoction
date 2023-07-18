@@ -26,10 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class BehaviorMatchingTests {
-	// TODO: Upstream SSVM changes are required in newer JDK versions like 17
-	//  - Some native hooks missing that got added in later JDK versions
 	@Test
-	@EnabledForJreRange(max = JRE.JAVA_8)
 	void test() {
 		try {
 			Results results = results("File_read.json", FileStream.class);

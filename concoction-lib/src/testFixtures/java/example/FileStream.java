@@ -4,7 +4,7 @@ import java.io.*;
 
 public class FileStream {
 	public static String streamImportantFile() throws IOException {
-		FileInputStream fis = new FileInputStream("important.txt");
+		FileInputStream fis = new FileInputStream("README.md");
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(fis))) {
 			StringBuilder sb = new StringBuilder();
 			String line;

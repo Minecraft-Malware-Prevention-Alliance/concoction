@@ -1,10 +1,12 @@
 package info.mmpa.concoction.scan.dynamic;
 
 import dev.xdark.ssvm.VirtualMachine;
+import dev.xdark.ssvm.api.MethodInvoker;
 import dev.xdark.ssvm.api.VMInterface;
 import dev.xdark.ssvm.classloading.SupplyingClassLoaderInstaller;
 import dev.xdark.ssvm.filesystem.FileManager;
 import dev.xdark.ssvm.invoke.InvocationUtil;
+import dev.xdark.ssvm.mirror.type.InstanceClass;
 import dev.xdark.ssvm.thread.OSThread;
 import info.mmpa.concoction.model.ApplicationModel;
 import info.mmpa.concoction.model.ModelSource;
@@ -60,6 +62,17 @@ public class SsvmContext {
 				throw new IllegalArgumentException("Cannot pop call stack frame from thread with no prior stack history");
 			stack.pop();
 		});
+
+		// Some patches to circumvent bugs arising from VM implementation changes in later versions
+		if (vm.getJvmVersion() > 8) {
+			// Bug in SSVM makes it think there are overlapping sleeps, so until that gets fixed we stub out sleeping.
+			InstanceClass thread = vm.getSymbols().java_lang_Thread();
+			vmi.setInvoker(thread.getMethod("sleep", "(J)V"), MethodInvoker.noop());
+
+			// SSVM manages its own memory, and this conflicts with it. Stubbing it out keeps everyone happy.
+			InstanceClass bits = (InstanceClass) vm.findBootstrapClass("java/nio/Bits");
+			vmi.setInvoker(bits.getMethod("reserveMemory", "(JJ)V"), MethodInvoker.noop());
+		}
 
 		// Store VM instance.
 		this.vm = vm;
