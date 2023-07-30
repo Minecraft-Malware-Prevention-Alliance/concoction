@@ -1,7 +1,6 @@
 package info.mmpa.concoction.scan;
 
 import example.RuntimeExec;
-import info.mmpa.concoction.Concoction;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
@@ -26,10 +25,7 @@ public class InstructionMatchingTests {
 	@Test
 	void test() {
 		try {
-			Results results = Concoction.builder()
-					.model(Paths.get("src/test/resources/models/Runtime_exec.json"))
-					.primarySource(TestUtils.appModel(RuntimeExec.class).primarySource())
-					.scan();
+			Results results = results("Runtime_exec.json", RuntimeExec.class);
 			NavigableSet<Detection> detections = results.detections();
 
 			// There are four sample methods which exhibit match-worthy behavior.
@@ -47,5 +43,13 @@ public class InstructionMatchingTests {
 		} catch (IOException ex) {
 			fail(ex);
 		}
+	}
+
+	@Nonnull
+	private static Results results(@Nonnull String modelName, @Nonnull Class<?> type) throws IOException {
+		Path path = Paths.get("src/test/resources/models/" + modelName);
+		InstructionsMatchingModel model = InstructionsMatchingModel.fromJson(path);
+		StandardScan scan = new StandardScan(Collections.singletonList(model));
+		return scan.accept(TestUtils.appModel(type));
 	}
 }
