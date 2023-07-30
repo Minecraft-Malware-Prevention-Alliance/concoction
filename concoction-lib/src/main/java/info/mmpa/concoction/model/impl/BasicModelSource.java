@@ -3,8 +3,10 @@ package info.mmpa.concoction.model.impl;
 import info.mmpa.concoction.model.ModelSource;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Basic model source implementation.
@@ -56,8 +58,8 @@ public class BasicModelSource implements ModelSource {
 		BasicModelSource that = (BasicModelSource) o;
 
 		if (!identifier.equals(that.identifier)) return false;
-		if (!classes.equals(that.classes)) return false;
-		return files.equals(that.files);
+		if (!mapEquals(classes, that.classes)) return false;
+		return mapEquals(files, that.files);
 	}
 
 	@Override
@@ -75,5 +77,24 @@ public class BasicModelSource implements ModelSource {
 				", classes=" + classes.size() +
 				", files=" + files.size() +
 				'}';
+	}
+
+	private static boolean mapEquals(@Nonnull Map<String, byte[]> a, @Nonnull Map<String, byte[]> b) {
+		// Quick key check so that we don't do a bunch of array comparisons off the bat.
+		if (!a.keySet().equals(b.keySet())) return false;
+
+		// We can't do a simple 'a.equals(b)' because of odd interactions between value comparisons of arrays.
+		// Don't believe me? Comment out the block below and replace it with:
+		//   return a.equals(b);
+		for (Map.Entry<String, byte[]> e : a.entrySet()) {
+			String name = e.getKey();
+			byte[] data = e.getValue();
+			byte[] other = b.get(name);
+			if (other == null)
+				return false;
+			if (!Arrays.equals(data, other))
+				return false;
+		}
+		return true;
 	}
 }
