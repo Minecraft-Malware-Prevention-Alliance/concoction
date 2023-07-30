@@ -4,7 +4,7 @@
     "identifier": "runtime-exec",
     "description": "Runtime.getRuntime().exec(...) can be used to run applications on the system"
   },
-  "variants": {
+  "code-patterns": {
     "1": [
       { "op": "EQUALS INVOKESTATIC", "args": "EQUALS java/lang/Runtime.getRuntime()Ljava/lang/Runtime;"  },
       { "op": "EQUALS LDC" },
@@ -31,5 +31,6 @@
       { "op": "EQUALS LDC" },
       { "op": "EQUALS INVOKEVIRTUAL", "args": "EQUALS java/lang/Runtime.exec(Ljava/lang/String;)Ljava/lang/Process;" }
     ]
-  }
+  },
+  "code-behaviors": {}
 }

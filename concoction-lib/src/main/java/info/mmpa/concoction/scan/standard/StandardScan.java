@@ -7,12 +7,14 @@ import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.util.AsmUtil;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +22,14 @@ import java.util.Map;
  * Basic ASM pattern matching based scanning.
  */
 public class StandardScan {
-	private final List<InstructionsMatchingModel> instructionsMatchingModels;
+	private final Collection<ScanModel> scanModels;
 
 	/**
-	 * @param instructionsMatchingModels
+	 * @param scanModels
 	 * 		List of detection models to scan for.
 	 */
-	public StandardScan(@Nonnull List<InstructionsMatchingModel> instructionsMatchingModels) {
-		this.instructionsMatchingModels = instructionsMatchingModels;
+	public StandardScan(@Nonnull Collection<ScanModel> scanModels) {
+		this.scanModels = scanModels;
 	}
 
 	/**
@@ -55,8 +57,10 @@ public class StandardScan {
 				for (MethodNode methodNode : classNode.methods) {
 					MethodPathElement methodPath = classPath.child(methodNode);
 					if (methodNode.instructions == null) continue;
-					for (InstructionsMatchingModel matchingModel : instructionsMatchingModels)
-						matchingModel.match(sink, methodPath, classNode, methodNode);
+					for (ScanModel scanModel : scanModels) {
+						InstructionsMatchingModel matchingModel = scanModel.getInstructionsMatchingModel();
+						matchingModel.match(sink, scanModel.getDetectionArchetype(), methodPath, classNode, methodNode);
+					}
 				}
 			} catch (Throwable ex) {
 				// Pipe errors to sink.

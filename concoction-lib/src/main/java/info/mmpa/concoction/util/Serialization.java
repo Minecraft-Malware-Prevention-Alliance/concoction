@@ -3,12 +3,11 @@ package info.mmpa.concoction.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.scan.model.insn.InstructionMatchEntry;
 import info.mmpa.concoction.scan.model.insn.InstructionMatchEntryDeserializer;
-import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Serialization utils.
@@ -39,13 +38,13 @@ public class Serialization {
 
 	/**
 	 * @param text
-	 * 		Text representing an {@link InstructionsMatchingModel}.
+	 * 		Text representing an {@link ScanModel}.
 	 *
 	 * @return Deserialized value.
 	 */
 	@Nonnull
-	public static InstructionsMatchingModel deserializeModel(@Nonnull String text) throws JsonProcessingException {
-		return deserialize(InstructionsMatchingModel.class, text);
+	public static ScanModel deserializeModel(@Nonnull String text) throws JsonProcessingException {
+		return deserialize(ScanModel.class, text);
 	}
 
 	/**
@@ -55,7 +54,7 @@ public class Serialization {
 	 * @return Deserialized value.
 	 */
 	@Nonnull
-	public static InstructionMatchEntry deserializeEntry(@Nonnull String text) throws JsonProcessingException {
+	public static InstructionMatchEntry deserializeInsnEntry(@Nonnull String text) throws JsonProcessingException {
 		return deserialize(InstructionMatchEntry.class, text);
 	}
 
@@ -70,7 +69,7 @@ public class Serialization {
 	 * @return Deserialized value.
 	 */
 	@Nonnull
-	public static <T> T deserialize(@Nullable Class<T> type, @Nonnull String text) throws JsonProcessingException {
+	public static <T> T deserialize(@Nonnull Class<T> type, @Nonnull String text) throws JsonProcessingException {
 		return mapper.readValue(text, type);
 	}
 }

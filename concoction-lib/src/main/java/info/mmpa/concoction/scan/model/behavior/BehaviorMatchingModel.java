@@ -1,8 +1,8 @@
 package info.mmpa.concoction.scan.model.behavior;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import info.mmpa.concoction.output.DetectionArchetype;
-import info.mmpa.concoction.scan.model.MatchingModel;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -13,32 +13,25 @@ import java.util.Map;
  * <br>
  * The model may have one or more variants describing different signature techniques.
  */
-public class BehaviorMatchingModel implements MatchingModel<BehaviorMatchEntry> {
-	private final DetectionArchetype archetype;
+@JsonDeserialize(converter = BehaviorMatchingModelDeserializingConverter.class)
+@JsonSerialize(converter = BehaviorMatchingModelSerializingConverter.class)
+public class BehaviorMatchingModel {
 	private final Map<String, BehaviorMatchEntry> variants;
 
 	/**
-	 * @param archetype
-	 * 		Information about what the signature is matching.
 	 * @param variants
 	 * 		Map of variants to detect the pattern.
 	 */
-	public BehaviorMatchingModel(@JsonProperty("archetype") @Nonnull DetectionArchetype archetype,
-								 @JsonProperty("variants") @Nonnull Map<String, BehaviorMatchEntry> variants) {
-		this.archetype = archetype;
+	public BehaviorMatchingModel(@Nonnull Map<String, BehaviorMatchEntry> variants) {
 		this.variants = variants;
 	}
 
 	// TODO: Implement scanning
 
+	/**
+	 * @return Map of variants to detect the pattern.
+	 */
 	@Nonnull
-	@Override
-	public DetectionArchetype getArchetype() {
-		return archetype;
-	}
-
-	@Nonnull
-	@Override
 	public Map<String, BehaviorMatchEntry> getVariants() {
 		return variants;
 	}
@@ -60,8 +53,6 @@ public class BehaviorMatchingModel implements MatchingModel<BehaviorMatchEntry> 
 
 	@Override
 	public String toString() {
-		return "BehaviorMatchingModel{" +
-				"archetype=" + archetype +
-				", variants[" + variants.size() + "]}";
+		return "BehaviorMatchingModel{variants[" + variants.size() + "]}";
 	}
 }

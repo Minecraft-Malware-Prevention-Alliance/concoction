@@ -11,8 +11,11 @@ import javax.annotation.Nonnull;
  * @see InstructionsMatchingModel Detection for method instructions.
  */
 public class DetectionArchetype implements Comparable<DetectionArchetype> {
+	@JsonProperty("level")
 	private final SusLevel level;
+	@JsonProperty("identifier")
 	private final String identifier;
+	@JsonProperty("description")
 	private final String description;
 
 	/**

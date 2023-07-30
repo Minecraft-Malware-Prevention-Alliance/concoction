@@ -2,11 +2,13 @@ package info.mmpa.concoction.scan.model;
 
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.SusLevel;
+import info.mmpa.concoction.scan.model.behavior.BehaviorMatchingModel;
 import info.mmpa.concoction.scan.model.insn.*;
 import org.junit.jupiter.api.Test;
 import software.coley.collections.Maps;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static info.mmpa.concoction.scan.model.TextMatchMode.EQUALS;
@@ -23,7 +25,7 @@ public class InstructionMatchSerializationTests {
 		String serialized = serialize(wildcard);
 		assertEquals("\"*\"", serialized, "Wildcard should serialize to '*'");
 
-		InstructionMatchEntry entry = deserializeEntry("\"*\"");
+		InstructionMatchEntry entry = deserializeInsnEntry("\"*\"");
 		assertTrue(entry instanceof InstructionWildcard, "'*' should be deserialized to wildcard");
 	}
 
@@ -33,13 +35,13 @@ public class InstructionMatchSerializationTests {
 		String serialized = serialize(wildcard);
 		assertEquals("\"**\"", serialized, "Wildcard-multi-any should serialize to '**'");
 
-		InstructionMatchEntry entry = deserializeEntry("\"**\"");
+		InstructionMatchEntry entry = deserializeInsnEntry("\"**\"");
 		assertSame(entry, wildcard, "'**' should be deserialized to wildcard-multi-any");
 
 		// Edge cases
-		entry = deserializeEntry("\"*0\"");
+		entry = deserializeInsnEntry("\"*0\"");
 		assertSame(entry, wildcard, "'*0' should be deserialized to wildcard-multi-any");
-		entry = deserializeEntry("\"*-1\"");
+		entry = deserializeInsnEntry("\"*-1\"");
 		assertSame(entry, wildcard, "'*-1' should be deserialized to wildcard-multi-any");
 	}
 
@@ -49,7 +51,7 @@ public class InstructionMatchSerializationTests {
 		String serialized = serialize(wildcard);
 		assertEquals("\"*7\"", serialized, "Wildcard-multi-7 should serialize to '*7'");
 
-		InstructionMatchEntry entry = deserializeEntry("\"*7\"");
+		InstructionMatchEntry entry = deserializeInsnEntry("\"*7\"");
 		assertSame(entry, wildcard, "'*7' should be deserialized to wildcard-multi-7");
 	}
 
@@ -59,7 +61,7 @@ public class InstructionMatchSerializationTests {
 		String serialized = serialize(instruction);
 		assertEquals("{\"op\":\"EQUALS NOP\"}", serialized);
 
-		InstructionMatchEntry entry = deserializeEntry("{\"op\":\"EQUALS NOP\"}");
+		InstructionMatchEntry entry = deserializeInsnEntry("{\"op\":\"EQUALS NOP\"}");
 		assertEquals(instruction, entry);
 	}
 
@@ -69,7 +71,7 @@ public class InstructionMatchSerializationTests {
 		String serialized = serialize(instruction);
 		assertEquals("{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}", serialized);
 
-		InstructionMatchEntry entry = deserializeEntry("{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}");
+		InstructionMatchEntry entry = deserializeInsnEntry("{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}");
 		assertEquals(instruction, entry);
 	}
 
@@ -83,7 +85,7 @@ public class InstructionMatchSerializationTests {
 		String serialized = serialize(multiInstruction);
 		assertEquals("{\"ANY\":[\"*\",{\"op\":\"EQUALS NOP\"},{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}]}", serialized);
 
-		InstructionMatchEntry entry = deserializeEntry("{\n" +
+		InstructionMatchEntry entry = deserializeInsnEntry("{\n" +
 				"  \"ANY\": [\n" +
 				"    \"*\",\n" +
 				"    { \"op\": \"EQUALS NOP\" },\n" +
@@ -106,11 +108,13 @@ public class InstructionMatchSerializationTests {
 				new Instruction("LDC", null, EQUALS, null),
 				new Instruction("INVOKEVIRTUAL", "exec(Ljava/lang/String;)Ljava/lang/Process;", EQUALS, EQUALS)
 		);
-		InstructionsMatchingModel model = new InstructionsMatchingModel(archetype, Maps.of("key", entries));
+		InstructionsMatchingModel insnModel = new InstructionsMatchingModel(Maps.of("key", entries));
+		BehaviorMatchingModel behaviorModel = new BehaviorMatchingModel(Collections.emptyMap()); // TODO: Provide a value here
+		ScanModel model = new ScanModel(archetype, insnModel, behaviorModel);
 
 		// Serialize, deserialize, and compare equality
 		String serialized = serialize(model);
-		InstructionsMatchingModel modelDeserialized = deserializeModel(serialized);
+		ScanModel modelDeserialized = deserializeModel(serialized);
 		assertEquals(model, modelDeserialized);
 	}
 }

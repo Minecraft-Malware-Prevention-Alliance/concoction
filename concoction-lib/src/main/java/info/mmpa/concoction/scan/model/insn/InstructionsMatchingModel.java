@@ -1,21 +1,16 @@
 package info.mmpa.concoction.scan.model.insn;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.ResultsSink;
-import info.mmpa.concoction.scan.model.MatchingModel;
-import info.mmpa.concoction.util.Serialization;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,57 +22,26 @@ import java.util.stream.Collectors;
  * <br>
  * The model may have one or more variants describing different signature techniques.
  */
-public class InstructionsMatchingModel implements MatchingModel<InstructionMatchingList> {
-	private final DetectionArchetype archetype;
+@JsonDeserialize(converter = InstructionsMatchingModelDeserializingConverter.class)
+@JsonSerialize(converter = InstructionsMatchingModelSerializingConverter.class)
+public class InstructionsMatchingModel {
 	private final Map<String, InstructionMatchingList> variants;
 
 	/**
-	 * @param archetype
-	 * 		Information about what the signature is matching.
 	 * @param variants
 	 * 		Map of variants to detect the pattern.
 	 * 		Map values are lists of instruction matchers forming a single signature.
 	 */
-	public InstructionsMatchingModel(@JsonProperty("archetype") @Nonnull DetectionArchetype archetype,
-									 @JsonProperty("variants") @Nonnull Map<String, List<InstructionMatchEntry>> variants) {
-		this.archetype = archetype;
+	public InstructionsMatchingModel(@Nonnull Map<String, List<InstructionMatchEntry>> variants) {
 		this.variants = Collections.unmodifiableMap(variants.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey,
-						e -> new InstructionMatchingList(e.getValue()))));
-	}
-
-	/**
-	 * @param path
-	 * 		Path to json file representing a {@link InstructionsMatchingModel}.
-	 *
-	 * @return Parsed model from json.
-	 *
-	 * @throws IOException
-	 * 		When the file cannot be read from,
-	 * 		or the json is malformed and cannot deserialize into the model format.
-	 */
-	@Nonnull
-	public static InstructionsMatchingModel fromJson(@Nonnull Path path) throws IOException {
-		return fromJson(new String(Files.readAllBytes(path)));
-	}
-
-	/**
-	 * @param json
-	 * 		Json to deserialize.
-	 *
-	 * @return Parsed model from json.
-	 *
-	 * @throws JsonProcessingException
-	 * 		When the json is malformed and cannot deserialize into the model format.
-	 */
-	@Nonnull
-	public static InstructionsMatchingModel fromJson(@Nonnull String json) throws JsonProcessingException {
-		return Serialization.deserializeModel(json);
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> new InstructionMatchingList(e.getValue()))));
 	}
 
 	/**
 	 * @param sink
 	 * 		Sink to feed match results into.
+	 * @param archetype
+	 * 		Information about what the signature being matched.
 	 * @param path
 	 * 		Current method path to pass into the sink.
 	 * @param classNode
@@ -85,17 +49,18 @@ public class InstructionsMatchingModel implements MatchingModel<InstructionMatch
 	 * @param methodNode
 	 * 		The method being scanned.
 	 */
-	public void match(@Nonnull ResultsSink sink, @Nonnull MethodPathElement path,
+	public void match(@Nonnull ResultsSink sink, DetectionArchetype archetype, @Nonnull MethodPathElement path,
 					  @Nonnull ClassNode classNode, @Nonnull MethodNode methodNode) {
 		// Skip methods without code
 		if (methodNode.instructions == null) return;
 
 		// Scan with each variant
 		for (List<InstructionMatchEntry> entries : variants.values())
-			matchVariant(sink, path, methodNode, entries);
+			matchVariant(sink, archetype, path, methodNode, entries);
 	}
 
 	private void matchVariant(@Nonnull ResultsSink sink,
+							  @Nonnull DetectionArchetype archetype,
 							  @Nonnull MethodPathElement path,
 							  @Nonnull MethodNode methodNode,
 							  @Nonnull List<InstructionMatchEntry> entries) {
@@ -168,14 +133,10 @@ public class InstructionsMatchingModel implements MatchingModel<InstructionMatch
 		}
 	}
 
+	/**
+	 * @return Map of variants to detect the pattern.
+	 */
 	@Nonnull
-	@Override
-	public DetectionArchetype getArchetype() {
-		return archetype;
-	}
-
-	@Nonnull
-	@Override
 	public Map<String, InstructionMatchingList> getVariants() {
 		return variants;
 	}
@@ -197,8 +158,6 @@ public class InstructionsMatchingModel implements MatchingModel<InstructionMatch
 
 	@Override
 	public String toString() {
-		return "InstructionsMatchingModel{" +
-				"archetype=" + archetype +
-				", variants[" + variants.size() + "]}";
+		return "InstructionsMatchingModel{variants[" + variants.size() + "]}";
 	}
 }
