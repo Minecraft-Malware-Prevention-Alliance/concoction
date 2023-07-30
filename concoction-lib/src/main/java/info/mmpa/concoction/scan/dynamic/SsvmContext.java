@@ -10,12 +10,14 @@ import dev.xdark.ssvm.mirror.type.InstanceClass;
 import dev.xdark.ssvm.thread.OSThread;
 import info.mmpa.concoction.model.ApplicationModel;
 import info.mmpa.concoction.model.ModelSource;
+import info.mmpa.concoction.scan.model.ScanModel;
 import org.objectweb.asm.Opcodes;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -34,8 +36,15 @@ public class SsvmContext {
 	/**
 	 * @param model
 	 * 		Model to pass to the VM.
+	 * @param scanModel
+	 * 		List of detection models to scan for.
 	 */
-	public SsvmContext(@Nonnull ApplicationModel model) {
+	public SsvmContext(@Nonnull ApplicationModel model, @Nonnull List<ScanModel> scanModel) {
+		// TODO: Supply dynamic models to match against
+		//  - Tweak VM initialization to track information that is needed for the models to match against.
+		//    - Method enter/exit listeners
+		//    - Method instruction interceptors for some edge cases perhaps?
+
 		// Create and initialize the VM.
 		VirtualMachine vm = new VirtualMachine() {
 			@Override
@@ -52,8 +61,6 @@ public class SsvmContext {
 			OSThread thread = vm.currentJavaThread().getOsThread();
 			Stack<CallStackFrame> stack = threadFrameMap.computeIfAbsent(thread, t -> new Stack<>());
 			stack.push(new CallStackFrame(ctx));
-
-			// TODO: Only push/pop frames within the scope of our EntryPoint
 		});
 		vmi.registerMethodExitListener(ctx -> {
 			OSThread thread = vm.currentJavaThread().getOsThread();

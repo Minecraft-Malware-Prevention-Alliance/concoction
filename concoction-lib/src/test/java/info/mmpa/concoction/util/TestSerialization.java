@@ -1,7 +1,7 @@
 package info.mmpa.concoction.util;
 
+import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.scan.model.insn.InstructionMatchEntry;
-import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import org.junit.jupiter.api.Assertions;
 
 import javax.annotation.Nonnull;
@@ -13,12 +13,12 @@ import static info.mmpa.concoction.util.Unchecked.map;
  */
 public class TestSerialization {
 	@Nonnull
-	public static InstructionMatchEntry deserializeEntry(@Nonnull String json) {
-		return map(Serialization::deserializeEntry, json);
+	public static InstructionMatchEntry deserializeInsnEntry(@Nonnull String json) {
+		return map(Serialization::deserializeInsnEntry, json);
 	}
 
 	@Nonnull
-	public static InstructionsMatchingModel deserializeModel(@Nonnull String json) {
+	public static ScanModel deserializeModel(@Nonnull String json) {
 		return map(Serialization::deserializeModel, json);
 	}
 

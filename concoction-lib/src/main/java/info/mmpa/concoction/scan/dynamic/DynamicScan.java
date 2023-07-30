@@ -1,9 +1,9 @@
 package info.mmpa.concoction.scan.dynamic;
 
 import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelSource;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.scan.model.ScanModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,23 +17,22 @@ public class DynamicScan {
 	private static final Logger logger = LoggerFactory.getLogger(DynamicScan.class);
 	private final EntryPointDiscovery entryPointDiscovery;
 	private final CoverageEntryPointSupplier coverageEntryPointSupplier;
+	private final List<ScanModel> scanModels;
 
 	/**
 	 * @param entryPointDiscovery
 	 * 		Supplier of initial entry points for known cases.
 	 * @param coverageEntryPointSupplier
 	 * 		Supplier to fill in additional entry points to maximize scanned code coverage.
+	 * @param scanModels
+	 * 		List of detection models to scan for.
 	 */
 	public DynamicScan(@Nonnull EntryPointDiscovery entryPointDiscovery,
-					   @Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier) {
+					   @Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier,
+					   @Nonnull List<ScanModel> scanModels) {
 		this.entryPointDiscovery = entryPointDiscovery;
 		this.coverageEntryPointSupplier = coverageEntryPointSupplier;
-
-		// TODO: Supply dynamic models to match against
-		//  - Pass them to the 'SsvmContext' and tweak VM initialization to track information that is needed
-		//    for the models to match against.
-		//    - Method enter/exit listeners
-		//    - Method instruction interceptors for some edge cases perhaps?
+		this.scanModels = scanModels;
 	}
 
 	/**
@@ -43,9 +42,10 @@ public class DynamicScan {
 	 * @return Detection results found in the model's primary source.
 	 */
 	@Nonnull
+	@SuppressWarnings("UnnecessaryLocalVariable")
 	public Results accept(@Nonnull ApplicationModel model) throws DynamicScanException {
 		ResultsSink sink = new ResultsSink();
-		SsvmContext context = new SsvmContext(model);
+		SsvmContext context = new SsvmContext(model, scanModels);
 
 		// Visit initial entry points
 		List<EntryPoint> initialEntryPoints = entryPointDiscovery.createEntryPoints(model, context);

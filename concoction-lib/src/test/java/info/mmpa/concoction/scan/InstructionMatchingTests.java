@@ -4,7 +4,7 @@ import example.RuntimeExec;
 import info.mmpa.concoction.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
-import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.scan.standard.StandardScan;
 import info.mmpa.concoction.util.TestUtils;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ public class InstructionMatchingTests {
 	@Nonnull
 	private static Results results(@Nonnull String modelName, @Nonnull Class<?> type) throws IOException {
 		Path path = Paths.get("src/test/resources/models/" + modelName);
-		InstructionsMatchingModel model = InstructionsMatchingModel.fromJson(path);
+		ScanModel model = ScanModel.fromJson(path);
 		StandardScan scan = new StandardScan(Collections.singletonList(model));
 		return scan.accept(TestUtils.appModel(type));
 	}

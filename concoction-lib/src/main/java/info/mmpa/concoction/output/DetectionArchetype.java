@@ -1,6 +1,5 @@
 package info.mmpa.concoction.output;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 
 import javax.annotation.Nonnull;
@@ -23,9 +22,9 @@ public class DetectionArchetype implements Comparable<DetectionArchetype> {
 	 * @param description
 	 * 		A description of what the detection means.
 	 */
-	public DetectionArchetype(@JsonProperty("level") @Nonnull SusLevel level,
-							  @JsonProperty("identifier") @Nonnull String identifier,
-							  @JsonProperty("description") @Nonnull String description) {
+	public DetectionArchetype(@Nonnull SusLevel level,
+							  @Nonnull String identifier,
+							  @Nonnull String description) {
 		this.level = level;
 		this.identifier = identifier;
 		this.description = description;

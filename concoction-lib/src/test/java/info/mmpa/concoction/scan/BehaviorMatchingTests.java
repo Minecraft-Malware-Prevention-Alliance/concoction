@@ -5,6 +5,7 @@ import example.FileStream;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.scan.dynamic.*;
+import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -18,6 +19,8 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -51,10 +54,11 @@ public class BehaviorMatchingTests {
 
 		// Read the model
 		Path path = Paths.get("src/test/resources/models/" + modelName);
+		List<ScanModel> scanModels = Collections.emptyList();
 		// TODO: Deserialize model after creating behavior matching schemes
 
 		// Run the scan.
-		DynamicScan scan = new DynamicScan(discovery, coverageSupplier);
+		DynamicScan scan = new DynamicScan(discovery, coverageSupplier, scanModels);
 		return scan.accept(TestUtils.appModel(type));
 	}
 
