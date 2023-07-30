@@ -16,8 +16,8 @@ import org.objectweb.asm.Opcodes;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -39,7 +39,7 @@ public class SsvmContext {
 	 * @param scanModel
 	 * 		List of detection models to scan for.
 	 */
-	public SsvmContext(@Nonnull ApplicationModel model, @Nonnull List<ScanModel> scanModel) {
+	public SsvmContext(@Nonnull ApplicationModel model, @Nonnull Collection<ScanModel> scanModel) {
 		// TODO: Supply dynamic models to match against
 		//  - Tweak VM initialization to track information that is needed for the models to match against.
 		//    - Method enter/exit listeners

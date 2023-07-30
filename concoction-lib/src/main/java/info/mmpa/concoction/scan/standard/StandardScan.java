@@ -14,6 +14,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,13 +22,13 @@ import java.util.Map;
  * Basic ASM pattern matching based scanning.
  */
 public class StandardScan {
-	private final List<ScanModel> scanModels;
+	private final Collection<ScanModel> scanModels;
 
 	/**
 	 * @param scanModels
 	 * 		List of detection models to scan for.
 	 */
-	public StandardScan(@Nonnull List<ScanModel> scanModels) {
+	public StandardScan(@Nonnull Collection<ScanModel> scanModels) {
 		this.scanModels = scanModels;
 	}
 

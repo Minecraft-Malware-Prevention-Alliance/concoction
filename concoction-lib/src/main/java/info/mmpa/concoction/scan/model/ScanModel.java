@@ -68,6 +68,14 @@ public class ScanModel {
 		return Serialization.deserializeModel(json);
 	}
 
+	public boolean hasInstructionModel() {
+		return !instructionsMatchingModel.getVariants().isEmpty();
+	}
+
+	public boolean hasBehaviorModel() {
+		return !behaviorMatchingModel.getVariants().isEmpty();
+	}
+
 	/**
 	 * @return Information about what the signature is matching.
 	 */
