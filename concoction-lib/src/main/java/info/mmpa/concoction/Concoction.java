@@ -20,9 +20,9 @@ import java.util.List;
 public class Concoction {
     private final List<Path> modelPaths = new ArrayList<>();
 
-    private ModelSource primarySource;
-
     private final List<ModelSource> supportingSources = new ArrayList<>();
+
+    private ModelSource primarySource;
 
     private Concoction() {}
 
@@ -30,7 +30,6 @@ public class Concoction {
      * The initialization point of the builder
      * @return A Concoction builder
      */
-
     public static Concoction builder() {
         return new Concoction();
     }
@@ -38,7 +37,7 @@ public class Concoction {
     /**
      * Adds a model path to the current builder
      * @param path The path of the JSON model to add.
-     * @return The updated builder
+     * @return Self
      */
     public Concoction model(Path path) {
         modelPaths.add(path);
@@ -48,7 +47,7 @@ public class Concoction {
     /**
      * Sets the primary source for this current builder
      * @param primarySource The primary source to set.
-     * @return The updated builder
+     * @return Self
      */
     public Concoction primarySource(ModelSource primarySource) {
         this.primarySource = primarySource;
@@ -58,7 +57,7 @@ public class Concoction {
     /**
      * Adds supporting sources for the {@link Concoction#primarySource}
      * @param sources The supporting sources to add
-     * @return The updated builder
+     * @return Self
      */
     public Concoction supportingSources(ModelSource... sources) {
         supportingSources.addAll(Arrays.asList(sources));
