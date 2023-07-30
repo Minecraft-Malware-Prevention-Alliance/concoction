@@ -30,7 +30,12 @@ public enum TextMatchMode {
 	/**
 	 * Input fully matches a pattern.
 	 */
-	REGEX_FULL_MATCH((src, input) -> input != null && input.matches(src)),
+	REGEX_FULL_MATCH((src, input) -> {
+		if (input == null) return false;
+		Pattern pattern = RegexCache.pattern(src);
+		if (pattern == null) return false;
+		return pattern.matcher(input).matches();
+	}),
 	/**
 	 * Input partially matches a pattern.
 	 */
