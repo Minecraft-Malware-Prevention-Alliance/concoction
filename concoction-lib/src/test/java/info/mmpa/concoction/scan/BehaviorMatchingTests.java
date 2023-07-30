@@ -8,8 +8,6 @@ import info.mmpa.concoction.scan.dynamic.*;
 import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.util.TestUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nonnull;
