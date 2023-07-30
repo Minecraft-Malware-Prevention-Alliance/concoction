@@ -23,7 +23,7 @@ public class InstructionStrings {
 	static {
 		try {
 			for (Field field : Opcodes.class.getDeclaredFields()) {
-				opcodeToName.put(field.getInt(null), field.getName());
+				opcodeToName.put(field.getInt(null), field.getName().toLowerCase());
 			}
 		} catch (ReflectiveOperationException ex) {
 			logger.error("Failed to populate opcode name map", ex);
@@ -40,7 +40,7 @@ public class InstructionStrings {
 	public static String opcodeToString(int opcode) {
 		String name = opcodeToName.get(opcode);
 		if (name == null)
-			return "OP-" + opcode;
+			return "op_" + opcode;
 		return name;
 	}
 
