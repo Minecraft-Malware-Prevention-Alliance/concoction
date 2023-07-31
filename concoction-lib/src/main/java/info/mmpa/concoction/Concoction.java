@@ -5,12 +5,12 @@ import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.input.model.InvalidModelException;
 import info.mmpa.concoction.input.model.ModelBuilder;
 import info.mmpa.concoction.output.Results;
-import info.mmpa.concoction.scan.dynamic.CoverageEntryPointSupplier;
-import info.mmpa.concoction.scan.dynamic.DynamicScan;
 import info.mmpa.concoction.scan.dynamic.DynamicScanException;
+import info.mmpa.concoction.scan.dynamic.DynamicScanner;
+import info.mmpa.concoction.scan.dynamic.CoverageEntryPointSupplier;
 import info.mmpa.concoction.scan.dynamic.EntryPointDiscovery;
+import info.mmpa.concoction.scan.insn.InstructionScanner;
 import info.mmpa.concoction.scan.model.ScanModel;
-import info.mmpa.concoction.scan.standard.StandardScan;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -303,7 +303,7 @@ public class Concoction {
 				.filter(ScanModel::hasInstructionModel)
 				.collect(Collectors.toList());
 		if (!insnModels.isEmpty()) {
-			StandardScan scan = new StandardScan(insnModels);
+			InstructionScanner scan = new InstructionScanner(insnModels);
 			for (Map.Entry<Path, ApplicationModel> entry : inputModels.entrySet()) {
 				Path scannedFilePath = entry.getKey();
 				ApplicationModel inputModel = entry.getValue();
@@ -314,14 +314,14 @@ public class Concoction {
 
 		// Then dynamic scanning
 		List<ScanModel> dynamicModels = scanModels.values().stream()
-				.filter(ScanModel::hasBehaviorModel)
+				.filter(ScanModel::hasDynamicModel)
 				.collect(Collectors.toList());
 		if (!insnModels.isEmpty()) {
 			// TODO: Point these interfaces to proper implementations
 			//  - This will currently scan nothing
 			EntryPointDiscovery entryPointDiscovery = (model, context) -> Collections.emptyList();
 			CoverageEntryPointSupplier coverageEntryPointSupplier = (model, context) -> null;
-			DynamicScan scan = new DynamicScan(entryPointDiscovery, coverageEntryPointSupplier, dynamicModels);
+			DynamicScanner scan = new DynamicScanner(entryPointDiscovery, coverageEntryPointSupplier, dynamicModels);
 			for (Map.Entry<Path, ApplicationModel> entry : inputModels.entrySet()) {
 				Path scannedFilePath = entry.getKey();
 				ApplicationModel inputModel = entry.getValue();

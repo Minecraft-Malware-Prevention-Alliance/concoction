@@ -3,7 +3,7 @@ package info.mmpa.concoction.scan.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import info.mmpa.concoction.output.DetectionArchetype;
-import info.mmpa.concoction.scan.model.behavior.BehaviorMatchingModel;
+import info.mmpa.concoction.scan.model.dynamic.DynamicMatchingModel;
 import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.util.Serialization;
 
@@ -21,22 +21,22 @@ public class ScanModel {
 	@JsonProperty("code-patterns")
 	private final InstructionsMatchingModel instructionsMatchingModel;
 	@JsonProperty("code-behaviors")
-	private final BehaviorMatchingModel behaviorMatchingModel;
+	private final DynamicMatchingModel dynamicMatchingModel;
 
 	/**
 	 * @param detectionArchetype
 	 * 		Information about what the signature is matching.
 	 * @param instructionsMatchingModel
 	 * 		Instruction based signatures.
-	 * @param behaviorMatchingModel
-	 * 		Behavior based signatures.
+	 * @param dynamicMatchingModel
+	 * 		Dynamic/runtime based signatures.
 	 */
 	public ScanModel(@JsonProperty("archetype") @Nonnull DetectionArchetype detectionArchetype,
 					 @JsonProperty("code-patterns") @Nonnull InstructionsMatchingModel instructionsMatchingModel,
-					 @JsonProperty("code-behaviors") @Nonnull BehaviorMatchingModel behaviorMatchingModel) {
+					 @JsonProperty("code-behaviors") @Nonnull DynamicMatchingModel dynamicMatchingModel) {
 		this.detectionArchetype = detectionArchetype;
 		this.instructionsMatchingModel = instructionsMatchingModel;
-		this.behaviorMatchingModel = behaviorMatchingModel;
+		this.dynamicMatchingModel = dynamicMatchingModel;
 	}
 
 	/**
@@ -76,10 +76,10 @@ public class ScanModel {
 	}
 
 	/**
-	 * @return {@code true} when this model has behavior matching components.
+	 * @return {@code true} when this model has dynamic/runtime matching components.
 	 */
-	public boolean hasBehaviorModel() {
-		return !behaviorMatchingModel.getVariants().isEmpty();
+	public boolean hasDynamicModel() {
+		return !dynamicMatchingModel.getVariants().isEmpty();
 	}
 
 	/**
@@ -99,11 +99,11 @@ public class ScanModel {
 	}
 
 	/**
-	 * @return Behavior based signatures.
+	 * @return Dynamic/runtime based signatures.
 	 */
 	@Nonnull
-	public BehaviorMatchingModel getBehaviorMatchingModel() {
-		return behaviorMatchingModel;
+	public DynamicMatchingModel getDynamicMatchingModel() {
+		return dynamicMatchingModel;
 	}
 
 	@Override
@@ -115,14 +115,14 @@ public class ScanModel {
 
 		if (!detectionArchetype.equals(scanModel.detectionArchetype)) return false;
 		if (!instructionsMatchingModel.equals(scanModel.instructionsMatchingModel)) return false;
-		return behaviorMatchingModel.equals(scanModel.behaviorMatchingModel);
+		return dynamicMatchingModel.equals(scanModel.dynamicMatchingModel);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = detectionArchetype.hashCode();
 		result = 31 * result + instructionsMatchingModel.hashCode();
-		result = 31 * result + behaviorMatchingModel.hashCode();
+		result = 31 * result + dynamicMatchingModel.hashCode();
 		return result;
 	}
 }

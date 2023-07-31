@@ -13,10 +13,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Advanced behavioral pattern matching based scanning.
+ * Advanced dynamic pattern matching based scanning.
  */
-public class DynamicScan {
-	private static final Logger logger = LoggerFactory.getLogger(DynamicScan.class);
+public class DynamicScanner {
+	private static final Logger logger = LoggerFactory.getLogger(DynamicScanner.class);
 	private final EntryPointDiscovery entryPointDiscovery;
 	private final CoverageEntryPointSupplier coverageEntryPointSupplier;
 	private final Collection<ScanModel> scanModels;
@@ -29,9 +29,9 @@ public class DynamicScan {
 	 * @param scanModels
 	 * 		List of detection models to scan for.
 	 */
-	public DynamicScan(@Nonnull EntryPointDiscovery entryPointDiscovery,
-					   @Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier,
-					   @Nonnull Collection<ScanModel> scanModels) {
+	public DynamicScanner(@Nonnull EntryPointDiscovery entryPointDiscovery,
+						  @Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier,
+						  @Nonnull Collection<ScanModel> scanModels) {
 		this.entryPointDiscovery = entryPointDiscovery;
 		this.coverageEntryPointSupplier = coverageEntryPointSupplier;
 		this.scanModels = scanModels;

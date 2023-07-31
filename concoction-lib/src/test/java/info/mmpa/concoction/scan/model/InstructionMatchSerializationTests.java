@@ -2,7 +2,7 @@ package info.mmpa.concoction.scan.model;
 
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.SusLevel;
-import info.mmpa.concoction.scan.model.behavior.BehaviorMatchingModel;
+import info.mmpa.concoction.scan.model.dynamic.DynamicMatchingModel;
 import info.mmpa.concoction.scan.model.insn.*;
 import org.junit.jupiter.api.Test;
 import software.coley.collections.Maps;
@@ -109,8 +109,8 @@ public class InstructionMatchSerializationTests {
 				new Instruction("INVOKEVIRTUAL", "exec(Ljava/lang/String;)Ljava/lang/Process;", EQUALS, EQUALS)
 		);
 		InstructionsMatchingModel insnModel = new InstructionsMatchingModel(Maps.of("key", entries));
-		BehaviorMatchingModel behaviorModel = new BehaviorMatchingModel(Collections.emptyMap()); // TODO: Provide a value here
-		ScanModel model = new ScanModel(archetype, insnModel, behaviorModel);
+		DynamicMatchingModel dynamicModel = new DynamicMatchingModel(Collections.emptyMap()); // TODO: Provide a value here
+		ScanModel model = new ScanModel(archetype, insnModel, dynamicModel);
 
 		// Serialize, deserialize, and compare equality
 		String serialized = serialize(model);

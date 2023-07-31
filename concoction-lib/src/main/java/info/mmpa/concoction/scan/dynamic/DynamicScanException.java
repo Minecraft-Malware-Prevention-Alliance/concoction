@@ -1,7 +1,7 @@
 package info.mmpa.concoction.scan.dynamic;
 
 /**
- * Exception wrapper for problems in {@link DynamicScan}.
+ * Exception wrapper for problems in {@link DynamicScanner}.
  */
 public class DynamicScanException extends Exception {
 	/**

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class BehaviorMatchingTests {
+public class DynamicMatchingTests {
 	@Test
 	void test() {
 		try {
@@ -53,10 +53,10 @@ public class BehaviorMatchingTests {
 		// Read the model
 		Path path = Paths.get("src/test/resources/models/" + modelName);
 		List<ScanModel> scanModels = Collections.emptyList();
-		// TODO: Deserialize model after creating behavior matching schemes
+		// TODO: Deserialize model after creating dynamic/runtime matching schemes
 
 		// Run the scan.
-		DynamicScan scan = new DynamicScan(discovery, coverageSupplier, scanModels);
+		DynamicScanner scan = new DynamicScanner(discovery, coverageSupplier, scanModels);
 		return scan.accept(TestUtils.appModel(type));
 	}
 

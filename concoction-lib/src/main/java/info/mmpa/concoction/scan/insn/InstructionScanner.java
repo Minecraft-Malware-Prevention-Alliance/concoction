@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.standard;
+package info.mmpa.concoction.scan.insn;
 
 import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.input.model.ModelSource;
@@ -20,14 +20,14 @@ import java.util.Map;
 /**
  * Basic ASM pattern matching based scanning.
  */
-public class StandardScan {
+public class InstructionScanner {
 	private final Collection<ScanModel> scanModels;
 
 	/**
 	 * @param scanModels
 	 * 		List of detection models to scan for.
 	 */
-	public StandardScan(@Nonnull Collection<ScanModel> scanModels) {
+	public InstructionScanner(@Nonnull Collection<ScanModel> scanModels) {
 		this.scanModels = scanModels;
 	}
 

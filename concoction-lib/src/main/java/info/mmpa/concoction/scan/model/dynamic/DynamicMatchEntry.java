@@ -1,11 +1,11 @@
-package info.mmpa.concoction.scan.model.behavior;
+package info.mmpa.concoction.scan.model.dynamic;
 
 import info.mmpa.concoction.scan.dynamic.CallStackFrame;
 
 import javax.annotation.Nonnull;
 
 /**
- * Outline of behavioral matching.
+ * Outline of dynamic matching.
  */
 // TODO: Custom serializers for short-hand
 // TODO: Sub-types
@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 //         - Also for char[] and other similar types (StringBuilder, StringBuffer, non-string CharSequence)
 //       - byte[] matching helpers
 //    - with optional parent calling context predicate
-public interface BehaviorMatchEntry {
+public interface DynamicMatchEntry {
 	/**
 	 * @param frame
 	 * 		Method call stack reference.

@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.model.behavior;
+package info.mmpa.concoction.scan.model.dynamic;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -9,20 +9,20 @@ import java.util.Map;
 
 /**
  * Model representing pattern matching for a {@link DetectionArchetype detection archetype} against a series of
- * behavioral indicators in method execution.
+ * dynamic indicators in method execution.
  * <br>
  * The model may have one or more variants describing different signature techniques.
  */
-@JsonDeserialize(converter = BehaviorMatchingModelDeserializingConverter.class)
-@JsonSerialize(converter = BehaviorMatchingModelSerializingConverter.class)
-public class BehaviorMatchingModel {
-	private final Map<String, BehaviorMatchEntry> variants;
+@JsonDeserialize(converter = DynamicMatchingModelDeserializingConverter.class)
+@JsonSerialize(converter = DynamicMatchingModelSerializingConverter.class)
+public class DynamicMatchingModel {
+	private final Map<String, DynamicMatchEntry> variants;
 
 	/**
 	 * @param variants
 	 * 		Map of variants to detect the pattern.
 	 */
-	public BehaviorMatchingModel(@Nonnull Map<String, BehaviorMatchEntry> variants) {
+	public DynamicMatchingModel(@Nonnull Map<String, DynamicMatchEntry> variants) {
 		this.variants = variants;
 	}
 
@@ -32,7 +32,7 @@ public class BehaviorMatchingModel {
 	 * @return Map of variants to detect the pattern.
 	 */
 	@Nonnull
-	public Map<String, BehaviorMatchEntry> getVariants() {
+	public Map<String, DynamicMatchEntry> getVariants() {
 		return variants;
 	}
 
@@ -41,7 +41,7 @@ public class BehaviorMatchingModel {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		BehaviorMatchingModel that = (BehaviorMatchingModel) o;
+		DynamicMatchingModel that = (DynamicMatchingModel) o;
 
 		return variants.equals(that.variants);
 	}
@@ -53,6 +53,6 @@ public class BehaviorMatchingModel {
 
 	@Override
 	public String toString() {
-		return "BehaviorMatchingModel{variants[" + variants.size() + "]}";
+		return "DynamicMatchingModel{variants[" + variants.size() + "]}";
 	}
 }
