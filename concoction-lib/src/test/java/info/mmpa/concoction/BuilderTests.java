@@ -1,8 +1,8 @@
 package info.mmpa.concoction;
 
-import info.mmpa.concoction.input.archive.ArchiveLoadContext;
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelBuilder;
+import info.mmpa.concoction.input.io.archive.ArchiveLoadContext;
+import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ModelBuilder;
 import info.mmpa.concoction.scan.model.ScanModel;
 import org.junit.jupiter.api.Test;
 

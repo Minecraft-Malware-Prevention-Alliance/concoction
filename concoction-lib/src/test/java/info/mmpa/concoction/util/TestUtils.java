@@ -1,9 +1,9 @@
 package info.mmpa.concoction.util;
 
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelSource;
-import info.mmpa.concoction.model.impl.BasicApplicationModel;
-import info.mmpa.concoction.model.impl.BasicModelSource;
+import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.impl.BasicApplicationModel;
+import info.mmpa.concoction.input.model.impl.BasicModelSource;
 import org.apache.commons.io.IOUtils;
 import software.coley.collections.Maps;
 

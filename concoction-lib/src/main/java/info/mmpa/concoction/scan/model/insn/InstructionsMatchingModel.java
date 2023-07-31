@@ -2,7 +2,7 @@ package info.mmpa.concoction.scan.model.insn;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import info.mmpa.concoction.model.path.MethodPathElement;
+import info.mmpa.concoction.input.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.ResultsSink;

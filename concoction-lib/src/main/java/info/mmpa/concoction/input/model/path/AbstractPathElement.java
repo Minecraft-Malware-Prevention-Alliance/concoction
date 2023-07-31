@@ -1,4 +1,4 @@
-package info.mmpa.concoction.model.path;
+package info.mmpa.concoction.input.model.path;
 
 /**
  * Common outline of path elements, declaring shared behaviors.

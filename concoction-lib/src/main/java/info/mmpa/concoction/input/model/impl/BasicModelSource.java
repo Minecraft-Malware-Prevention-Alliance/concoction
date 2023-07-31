@@ -1,12 +1,11 @@
-package info.mmpa.concoction.model.impl;
+package info.mmpa.concoction.input.model.impl;
 
-import info.mmpa.concoction.model.ModelSource;
+import info.mmpa.concoction.input.model.ModelSource;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Basic model source implementation.

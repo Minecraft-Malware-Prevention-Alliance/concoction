@@ -1,6 +1,6 @@
 package info.mmpa.concoction.output;
 
-import info.mmpa.concoction.model.path.PathElement;
+import info.mmpa.concoction.input.model.path.PathElement;
 
 import javax.annotation.Nonnull;
 

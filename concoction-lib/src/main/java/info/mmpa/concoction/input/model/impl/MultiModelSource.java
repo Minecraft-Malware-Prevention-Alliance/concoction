@@ -1,7 +1,7 @@
-package info.mmpa.concoction.model.impl;
+package info.mmpa.concoction.input.model.impl;
 
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelSource;
+import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ModelSource;
 import info.mmpa.concoction.util.SplitMap;
 
 import javax.annotation.Nonnull;

@@ -1,4 +1,4 @@
-package info.mmpa.concoction.model;
+package info.mmpa.concoction.input.model;
 
 import javax.annotation.Nonnull;
 import java.util.Map;

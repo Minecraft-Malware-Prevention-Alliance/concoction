@@ -1,7 +1,7 @@
 package info.mmpa.concoction.scan.dynamic;
 
 import dev.xdark.ssvm.execution.VMException;
-import info.mmpa.concoction.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;

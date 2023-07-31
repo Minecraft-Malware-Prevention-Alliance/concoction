@@ -1,6 +1,6 @@
-package info.mmpa.concoction.model.path;
+package info.mmpa.concoction.input.model.path;
 
-import info.mmpa.concoction.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ApplicationModel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

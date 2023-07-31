@@ -1,8 +1,8 @@
-package info.mmpa.concoction.input.impl;
+package info.mmpa.concoction.input.io.impl;
 
-import info.mmpa.concoction.input.ClassesAndFiles;
-import info.mmpa.concoction.input.InputReader;
-import info.mmpa.concoction.input.archive.ArchiveLoadContext;
+import info.mmpa.concoction.input.io.ClassesAndFiles;
+import info.mmpa.concoction.input.io.InputReader;
+import info.mmpa.concoction.input.io.archive.ArchiveLoadContext;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

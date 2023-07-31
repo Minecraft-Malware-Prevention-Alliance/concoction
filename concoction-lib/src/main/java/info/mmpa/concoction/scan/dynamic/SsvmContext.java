@@ -8,8 +8,8 @@ import dev.xdark.ssvm.filesystem.FileManager;
 import dev.xdark.ssvm.invoke.InvocationUtil;
 import dev.xdark.ssvm.mirror.type.InstanceClass;
 import dev.xdark.ssvm.thread.OSThread;
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelSource;
+import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ModelSource;
 import info.mmpa.concoction.scan.model.ScanModel;
 import org.objectweb.asm.Opcodes;
 

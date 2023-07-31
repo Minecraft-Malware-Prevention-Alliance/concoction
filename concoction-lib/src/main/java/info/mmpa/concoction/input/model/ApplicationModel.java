@@ -1,8 +1,9 @@
-package info.mmpa.concoction.model;
+package info.mmpa.concoction.input.model;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.of;
@@ -40,7 +41,7 @@ public interface ApplicationModel {
 	 */
 	@Nonnull
 	default Collection<ModelSource> allSources() {
-		return concat(of(primarySource()), supportingSources().stream())
+		return concat(Stream.of(primarySource()), supportingSources().stream())
 				.collect(Collectors.toList());
 	}
 

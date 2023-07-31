@@ -1,7 +1,7 @@
-package info.mmpa.concoction.input.archive;
+package info.mmpa.concoction.input.io.archive;
 
-import info.mmpa.concoction.input.ClassesAndFiles;
-import info.mmpa.concoction.input.NotAClassException;
+import info.mmpa.concoction.input.io.ClassesAndFiles;
+import info.mmpa.concoction.input.io.NotAClassException;
 import software.coley.lljzip.ZipIO;
 import software.coley.lljzip.format.compression.ZipCompressions;
 import software.coley.lljzip.format.model.LocalFileHeader;

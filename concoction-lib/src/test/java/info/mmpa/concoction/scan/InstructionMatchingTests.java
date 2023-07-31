@@ -1,7 +1,7 @@
 package info.mmpa.concoction.scan;
 
 import example.RuntimeExec;
-import info.mmpa.concoction.model.path.MethodPathElement;
+import info.mmpa.concoction.input.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.scan.model.ScanModel;

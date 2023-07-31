@@ -1,4 +1,4 @@
-package info.mmpa.concoction.model;
+package info.mmpa.concoction.input.model;
 
 /**
  * Exception to outline failures to build in {@link ModelBuilder}.

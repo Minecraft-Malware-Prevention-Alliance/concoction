@@ -1,6 +1,6 @@
-package info.mmpa.concoction.model.path;
+package info.mmpa.concoction.input.model.path;
 
-import info.mmpa.concoction.model.ModelSource;
+import info.mmpa.concoction.input.model.ModelSource;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;

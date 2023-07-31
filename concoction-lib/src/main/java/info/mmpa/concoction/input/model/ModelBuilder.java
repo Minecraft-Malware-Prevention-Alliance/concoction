@@ -1,7 +1,7 @@
-package info.mmpa.concoction.model;
+package info.mmpa.concoction.input.model;
 
-import info.mmpa.concoction.input.archive.ArchiveLoadContext;
-import info.mmpa.concoction.model.impl.BasicModelBuilder;
+import info.mmpa.concoction.input.io.archive.ArchiveLoadContext;
+import info.mmpa.concoction.input.model.impl.BasicModelBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

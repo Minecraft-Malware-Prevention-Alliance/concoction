@@ -1,6 +1,6 @@
 package info.mmpa.concoction.scan.dynamic;
 
-import info.mmpa.concoction.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ApplicationModel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -1,14 +1,14 @@
-package info.mmpa.concoction.model.impl;
+package info.mmpa.concoction.input.model.impl;
 
-import info.mmpa.concoction.input.ClassesAndFiles;
-import info.mmpa.concoction.input.InputReader;
-import info.mmpa.concoction.input.archive.ArchiveLoadContext;
-import info.mmpa.concoction.input.impl.PathInputReader;
-import info.mmpa.concoction.input.impl.RawInputReader;
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.InvalidModelException;
-import info.mmpa.concoction.model.ModelBuilder;
-import info.mmpa.concoction.model.ModelSource;
+import info.mmpa.concoction.input.io.ClassesAndFiles;
+import info.mmpa.concoction.input.io.InputReader;
+import info.mmpa.concoction.input.io.archive.ArchiveLoadContext;
+import info.mmpa.concoction.input.io.impl.PathInputReader;
+import info.mmpa.concoction.input.io.impl.RawInputReader;
+import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.InvalidModelException;
+import info.mmpa.concoction.input.model.ModelBuilder;
+import info.mmpa.concoction.input.model.ModelSource;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

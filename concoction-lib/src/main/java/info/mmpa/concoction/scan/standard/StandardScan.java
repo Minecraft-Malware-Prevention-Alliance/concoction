@@ -1,10 +1,10 @@
 package info.mmpa.concoction.scan.standard;
 
-import info.mmpa.concoction.model.ApplicationModel;
-import info.mmpa.concoction.model.ModelSource;
-import info.mmpa.concoction.model.path.ClassPathElement;
-import info.mmpa.concoction.model.path.MethodPathElement;
-import info.mmpa.concoction.model.path.SourcePathElement;
+import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.path.ClassPathElement;
+import info.mmpa.concoction.input.model.path.MethodPathElement;
+import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;
@@ -15,7 +15,6 @@ import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,4 +1,4 @@
-package info.mmpa.concoction.input;
+package info.mmpa.concoction.input.io;
 
 import javax.annotation.Nonnull;
 

@@ -68,10 +68,16 @@ public class ScanModel {
 		return Serialization.deserializeModel(json);
 	}
 
+	/**
+	 * @return {@code true} when this model has instruction matching components.
+	 */
 	public boolean hasInstructionModel() {
 		return !instructionsMatchingModel.getVariants().isEmpty();
 	}
 
+	/**
+	 * @return {@code true} when this model has behavior matching components.
+	 */
 	public boolean hasBehaviorModel() {
 		return !behaviorMatchingModel.getVariants().isEmpty();
 	}
