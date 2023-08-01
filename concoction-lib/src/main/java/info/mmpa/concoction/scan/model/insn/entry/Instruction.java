@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.model.insn;
+package info.mmpa.concoction.scan.model.insn.entry;
 
 import info.mmpa.concoction.scan.model.TextMatchMode;
 import info.mmpa.concoction.util.InstructionStrings;

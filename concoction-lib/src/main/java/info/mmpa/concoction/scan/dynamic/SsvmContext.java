@@ -10,6 +10,9 @@ import dev.xdark.ssvm.mirror.type.InstanceClass;
 import dev.xdark.ssvm.thread.OSThread;
 import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.path.SourcePathElement;
+import info.mmpa.concoction.output.DetectionArchetype;
+import info.mmpa.concoction.output.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;
 import org.objectweb.asm.Opcodes;
 
@@ -36,15 +39,18 @@ public class SsvmContext {
 	/**
 	 * @param model
 	 * 		Model to pass to the VM.
+	 * @param sink
+	 * 		Sink to feed match results into.
+	 * @param sourcePath
+	 * 		Current method path to the containing input source.
+	 * 		SSVM will pass along the rest of the path details.
 	 * @param scanModel
 	 * 		List of detection models to scan for.
 	 */
-	public SsvmContext(@Nonnull ApplicationModel model, @Nonnull Collection<ScanModel> scanModel) {
-		// TODO: Supply dynamic models to match against
-		//  - Tweak VM initialization to track information that is needed for the models to match against.
-		//    - Method enter/exit listeners
-		//    - Method instruction interceptors for some edge cases perhaps?
-
+	public SsvmContext(@Nonnull ApplicationModel model,
+					   @Nonnull ResultsSink sink,
+					   @Nonnull SourcePathElement sourcePath,
+					   @Nonnull Collection<ScanModel> scanModel) {
 		// Create and initialize the VM.
 		VirtualMachine vm = new VirtualMachine() {
 			@Override
@@ -60,14 +66,23 @@ public class SsvmContext {
 		vmi.registerMethodEnterListener(ctx -> {
 			OSThread thread = vm.currentJavaThread().getOsThread();
 			Stack<CallStackFrame> stack = threadFrameMap.computeIfAbsent(thread, t -> new Stack<>());
-			stack.push(new CallStackFrame(ctx));
+			CallStackFrame frame = new CallStackFrame(ctx);
+			stack.push(frame);
+			for (ScanModel modelEntry : scanModel) {
+				DetectionArchetype archetype = modelEntry.getDetectionArchetype();
+				modelEntry.getDynamicMatchingModel().matchOnEnter(sink, archetype, sourcePath, frame);
+			}
 		});
 		vmi.registerMethodExitListener(ctx -> {
 			OSThread thread = vm.currentJavaThread().getOsThread();
 			Stack<CallStackFrame> stack = threadFrameMap.get(thread);
 			if (stack == null || stack.isEmpty())
 				throw new IllegalArgumentException("Cannot pop call stack frame from thread with no prior stack history");
-			stack.pop();
+			CallStackFrame frame = stack.pop();
+			for (ScanModel modelEntry : scanModel) {
+				DetectionArchetype archetype = modelEntry.getDetectionArchetype();
+				modelEntry.getDynamicMatchingModel().matchOnExit(sink, archetype, sourcePath, frame);
+			}
 		});
 
 		// Some patches to circumvent bugs arising from VM implementation changes in later versions

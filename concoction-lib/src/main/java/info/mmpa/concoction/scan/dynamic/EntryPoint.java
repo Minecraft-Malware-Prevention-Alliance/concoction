@@ -140,7 +140,7 @@ public class EntryPoint implements Comparable<EntryPoint> {
 	@Override
 	public int compareTo(@Nonnull EntryPoint o) {
 		int cmp = className.compareTo(o.className);
-		if (cmp != 0){
+		if (cmp != 0) {
 			cmp = methodName.compareTo(o.methodName);
 			if (cmp != 0) cmp = methodDescriptor.compareTo(o.methodDescriptor);
 		}

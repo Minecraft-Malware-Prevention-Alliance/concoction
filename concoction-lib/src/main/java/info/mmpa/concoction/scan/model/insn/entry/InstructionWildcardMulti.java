@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.model.insn;
+package info.mmpa.concoction.scan.model.insn.entry;
 
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;

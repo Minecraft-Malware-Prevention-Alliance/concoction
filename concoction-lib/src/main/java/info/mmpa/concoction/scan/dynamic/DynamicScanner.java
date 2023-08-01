@@ -2,6 +2,7 @@ package info.mmpa.concoction.scan.dynamic;
 
 import dev.xdark.ssvm.execution.VMException;
 import info.mmpa.concoction.input.model.ApplicationModel;
+import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;
@@ -50,7 +51,7 @@ public class DynamicScanner {
 	@SuppressWarnings("UnnecessaryLocalVariable")
 	public Results accept(@Nonnull ApplicationModel model) throws DynamicScanException {
 		ResultsSink sink = new ResultsSink();
-		SsvmContext context = new SsvmContext(model, scanModels);
+		SsvmContext context = new SsvmContext(model, sink, new SourcePathElement(model.primarySource()), scanModels);
 
 		// Visit initial entry points
 		List<EntryPoint> initialEntryPoints = entryPointDiscovery.createEntryPoints(model, context);

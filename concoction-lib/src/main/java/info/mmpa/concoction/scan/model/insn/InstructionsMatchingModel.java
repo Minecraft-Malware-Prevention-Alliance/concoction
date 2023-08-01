@@ -6,6 +6,7 @@ import info.mmpa.concoction.input.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.scan.model.insn.entry.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;

@@ -2,6 +2,9 @@ package info.mmpa.concoction.scan.model.insn;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import info.mmpa.concoction.scan.model.insn.entry.InstructionMatchEntry;
+import info.mmpa.concoction.scan.model.insn.entry.InstructionMatchEntryDeserializer;
+import info.mmpa.concoction.scan.model.insn.entry.InstructionMatchEntrySerializer;
 import software.coley.collections.delegate.DelegatingList;
 
 import javax.annotation.Nonnull;

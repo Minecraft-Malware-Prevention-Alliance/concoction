@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import info.mmpa.concoction.scan.model.ScanModel;
-import info.mmpa.concoction.scan.model.insn.InstructionMatchEntry;
-import info.mmpa.concoction.scan.model.insn.InstructionMatchEntryDeserializer;
+import info.mmpa.concoction.scan.model.dynamic.entry.Condition;
+import info.mmpa.concoction.scan.model.dynamic.entry.DynamicMatchEntry;
+import info.mmpa.concoction.scan.model.dynamic.entry.MethodLocation;
+import info.mmpa.concoction.scan.model.insn.entry.InstructionMatchEntry;
+import info.mmpa.concoction.scan.model.insn.entry.InstructionMatchEntryDeserializer;
 
 import javax.annotation.Nonnull;
 
@@ -56,6 +59,39 @@ public class Serialization {
 	@Nonnull
 	public static InstructionMatchEntry deserializeInsnEntry(@Nonnull String text) throws JsonProcessingException {
 		return deserialize(InstructionMatchEntry.class, text);
+	}
+
+	/**
+	 * @param text
+	 * 		Text representing an {@link DynamicMatchEntry}.
+	 *
+	 * @return Deserialized value.
+	 */
+	@Nonnull
+	public static DynamicMatchEntry deserializeDynamicEntry(@Nonnull String text) throws JsonProcessingException {
+		return deserialize(DynamicMatchEntry.class, text);
+	}
+
+	/**
+	 * @param text
+	 * 		Text representing an {@link MethodLocation}.
+	 *
+	 * @return Deserialized value.
+	 */
+	@Nonnull
+	public static MethodLocation deserializeMethodLocation(@Nonnull String text) throws JsonProcessingException {
+		return deserialize(MethodLocation.class, text);
+	}
+
+	/**
+	 * @param text
+	 * 		Text representing an {@link Condition}.
+	 *
+	 * @return Deserialized value.
+	 */
+	@Nonnull
+	public static Condition deserializeCondition(@Nonnull String text) throws JsonProcessingException {
+		return deserialize(Condition.class, text);
 	}
 
 	/**

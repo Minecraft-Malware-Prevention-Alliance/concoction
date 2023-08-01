@@ -1,12 +1,11 @@
-package info.mmpa.concoction.scan.model.insn;
+package info.mmpa.concoction.scan.model.insn.entry;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import info.mmpa.concoction.scan.model.MultiMatchMode;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-
-import static java.util.Collections.unmodifiableList;
 
 /**
  * Base multi-instruction outline.
@@ -64,42 +63,5 @@ public abstract class MultiInstruction implements InstructionMatchEntry {
 		int result = entries.hashCode();
 		result = 31 * result + mode.hashCode();
 		return result;
-	}
-
-	/**
-	 * Mode for subtypes of multi-instruction matchers.
-	 */
-	public enum MultiMatchMode {
-		/**
-		 * @see AllMultiInstruction
-		 */
-		ALL,
-		/**
-		 * @see AnyMultiInstruction
-		 */
-		ANY,
-		/**
-		 * @see NoneMultiInstruction
-		 */
-		NONE;
-
-		/**
-		 * @param entries
-		 * 		Entries to wrap into a multi-instruction matcher subtype.
-		 *
-		 * @return Instance of multi-instruction matcher subtype.
-		 */
-		@Nonnull
-		public MultiInstruction createMulti(List<InstructionMatchEntry> entries) {
-			switch (this) {
-				case NONE:
-					return new NoneMultiInstruction(unmodifiableList(entries));
-				case ALL:
-					return new AllMultiInstruction(unmodifiableList(entries));
-				case ANY:
-				default:
-					return new AnyMultiInstruction(unmodifiableList(entries));
-			}
-		}
 	}
 }
