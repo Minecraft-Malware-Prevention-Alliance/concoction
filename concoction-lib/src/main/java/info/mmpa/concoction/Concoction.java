@@ -30,6 +30,7 @@ public class Concoction {
 	private final Map<Path, ScanModel> scanModels = new HashMap<>();
 	private ArchiveLoadContext supportingPathLoadContext = ArchiveLoadContext.RANDOM_ACCESS_JAR;
 	private int inputDepth = 3;
+	private boolean dynamicScanning;
 
 	private Concoction() {
 	}
@@ -57,6 +58,18 @@ public class Concoction {
 	@Nonnull
 	public Concoction withMaxInputDirectoryDepth(int inputDepth) {
 		this.inputDepth = inputDepth;
+		return this;
+	}
+
+	/**
+	 * Activates dynamic scanning capabilities.
+	 * By default, they are disabled,
+	 *
+	 * @return Self.
+	 */
+	@Nonnull
+	public Concoction withDynamicScanning() {
+		this.dynamicScanning = true;
 		return this;
 	}
 
@@ -313,9 +326,9 @@ public class Concoction {
 		}
 
 		// Then dynamic scanning
-		List<ScanModel> dynamicModels = scanModels.values().stream()
+		List<ScanModel> dynamicModels = dynamicScanning ? scanModels.values().stream()
 				.filter(ScanModel::hasDynamicModel)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()) : Collections.emptyList();
 		if (!insnModels.isEmpty()) {
 			// TODO: Point these interfaces to proper implementations
 			//  - This will currently scan nothing
