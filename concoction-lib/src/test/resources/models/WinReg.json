@@ -1,0 +1,49 @@
+{
+  "archetype": {
+    "level": "MAXIMUM",
+    "identifier": "Windows Registry",
+    "description": "Indicators of working with Windows Registry"
+  },
+  "code-patterns": {
+    "invokeRootUser": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.userRoot()" }],
+    "invokeRootSysm": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.systemRoot()" }],
+  },
+  "code-behaviors": {
+    "lookupMethod": {
+      "ANY": [
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegOpenKey" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegCloseKey" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegQueryValueEx" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegEnumValue" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegEnumKeyEx" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegSetValueEx" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegDeleteValue" }
+        },
+        {
+          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+          "condition": { "index": 1, "match": "EQUALS WindowsRegDeleteKey" }
+        }
+      ]
+    }
+  }
+}

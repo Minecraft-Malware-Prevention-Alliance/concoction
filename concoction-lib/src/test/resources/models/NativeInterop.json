@@ -1,0 +1,21 @@
+{
+  "archetype": {
+    "level": "MAXIMUM",
+    "identifier": "Native interop",
+    "description": "Usage of apis that load native code into the VM, which is harder to analyze than code restricted to the JVM"
+  },
+  "code-patterns": {
+    "0": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH jdk/internal/loader" }],
+    "1": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH jdk/internal/access/foreign" }],
+    "2": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/lang/foreign" }],
+    "3": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH com/sun/jna" }],
+    "4": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH org/jnativehook" }]
+  },
+  "code-behaviors": {
+    "0": { "location": { "class": "STARTS_WITH jdk/internal/loader" }, "condition": "ANY" },
+    "1": { "location": { "class": "STARTS_WITH jdk/internal/access/foreign" }, "condition": "ANY" },
+    "2": { "location": { "class": "STARTS_WITH java/lang/foreign" }, "condition": "ANY" },
+    "3": { "location": { "class": "STARTS_WITH com/sun/jna" }, "condition": "ANY" },
+    "4": { "location": { "class": "STARTS_WITH org/jnativehook" }, "condition": "ANY" }
+  }
+}
