@@ -45,6 +45,21 @@ public class InstructionStrings {
 	}
 
 	/**
+	 * @param handle
+	 * 		Handle to format.
+	 *
+	 * @return String representation of handle.
+	 */
+	@Nonnull
+	public static String handleToString(@Nonnull Handle handle) {
+		if (handle.getDesc().charAt(0) == '(') {
+			return handle.getOwner() + "." + handle.getName() + handle.getDesc();
+		} else {
+			return handle.getOwner() + "." + handle.getName() + " " + handle.getDesc();
+		}
+	}
+
+	/**
 	 * @param insn
 	 * 		Instruction to format.
 	 *
@@ -69,6 +84,8 @@ public class InstructionStrings {
 				MethodInsnNode methodNode = (MethodInsnNode) insn;
 				return methodNode.owner + "." + methodNode.name + methodNode.desc;
 			case AbstractInsnNode.INVOKE_DYNAMIC_INSN:
+				InvokeDynamicInsnNode indyNode = (InvokeDynamicInsnNode) insn;
+				return indyNode.name + indyNode.desc + " " + handleToString(indyNode.bsm);
 			case AbstractInsnNode.LDC_INSN:
 				LdcInsnNode ldcNode = (LdcInsnNode) insn;
 				Object cst = ldcNode.cst;
@@ -79,11 +96,7 @@ public class InstructionStrings {
 					return cstType.getDescriptor();
 				} else if (cst instanceof Handle) {
 					Handle cstHandle = (Handle) cst;
-					if (cstHandle.getDesc().charAt(0) == '(') {
-						return cstHandle.getOwner() + "." + cstHandle.getName() + cstHandle.getDesc();
-					} else {
-						return cstHandle.getOwner() + "." + cstHandle.getName() + " " + cstHandle.getDesc();
-					}
+					return handleToString(cstHandle);
 				}
 				return cst.toString();
 			case AbstractInsnNode.IINC_INSN:
