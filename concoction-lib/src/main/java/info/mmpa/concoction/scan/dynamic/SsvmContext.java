@@ -4,7 +4,6 @@ import dev.xdark.ssvm.VirtualMachine;
 import dev.xdark.ssvm.api.MethodInvoker;
 import dev.xdark.ssvm.api.VMInterface;
 import dev.xdark.ssvm.classloading.SupplyingClassLoaderInstaller;
-import dev.xdark.ssvm.filesystem.FileManager;
 import dev.xdark.ssvm.invoke.InvocationUtil;
 import dev.xdark.ssvm.mirror.type.InstanceClass;
 import dev.xdark.ssvm.thread.OSThread;
@@ -52,12 +51,7 @@ public class SsvmContext {
 					   @Nonnull SourcePathElement sourcePath,
 					   @Nonnull Collection<ScanModel> scanModel) {
 		// Create and initialize the VM.
-		VirtualMachine vm = new VirtualMachine() {
-			@Override
-			protected FileManager createFileManager() {
-				return new CustomFileManager();
-			}
-		};
+		VirtualMachine vm = new VirtualMachineExt() ;
 		vm.getProperties().put("java.class.path", ""); // Hide class path of concoction from the VM
 		vm.bootstrap();
 
@@ -93,7 +87,7 @@ public class SsvmContext {
 
 			// SSVM manages its own memory, and this conflicts with it. Stubbing it out keeps everyone happy.
 			InstanceClass bits = (InstanceClass) vm.findBootstrapClass("java/nio/Bits");
-			vmi.setInvoker(bits.getMethod("reserveMemory", "(JJ)V"), MethodInvoker.noop());
+			if (bits != null) vmi.setInvoker(bits.getMethod("reserveMemory", "(JJ)V"), MethodInvoker.noop());
 		}
 
 		// Store VM instance.
@@ -146,7 +140,7 @@ public class SsvmContext {
 				deencapsulate.invoke(null, SsvmContext.class);
 			}
 		} catch (Exception ex) {
-			throw new IllegalStateException(ex);
+			throw new IllegalStateException("Failed to unlock reflection access", ex);
 		}
 	}
 }

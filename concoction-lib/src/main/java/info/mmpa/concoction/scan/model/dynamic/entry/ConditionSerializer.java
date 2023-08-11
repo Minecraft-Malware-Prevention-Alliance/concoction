@@ -20,7 +20,35 @@ public class ConditionSerializer extends StdSerializer<Condition> {
 	}
 
 	@Override
-	public void serialize(Condition entry, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-		// TODO: Implement when condition sub-types are fleshed out
+	public void serialize(Condition condition, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+		if (condition instanceof AnyCondition) {
+			jgen.writeString("ANY");
+		} else if (condition instanceof NoneCondition) {
+			jgen.writeString("NONE");
+		} else if (condition instanceof NullParameterCondition) {
+			NullParameterCondition nullParameterCondition = (NullParameterCondition) condition;
+			jgen.writeStartObject();
+			jgen.writeNumberField("index", nullParameterCondition.getIndex());
+			jgen.writeBooleanField("null", nullParameterCondition.isNull());
+			jgen.writeEndObject();
+		} else if (condition instanceof StringParameterCondition) {
+			StringParameterCondition stringParameterCondition = (StringParameterCondition) condition;
+			jgen.writeStartObject();
+			if (stringParameterCondition.getIndex() >= 0)
+				jgen.writeNumberField("index", stringParameterCondition.getIndex());
+			if (stringParameterCondition.getExtractionMode() != StringParameterCondition.StringExtractionMode.KNOWN_STRING_TYPES)
+				jgen.writeStringField("extraction", stringParameterCondition.getExtractionMode().getDisplay());
+			jgen.writeStringField("match", stringParameterCondition.getMatchMode().name() + " " + stringParameterCondition.getMatch());
+			jgen.writeEndObject();
+		} else if (condition instanceof NumericParameterCondition) {
+			NumericParameterCondition numericParameterCondition = (NumericParameterCondition) condition;
+			jgen.writeStartObject();
+			if (numericParameterCondition.getIndex() >= 0)
+				jgen.writeNumberField("index", numericParameterCondition.getIndex());
+			jgen.writeStringField("match", numericParameterCondition.getComparisonOperation() + " " + numericParameterCondition.getComparisonValue());
+			jgen.writeEndObject();
+		} else {
+			throw new IllegalStateException("Unsupported condition class: " + condition.getClass().getName());
+		}
 	}
 }

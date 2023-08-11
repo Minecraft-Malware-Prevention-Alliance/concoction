@@ -85,7 +85,7 @@ public class SingleConditionCheckingDynamic implements DynamicMatchEntry {
 	public int hashCode() {
 		int result = location.hashCode();
 		result = 31 * result + condition.hashCode();
-		result = 31 * result + (when != null ? when.hashCode() : 0);
+		result = 31 * result + when.hashCode();
 		return result;
 	}
 }
