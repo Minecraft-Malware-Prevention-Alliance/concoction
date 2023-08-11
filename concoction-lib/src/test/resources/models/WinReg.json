@@ -10,40 +10,17 @@
   },
   "code-behaviors": {
     "lookupMethod": {
-      "ANY": [
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegOpenKey" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegCloseKey" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegQueryValueEx" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegEnumValue" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegEnumKeyEx" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegSetValueEx" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegDeleteValue" }
-        },
-        {
-          "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-          "condition": { "index": 1, "match": "EQUALS WindowsRegDeleteKey" }
-        }
-      ]
+      "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+      "condition": { "ANY": [
+        { "index": 1, "match": "EQUALS WindowsRegOpenKey" },
+        { "index": 1, "match": "EQUALS WindowsRegCloseKey" },
+        { "index": 1, "match": "EQUALS WindowsRegQueryValueEx" },
+        { "index": 1, "match": "EQUALS WindowsRegEnumValue" },
+        { "index": 1, "match": "EQUALS WindowsRegEnumKeyEx" },
+        { "index": 1, "match": "EQUALS WindowsRegSetValueEx" },
+        { "index": 1, "match": "EQUALS WindowsRegDeleteValue" },
+        { "index": 1, "match": "EQUALS WindowsRegDeleteKey" }
+      ]}
     }
   }
 }
