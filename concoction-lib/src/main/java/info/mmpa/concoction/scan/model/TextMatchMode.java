@@ -44,7 +44,15 @@ public enum TextMatchMode {
 		Pattern pattern = RegexCache.pattern(src);
 		if (pattern == null) return false;
 		return pattern.matcher(input).find();
-	});
+	}),
+	/**
+	 * Input does not matter, always match.
+	 */
+	ANYTHING((src, input) -> true),
+	/**
+	 * Input does not matter, never match.
+	 */
+	NOTHING((src, input) -> false);
 
 	// First arg is source text, second ard is input to check for match against the source.
 	private final BiPredicate<String, String> matcher;

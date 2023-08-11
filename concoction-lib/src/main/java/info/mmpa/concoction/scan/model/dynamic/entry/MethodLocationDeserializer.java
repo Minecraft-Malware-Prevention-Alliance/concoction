@@ -2,6 +2,7 @@ package info.mmpa.concoction.scan.model.dynamic.entry;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import info.mmpa.concoction.scan.model.TextMatchMode;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 import static info.mmpa.concoction.util.JsonUtil.breakByFirstSpace;
@@ -36,26 +38,40 @@ public class MethodLocationDeserializer extends StdDeserializer<MethodLocation> 
 	private MethodLocation deserializeNode(JsonParser jp, JsonNode node) throws JacksonException {
 		if (node.isObject()) {
 			JsonNode classNode = node.get("class");
-			if (classNode == null)
-				throw new JsonMappingException(jp, "Dynamic match entry location missing 'class' value");
 			JsonNode methodNameNode = node.get("mname");
-			if (methodNameNode == null)
-				throw new JsonMappingException(jp, "Dynamic match entry location missing 'mname' value");
 			JsonNode methodDescNode = node.get("mdesc");
-			if (methodDescNode == null)
-				throw new JsonMappingException(jp, "Dynamic match entry location missing 'mdesc' value");
-			String[] classInputs = breakByFirstSpace(jp, classNode.asText());
-			String[] methodNameInputs = breakByFirstSpace(jp, methodNameNode.asText());
-			String[] methodDescInputs = breakByFirstSpace(jp, methodDescNode.asText());
+			MatchPair classPair = getPair(jp, classNode);
+			MatchPair methodNamePair = getPair(jp, methodNameNode);
+			MatchPair methodDescPair = getPair(jp, methodDescNode);
 			return new MethodLocation(
-					classInputs[1],
-					methodNameInputs[1],
-					methodDescInputs[1],
-					TextMatchMode.valueOf(classInputs[0]),
-					TextMatchMode.valueOf(methodNameInputs[0]),
-					TextMatchMode.valueOf(methodDescInputs[0])
+					classPair.text,
+					methodNamePair.text,
+					methodDescPair.text,
+					classPair.mode,
+					methodNamePair.mode,
+					methodDescPair.mode
 			);
 		}
 		throw new JsonMappingException(jp, "Dynamic match entry expects a JSON object, or '*' literal for wildcards");
+	}
+
+	@Nonnull
+	private MatchPair getPair(@Nonnull JsonParser jp, @Nullable JsonNode node) throws JsonProcessingException {
+		// Any pair with no node to pull from is filled in with 'match anything'
+		if (node == null) return MatchPair.ANY;
+		
+		String[] inputs = breakByFirstSpace(jp, node.asText());
+		return new MatchPair(TextMatchMode.valueOf(inputs[0]), inputs[1]);
+	}
+
+	private static class MatchPair {
+		private static final MatchPair ANY = new MatchPair(TextMatchMode.ANYTHING, "");
+		private final TextMatchMode mode;
+		private final String text;
+
+		public MatchPair(TextMatchMode mode, String text) {
+			this.mode = mode;
+			this.text = text;
+		}
 	}
 }
