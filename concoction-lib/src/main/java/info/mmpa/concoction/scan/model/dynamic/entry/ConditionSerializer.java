@@ -47,7 +47,15 @@ public class ConditionSerializer extends StdSerializer<Condition> {
 				jgen.writeNumberField("index", numericParameterCondition.getIndex());
 			jgen.writeStringField("match", numericParameterCondition.getComparisonOperation() + " " + numericParameterCondition.getComparisonValue());
 			jgen.writeEndObject();
-		} else {
+		} else if (condition instanceof MultiCondition) {
+			MultiCondition multiCondition = (MultiCondition) condition;
+			jgen.writeStartObject();
+			jgen.writeFieldName(multiCondition.getMode().name());
+			jgen.writeStartArray();
+			for (Condition subCondition : multiCondition.getConditions())
+				serialize(subCondition, jgen, provider);
+			jgen.writeEndArray();
+		}else {
 			throw new IllegalStateException("Unsupported condition class: " + condition.getClass().getName());
 		}
 	}

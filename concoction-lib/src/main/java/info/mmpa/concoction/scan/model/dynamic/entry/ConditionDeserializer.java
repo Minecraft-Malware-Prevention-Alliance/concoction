@@ -6,10 +6,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import info.mmpa.concoction.scan.model.MultiMatchMode;
 import info.mmpa.concoction.scan.model.TextMatchMode;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static info.mmpa.concoction.util.JsonUtil.breakByFirstSpace;
 
@@ -28,6 +31,10 @@ public class ConditionDeserializer extends StdDeserializer<Condition> {
 
 	@Override
 	public Condition deserialize(JsonParser jp, DeserializationContext ctx) throws IOException {
+		if (jp == null)
+			throw new IOException("Cannot deserialize null 'JavaParser' instance");
+		else if (jp.getCodec() == null)
+			throw new IOException("Cannot deserialize 'JavaParser' instance with 'null' codec");
 		JsonNode node = jp.getCodec().readTree(jp);
 		return deserializeNode(jp, node);
 	}
@@ -50,10 +57,41 @@ public class ConditionDeserializer extends StdDeserializer<Condition> {
 			if (nullNode != null)
 				return new NullParameterCondition(index, nullNode.asBoolean());
 
+			// Check for multi-conditions
+			JsonNode anyNode = node.get("ANY");
+			JsonNode allNode = node.get("ALL");
+			JsonNode noneNode = node.get("NONE");
+			MultiMatchMode multiMatchMode = null;
+			List<Condition> conditions = new ArrayList<>();
+			if (anyNode != null && anyNode.isArray()) {
+				multiMatchMode = MultiMatchMode.ANY;
+				for (JsonNode subNode : anyNode)
+					conditions.add(deserializeNode(jp, subNode));
+			} else if (allNode != null && allNode.isArray()) {
+				multiMatchMode = MultiMatchMode.ALL;
+				for (JsonNode subNode : allNode)
+					conditions.add(deserializeNode(jp, subNode));
+			} else if (noneNode != null && noneNode.isArray()) {
+				multiMatchMode = MultiMatchMode.NONE;
+				for (JsonNode subNode : noneNode)
+					conditions.add(deserializeNode(jp, subNode));
+			}
+			if (multiMatchMode != null) {
+				switch (multiMatchMode) {
+					case ALL:
+						return new AllMultiCondition(conditions);
+					case ANY:
+						return new AnyMultiCondition(conditions);
+					case NONE:
+						return new NoneMultiCondition(conditions);
+				}
+			}
+
 			// Get the other possible fields for other conditions, and see which makes the most sense here.
 			JsonNode extractionNode = node.get("extraction");
 			JsonNode matchNode = node.get("match");
-			if (matchNode == null) throw new JsonMappingException(jp, "Missing expected 'match' field");
+			if (matchNode == null)
+				throw new JsonMappingException(jp, "Missing expected 'match' field");
 
 			// If the 'match' field value starts with a numeric op, it's a numeric param condition.
 			String matchRaw = matchNode.asText();
