@@ -6,7 +6,7 @@
   },
   "code-patterns": {
     "invokeRootUser": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.userRoot()" }],
-    "invokeRootSysm": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.systemRoot()" }],
+    "invokeRootSysm": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.systemRoot()" }]
   },
   "code-behaviors": {
     "lookupMethod": {
