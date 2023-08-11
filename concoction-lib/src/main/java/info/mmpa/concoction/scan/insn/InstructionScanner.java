@@ -50,7 +50,7 @@ public class InstructionScanner {
 			try {
 				ClassNode classNode = AsmUtil.node(classEntry.getValue());
 
-				// TODO #4: Class structure matchers
+				// TODO #4: Class structure matchers, then refactor this class name to 'StaticScanner'
 
 				// Run per-method matchers (instruction matching models)
 				for (MethodNode methodNode : classNode.methods) {

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Stream.concat;
-import static java.util.stream.Stream.of;
 
 /**
  * Full application model, comprised of one or more units.

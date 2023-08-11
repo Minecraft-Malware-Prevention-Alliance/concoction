@@ -1,4 +1,4 @@
-package info.mmpa.concoction.scan.model.insn;
+package info.mmpa.concoction.scan.model.insn.entry;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;

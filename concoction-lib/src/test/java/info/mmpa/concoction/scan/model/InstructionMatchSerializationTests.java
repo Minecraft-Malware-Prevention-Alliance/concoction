@@ -3,7 +3,8 @@ package info.mmpa.concoction.scan.model;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.SusLevel;
 import info.mmpa.concoction.scan.model.dynamic.DynamicMatchingModel;
-import info.mmpa.concoction.scan.model.insn.*;
+import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
+import info.mmpa.concoction.scan.model.insn.entry.*;
 import org.junit.jupiter.api.Test;
 import software.coley.collections.Maps;
 
@@ -16,7 +17,7 @@ import static info.mmpa.concoction.util.TestSerialization.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Tests for {@link InstructionMatchEntry} serialization.
+ * Tests for {@link InstructionsMatchingModel} and {@link InstructionMatchEntry} serialization.
  */
 public class InstructionMatchSerializationTests {
 	@Test
@@ -57,39 +58,39 @@ public class InstructionMatchSerializationTests {
 
 	@Test
 	void insnOpcodeOnly() {
-		Instruction instruction = new Instruction("NOP", null, TextMatchMode.EQUALS, null);
+		Instruction instruction = new Instruction("nop", null, TextMatchMode.EQUALS, null);
 		String serialized = serialize(instruction);
-		assertEquals("{\"op\":\"EQUALS NOP\"}", serialized);
+		assertEquals("{\"op\":\"EQUALS nop\"}", serialized);
 
-		InstructionMatchEntry entry = deserializeInsnEntry("{\"op\":\"EQUALS NOP\"}");
+		InstructionMatchEntry entry = deserializeInsnEntry("{\"op\":\"EQUALS nop\"}");
 		assertEquals(instruction, entry);
 	}
 
 	@Test
 	void insnOpcodeAndArgs() {
-		Instruction instruction = new Instruction("INVOKESTATIC", "java/lang/Runtime", TextMatchMode.EQUALS, TextMatchMode.STARTS_WITH);
+		Instruction instruction = new Instruction("invokestatic", "java/lang/Runtime", TextMatchMode.EQUALS, TextMatchMode.STARTS_WITH);
 		String serialized = serialize(instruction);
-		assertEquals("{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}", serialized);
+		assertEquals("{\"op\":\"EQUALS invokestatic\",\"args\":\"STARTS_WITH java/lang/Runtime\"}", serialized);
 
-		InstructionMatchEntry entry = deserializeInsnEntry("{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}");
+		InstructionMatchEntry entry = deserializeInsnEntry("{\"op\":\"EQUALS invokestatic\",\"args\":\"STARTS_WITH java/lang/Runtime\"}");
 		assertEquals(instruction, entry);
 	}
 
 	@Test
 	void multiInsn() {
 		InstructionWildcard instruction1 = InstructionWildcard.INSTANCE;
-		Instruction instruction2 = new Instruction("NOP", null, TextMatchMode.EQUALS, null);
-		Instruction instruction3 = new Instruction("INVOKESTATIC", "java/lang/Runtime", TextMatchMode.EQUALS, TextMatchMode.STARTS_WITH);
+		Instruction instruction2 = new Instruction("nop", null, TextMatchMode.EQUALS, null);
+		Instruction instruction3 = new Instruction("invokestatic", "java/lang/Runtime", TextMatchMode.EQUALS, TextMatchMode.STARTS_WITH);
 		MultiInstruction multiInstruction = new AnyMultiInstruction(Arrays.asList(instruction1, instruction2, instruction3));
 
 		String serialized = serialize(multiInstruction);
-		assertEquals("{\"ANY\":[\"*\",{\"op\":\"EQUALS NOP\"},{\"op\":\"EQUALS INVOKESTATIC\",\"args\":\"STARTS_WITH java/lang/Runtime\"}]}", serialized);
+		assertEquals("{\"ANY\":[\"*\",{\"op\":\"EQUALS nop\"},{\"op\":\"EQUALS invokestatic\",\"args\":\"STARTS_WITH java/lang/Runtime\"}]}", serialized);
 
 		InstructionMatchEntry entry = deserializeInsnEntry("{\n" +
 				"  \"ANY\": [\n" +
 				"    \"*\",\n" +
-				"    { \"op\": \"EQUALS NOP\" },\n" +
-				"    { \"op\": \"EQUALS INVOKESTATIC\", \"args\": \"STARTS_WITH java/lang/Runtime\" }\n" +
+				"    { \"op\": \"EQUALS nop\" },\n" +
+				"    { \"op\": \"EQUALS invokestatic\", \"args\": \"STARTS_WITH java/lang/Runtime\" }\n" +
 				"  ]\n" +
 				"}");
 		assertEquals(multiInstruction, entry);
@@ -104,12 +105,12 @@ public class InstructionMatchSerializationTests {
 		// Process foo = Runtime.getRuntime().exec("foo");
 		DetectionArchetype archetype = new DetectionArchetype(SusLevel.MAXIMUM, "id", "description");
 		List<InstructionMatchEntry> entries = Arrays.asList(
-				new Instruction("INVOKESTATIC", "getRuntime()Ljava/lang/Runtime;", EQUALS, EQUALS),
-				new Instruction("LDC", null, EQUALS, null),
-				new Instruction("INVOKEVIRTUAL", "exec(Ljava/lang/String;)Ljava/lang/Process;", EQUALS, EQUALS)
+				new Instruction("invokestatic", "getRuntime()Ljava/lang/Runtime;", EQUALS, EQUALS),
+				new Instruction("ldc", null, EQUALS, null),
+				new Instruction("invokevirtual", "exec(Ljava/lang/String;)Ljava/lang/Process;", EQUALS, EQUALS)
 		);
 		InstructionsMatchingModel insnModel = new InstructionsMatchingModel(Maps.of("key", entries));
-		DynamicMatchingModel dynamicModel = new DynamicMatchingModel(Collections.emptyMap()); // TODO: Provide a value here
+		DynamicMatchingModel dynamicModel = new DynamicMatchingModel(Collections.emptyMap());
 		ScanModel model = new ScanModel(archetype, insnModel, dynamicModel);
 
 		// Serialize, deserialize, and compare equality

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionLikeType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.Converter;
+import info.mmpa.concoction.scan.model.insn.entry.InstructionMatchEntry;
 
 import java.util.List;
 import java.util.Map;

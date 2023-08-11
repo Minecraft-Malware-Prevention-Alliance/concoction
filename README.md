@@ -6,6 +6,10 @@ A shared Java malware scanner capable of static and dynamic analysis.
 
 Concoction can be used either as a Java library or as a command line application.
 
+### Scan models
+
+The format of scan models is described [here](docs/ModelFormat.md).
+
 ### As a library
 
 First add Concoction as a library to your project. It is available on maven central:

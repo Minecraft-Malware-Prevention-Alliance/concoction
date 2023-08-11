@@ -1,18 +1,21 @@
-package info.mmpa.concoction.scan.model.insn;
+package info.mmpa.concoction.scan.model.insn.entry;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import info.mmpa.concoction.scan.model.MultiMatchMode;
 import info.mmpa.concoction.scan.model.TextMatchMode;
+import info.mmpa.concoction.util.EnumUtil;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static info.mmpa.concoction.util.JsonUtil.breakByFirstSpace;
 
 /**
  * Deserializes {@link InstructionMatchEntry} shorthand JSON into instances.
@@ -53,18 +56,18 @@ public class InstructionMatchEntryDeserializer extends StdDeserializer<Instructi
 				if (argsNode == null) {
 					// No arguments given
 					return new Instruction(opInputs[1], null,
-							TextMatchMode.valueOf(opInputs[0]), null);
+							EnumUtil.insensitiveValueOf(TextMatchMode.class, opInputs[0]), null);
 				} else {
 					// Arguments given
 					String[] argsInputs = breakByFirstSpace(jp, argsNode.asText());
 					return new Instruction(opInputs[1], argsInputs[1],
-							TextMatchMode.valueOf(opInputs[0]), TextMatchMode.valueOf(argsInputs[0]));
+							EnumUtil.insensitiveValueOf(TextMatchMode.class, opInputs[0]),
+							EnumUtil.insensitiveValueOf(TextMatchMode.class, argsInputs[0]));
 				}
-
 			} else {
 				// Should be a multi-instruction if no other case applies.
 				// Determine which mode by its name.
-				for (MultiInstruction.MultiMatchMode mode : MultiInstruction.MultiMatchMode.values()) {
+				for (MultiMatchMode mode : MultiMatchMode.values()) {
 					JsonNode modeNode = node.get(mode.name());
 					if (modeNode != null && modeNode.isArray()) {
 						// Mode found, now extract the entries and create the multi-matcher.
@@ -72,22 +75,11 @@ public class InstructionMatchEntryDeserializer extends StdDeserializer<Instructi
 						for (JsonNode arrayItem : modeNode) {
 							entries.add(deserializeNode(jp, arrayItem));
 						}
-						return mode.createMulti(entries);
+						return mode.createMultiInsn(entries);
 					}
 				}
 			}
 		}
 		throw new JsonMappingException(jp, "Instruction match entry expects a JSON object, or '*' literal for wildcards");
-	}
-
-	@Nonnull
-	private static String[] breakByFirstSpace(@Nonnull JsonParser jp, @Nonnull String input) throws JsonProcessingException {
-		String[] split = new String[2];
-		int splitIndex = input.indexOf(' ');
-		if (splitIndex <= 0)
-			throw new JsonMappingException(jp, "opcode or argument was not in expected format of: '<mode> <input>");
-		split[0] = input.substring(0, splitIndex); // text match mode
-		split[1] = input.substring(splitIndex + 1); // text input
-		return split;
 	}
 }

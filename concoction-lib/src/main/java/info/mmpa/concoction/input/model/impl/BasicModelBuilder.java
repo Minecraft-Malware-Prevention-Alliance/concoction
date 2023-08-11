@@ -28,7 +28,7 @@ public class BasicModelBuilder implements ModelBuilder {
 	@Nonnull
 	@Override
 	public ModelBuilder addSource(@Nonnull ArchiveLoadContext context, @Nonnull Path path) throws IOException {
-		ClassesAndFiles input = pathReader.from(context,path);
+		ClassesAndFiles input = pathReader.from(context, path);
 		String identifier = path.getFileName().toString();
 		sources.add(new BasicModelSource(identifier, input.getClasses(), input.getFiles()));
 		return this;
@@ -36,8 +36,8 @@ public class BasicModelBuilder implements ModelBuilder {
 
 	@Nonnull
 	@Override
-	public ModelBuilder addSource(@Nonnull ArchiveLoadContext context,@Nonnull String identifier, @Nonnull byte[] raw) throws IOException {
-		ClassesAndFiles input = rawReader.from(context,raw);
+	public ModelBuilder addSource(@Nonnull ArchiveLoadContext context, @Nonnull String identifier, @Nonnull byte[] raw) throws IOException {
+		ClassesAndFiles input = rawReader.from(context, raw);
 		sources.add(new BasicModelSource(identifier, input.getClasses(), input.getFiles()));
 		return this;
 	}

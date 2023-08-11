@@ -3,6 +3,7 @@ package info.mmpa.concoction.scan.model.dynamic;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.Converter;
+import info.mmpa.concoction.scan.model.dynamic.entry.DynamicMatchEntry;
 
 import java.util.Collections;
 import java.util.Map;

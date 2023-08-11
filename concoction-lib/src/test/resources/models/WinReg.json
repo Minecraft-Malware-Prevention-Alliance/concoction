@@ -1,0 +1,26 @@
+{
+  "archetype": {
+    "level": "MAXIMUM",
+    "identifier": "Windows Registry",
+    "description": "Indicators of working with Windows Registry"
+  },
+  "code-patterns": {
+    "invokeRootUser": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.userRoot()" }],
+    "invokeRootSysm": [{ "op": "STARTS_WITH invoke", "args": "STARTS_WITH java/util/prefs/Preferences.systemRoot()" }]
+  },
+  "code-behaviors": {
+    "lookupMethod": {
+      "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
+      "condition": { "any": [
+        { "index": 1, "match": "EQUALS WindowsRegOpenKey" },
+        { "index": 1, "match": "EQUALS WindowsRegCloseKey" },
+        { "index": 1, "match": "EQUALS WindowsRegQueryValueEx" },
+        { "index": 1, "match": "EQUALS WindowsRegEnumValue" },
+        { "index": 1, "match": "EQUALS WindowsRegEnumKeyEx" },
+        { "index": 1, "match": "EQUALS WindowsRegSetValueEx" },
+        { "index": 1, "match": "EQUALS WindowsRegDeleteValue" },
+        { "index": 1, "match": "EQUALS WindowsRegDeleteKey" }
+      ]}
+    }
+  }
+}

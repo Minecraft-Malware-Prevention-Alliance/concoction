@@ -1,5 +1,6 @@
-package info.mmpa.concoction.scan.model.insn;
+package info.mmpa.concoction.scan.model.insn.entry;
 
+import info.mmpa.concoction.scan.model.MultiMatchMode;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -18,7 +19,8 @@ import java.util.List;
  */
 public class NoneMultiInstruction extends MultiInstruction {
 	/**
-	 * @param entries Sub-matchers which must all not match inputs in order to pass.
+	 * @param entries
+	 * 		Sub-matchers which must all not match inputs in order to pass.
 	 */
 	public NoneMultiInstruction(@Nonnull List<InstructionMatchEntry> entries) {
 		super(MultiMatchMode.NONE, entries);
