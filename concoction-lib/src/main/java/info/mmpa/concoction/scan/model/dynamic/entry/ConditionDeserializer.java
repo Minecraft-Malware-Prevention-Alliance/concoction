@@ -5,9 +5,12 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import info.mmpa.concoction.scan.model.MultiMatchMode;
 import info.mmpa.concoction.scan.model.TextMatchMode;
+import info.mmpa.concoction.util.DeserializerExt;
+import info.mmpa.concoction.util.EnumUtil;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -21,7 +24,7 @@ import static info.mmpa.concoction.util.JsonUtil.breakByFirstSpace;
  *
  * @see ConditionSerializer
  */
-public class ConditionDeserializer extends StdDeserializer<Condition> {
+public class ConditionDeserializer extends DeserializerExt<Condition> {
 	/**
 	 * New deserializer instance.
 	 */
@@ -58,9 +61,9 @@ public class ConditionDeserializer extends StdDeserializer<Condition> {
 				return new NullParameterCondition(index, nullNode.asBoolean());
 
 			// Check for multi-conditions
-			JsonNode anyNode = node.get("ANY");
-			JsonNode allNode = node.get("ALL");
-			JsonNode noneNode = node.get("NONE");
+			JsonNode anyNode = findCaseless(node, "ANY");
+			JsonNode allNode = findCaseless(node, "ALL");
+			JsonNode noneNode = findCaseless(node, "NONE");
 			MultiMatchMode multiMatchMode = null;
 			List<Condition> conditions = new ArrayList<>();
 			if (anyNode != null && anyNode.isArray()) {
@@ -101,7 +104,7 @@ public class ConditionDeserializer extends StdDeserializer<Condition> {
 
 			// The only remaining possibility is a string parameter condition.
 			String[] matchInputs = breakByFirstSpace(jp, matchNode.asText());
-			TextMatchMode matchMode = TextMatchMode.valueOf(matchInputs[0]);
+			TextMatchMode matchMode = EnumUtil.insensitiveValueOf(TextMatchMode.class, matchInputs[0]);
 			String match = matchInputs[1];
 			StringParameterCondition.StringExtractionMode extractionMode = extractionNode == null ?
 					StringParameterCondition.StringExtractionMode.KNOWN_STRING_TYPES :

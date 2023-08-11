@@ -11,7 +11,7 @@
   "code-behaviors": {
     "lookupMethod": {
       "location": { "class": "EQUALS java/lang/Class", "mname": "EQUALS getDeclaredMethod" },
-      "condition": { "ANY": [
+      "condition": { "any": [
         { "index": 1, "match": "EQUALS WindowsRegOpenKey" },
         { "index": 1, "match": "EQUALS WindowsRegCloseKey" },
         { "index": 1, "match": "EQUALS WindowsRegQueryValueEx" },

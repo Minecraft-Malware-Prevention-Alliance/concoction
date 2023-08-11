@@ -2,19 +2,20 @@ package info.mmpa.concoction.scan.model.insn.entry;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import info.mmpa.concoction.scan.model.MultiMatchMode;
 import info.mmpa.concoction.scan.model.TextMatchMode;
-import static info.mmpa.concoction.util.JsonUtil.*;
+import info.mmpa.concoction.util.EnumUtil;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static info.mmpa.concoction.util.JsonUtil.breakByFirstSpace;
 
 /**
  * Deserializes {@link InstructionMatchEntry} shorthand JSON into instances.
@@ -55,14 +56,14 @@ public class InstructionMatchEntryDeserializer extends StdDeserializer<Instructi
 				if (argsNode == null) {
 					// No arguments given
 					return new Instruction(opInputs[1], null,
-							TextMatchMode.valueOf(opInputs[0]), null);
+							EnumUtil.insensitiveValueOf(TextMatchMode.class, opInputs[0]), null);
 				} else {
 					// Arguments given
 					String[] argsInputs = breakByFirstSpace(jp, argsNode.asText());
 					return new Instruction(opInputs[1], argsInputs[1],
-							TextMatchMode.valueOf(opInputs[0]), TextMatchMode.valueOf(argsInputs[0]));
+							EnumUtil.insensitiveValueOf(TextMatchMode.class, opInputs[0]),
+							EnumUtil.insensitiveValueOf(TextMatchMode.class, argsInputs[0]));
 				}
-
 			} else {
 				// Should be a multi-instruction if no other case applies.
 				// Determine which mode by its name.

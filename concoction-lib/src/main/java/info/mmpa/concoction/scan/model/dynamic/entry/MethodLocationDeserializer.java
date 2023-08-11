@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import info.mmpa.concoction.scan.model.TextMatchMode;
+import info.mmpa.concoction.util.EnumUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,7 +62,7 @@ public class MethodLocationDeserializer extends StdDeserializer<MethodLocation> 
 		if (node == null) return MatchPair.ANY;
 		
 		String[] inputs = breakByFirstSpace(jp, node.asText());
-		return new MatchPair(TextMatchMode.valueOf(inputs[0]), inputs[1]);
+		return new MatchPair(EnumUtil.insensitiveValueOf(TextMatchMode.class, inputs[0]), inputs[1]);
 	}
 
 	private static class MatchPair {

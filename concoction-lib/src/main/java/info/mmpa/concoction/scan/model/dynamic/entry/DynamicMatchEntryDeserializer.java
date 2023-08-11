@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import info.mmpa.concoction.scan.model.MultiMatchMode;
 import info.mmpa.concoction.scan.model.TextMatchMode;
+import info.mmpa.concoction.util.EnumUtil;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class DynamicMatchEntryDeserializer extends StdDeserializer<DynamicMatchE
 
 				// Construct the when
 				JsonNode whenNode = node.get("when");
-				When when = whenNode == null ? When.ENTRY : When.valueOf(whenNode.asText());
+				When when = whenNode == null ? When.ENTRY : EnumUtil.insensitiveValueOf(When.class, whenNode.asText());
 
 				return new SingleConditionCheckingDynamic(location, condition, when);
 			} else {
