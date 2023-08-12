@@ -42,7 +42,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test
       - name: Upload test results
-        if: false # TODO: Revert to 'always()' after the repo is public
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: Test artifacts
@@ -55,7 +55,7 @@ jobs:
   publish-test-results:
     name: Publish tests results
     needs: test
-    if: false # TODO: Revert to 'always()' after the repo is public
+    if: always()
     runs-on: ubuntu-latest
     permissions:
       checks: write
