@@ -177,6 +177,7 @@ tasks.named('generatePomFileForMavenPublication').configure {
 // Make it so that jar-generating tasks requires generating POM files first.
 jar {
     dependsOn(tasks.named('generatePomFileForMavenPublication'))
+    dependsOn(tasks.named('processTestResources')) // For some reason, this is caused by us putting pom info into 'build/resources'
 
     // Also bundle shaded artifacts into our artifact.
     from {
