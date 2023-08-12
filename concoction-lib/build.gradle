@@ -93,7 +93,13 @@ publishing {
             groupId = project.group
             version = project.version
             artifactId = 'concoction'
+
             from components.java
+            pom.withXml {
+                // Remove 'implementation' dependencies from the output pom.
+                def node = asNode().getAt('dependencies').get(0)
+                node.children().removeIf(c -> isRuntimeDependency(c))
+            }
 
             pom {
                 name = 'concoction'
@@ -151,10 +157,10 @@ javadoc {
 
 // Hack to generate POM files for the output.
 tasks.named('generatePomFileForMavenPublication').configure {
-    onlyIf { project.gradle.startParameter.taskNames.contains(':concoction:publish') }
+    onlyIf { project.gradle.startParameter.taskNames.contains('publish') }
 
-    destination = project.file('build/classes/java/main/META-INF/maven/info.mmpa/concoction/pom.xml')
-    def properties = project.file('build/classes/java/main/META-INF/maven/info.mmpa/concoction/pom.properties')
+    destination = project.file('build/resources/META-INF/maven/info.mmpa/concoction/pom.xml')
+    def properties = project.file('build/resources/META-INF/maven/info.mmpa/concoction/pom.properties')
 
     // Hack to also generate the pom-properties file.
     doLast {
@@ -176,4 +182,14 @@ jar {
     from {
         configurations.shaded.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+    // We dump some extra maven files here and want to include those in the jar.
+    from('build/resources') {
+        include '**'
+    }
+}
+
+private static boolean isRuntimeDependency(Node node) {
+    String scope = node.get("scope").text()
+    return "runtime".equals(scope)
 }
