@@ -31,7 +31,7 @@ public class DynamicMatchingTests {
 	void test() {
 		try {
 			Results results = results("File_read.json", FileStream.class);
-			NavigableSet<Detection> detections = results.detections();
+			NavigableSet<Detection> detections = results.asNavigableSet();
 
 			// TODO: Create rules to match against and create assertions for them here
 			assertEquals(0, detections.size());

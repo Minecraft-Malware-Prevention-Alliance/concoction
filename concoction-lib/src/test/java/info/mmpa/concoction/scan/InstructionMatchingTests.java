@@ -26,7 +26,7 @@ public class InstructionMatchingTests {
 	void test() {
 		try {
 			Results results = results("Runtime_exec.json", RuntimeExec.class);
-			NavigableSet<Detection> detections = results.detections();
+			NavigableSet<Detection> detections = results.asNavigableSet();
 
 			// There are four sample methods which exhibit match-worthy behavior.
 			assertEquals(4, detections.size());

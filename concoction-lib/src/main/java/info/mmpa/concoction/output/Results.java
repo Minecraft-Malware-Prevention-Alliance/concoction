@@ -54,13 +54,14 @@ public class Results extends DelegatingNavigableMap<PathElement, Map<DetectionAr
 	 * @return Flat set representation of all found detections.
 	 */
 	@Nonnull
-	public NavigableSet<Detection> detections() {
+	public NavigableSet<Detection> asNavigableSet() {
 		Spliterator<Detection> spliterator = Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
 		NavigableSet<Detection> set = StreamSupport.stream(spliterator, false)
 				.collect(Collectors.toCollection(TreeSet::new));
 		return Collections.unmodifiableNavigableSet(set);
 	}
 
+	@Nonnull
 	@Override
 	public Iterator<Detection> iterator() {
 		MultiIterator<Detection> it = new MultiIterator<>();
