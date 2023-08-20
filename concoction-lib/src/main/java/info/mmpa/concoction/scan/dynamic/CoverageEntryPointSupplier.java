@@ -13,6 +13,11 @@ import javax.annotation.Nullable;
  */
 public interface CoverageEntryPointSupplier {
 	/**
+	 * Shared instance for skipping coverage supplementation.
+	 */
+	CoverageEntryPointSupplier NO_COVERAGE = (model, context) -> null;
+
+	/**
 	 * @param model
 	 * 		Model of the application to scan.
 	 * @param context

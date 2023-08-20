@@ -13,6 +13,7 @@ import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;
+import info.mmpa.concoction.util.Encapsulation;
 import org.objectweb.asm.Opcodes;
 
 import javax.annotation.Nonnull;
@@ -130,17 +131,6 @@ public class SsvmContext {
 	}
 
 	static {
-		try {
-			String version = System.getProperty("java.class.version");
-			if (Double.parseDouble(version) >= Opcodes.V9) {
-				// Accessed reflectively since this only needs to be done on Java 9+
-				// and references to new module classes will fail on Java 8
-				Method deencapsulate = Class.forName("dev.xdark.deencapsulation.Deencapsulation")
-						.getDeclaredMethod("deencapsulate", Class.class);
-				deencapsulate.invoke(null, SsvmContext.class);
-			}
-		} catch (Exception ex) {
-			throw new IllegalStateException("Failed to unlock reflection access", ex);
-		}
+		Encapsulation.unlock();
 	}
 }

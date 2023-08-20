@@ -3,6 +3,7 @@ package info.mmpa.concoction.scan.dynamic;
 import info.mmpa.concoction.input.model.ApplicationModel;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,6 +14,11 @@ import java.util.List;
  * @see CoverageEntryPointSupplier Handles creating entry points to cover application logic not visited by these entry points.
  */
 public interface EntryPointDiscovery {
+	/**
+	 * Shared instance of yielding no entry points.
+	 */
+	EntryPointDiscovery NOTHING = (model, context) -> Collections.emptyList();
+
 	/**
 	 * @param model
 	 * 		Model of the application to scan.

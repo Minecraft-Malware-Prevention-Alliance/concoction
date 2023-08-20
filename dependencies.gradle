@@ -1,6 +1,6 @@
 def asmVersion = '9.5'
 def cafeDudeVersion = '1.10.2'
-def ssvmVersion = '2efc8c9ed7'
+def ssvmVersion = 'eda1bad910'
 def junitVersion = '5.9.2'
 def jacksonVersion = '2.15.2'
 

@@ -29,6 +29,8 @@ public class Concoction {
 	private final Map<Path, ApplicationModel> inputModels = new HashMap<>();
 	private final Map<Path, ScanModel> scanModels = new HashMap<>();
 	private ArchiveLoadContext supportingPathLoadContext = ArchiveLoadContext.RANDOM_ACCESS_JAR;
+	private EntryPointDiscovery entryPointDiscovery = EntryPointDiscovery.NOTHING;
+	private CoverageEntryPointSupplier coverageEntryPointSupplier = CoverageEntryPointSupplier.NO_COVERAGE;
 	private int inputDepth = 3;
 	private boolean dynamicScanning;
 
@@ -70,6 +72,38 @@ public class Concoction {
 	@Nonnull
 	public Concoction withDynamicScanning() {
 		this.dynamicScanning = true;
+		return this;
+	}
+
+	/**
+	 * Sets the entry point discovery strategy for dynamic scanning.
+	 * Used to feed known/special cases into the scanner as opposed to {@link CoverageEntryPointSupplier}
+	 * which is more generalized.
+	 *
+	 * @param entryPointDiscovery
+	 * 		Entry point discovery implementation to use.
+	 *
+	 * @return Self.
+	 */
+	@Nonnull
+	public Concoction withEntryPointDiscovery(@Nonnull EntryPointDiscovery entryPointDiscovery) {
+		this.entryPointDiscovery = entryPointDiscovery;
+		return this;
+	}
+
+
+	/**
+	 * Sets the coverage strategy for dynamic scanning.
+	 * Used to fill in gaps in scanning not covered by the {@link EntryPointDiscovery}.
+	 *
+	 * @param coverageEntryPointSupplier
+	 * 		Coverage entry point supplier implementation to use.
+	 *
+	 * @return Self.
+	 */
+	@Nonnull
+	public Concoction withCoverageEntryPointSupplier(@Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier) {
+		this.coverageEntryPointSupplier = coverageEntryPointSupplier;
 		return this;
 	}
 
@@ -330,10 +364,6 @@ public class Concoction {
 				.filter(ScanModel::hasDynamicModel)
 				.collect(Collectors.toList()) : Collections.emptyList();
 		if (!insnModels.isEmpty()) {
-			// TODO: Point these interfaces to proper implementations
-			//  - This will currently scan nothing
-			EntryPointDiscovery entryPointDiscovery = (model, context) -> Collections.emptyList();
-			CoverageEntryPointSupplier coverageEntryPointSupplier = (model, context) -> null;
 			DynamicScanner scan = new DynamicScanner(entryPointDiscovery, coverageEntryPointSupplier, dynamicModels);
 			for (Map.Entry<Path, ApplicationModel> entry : inputModels.entrySet()) {
 				Path scannedFilePath = entry.getKey();
