@@ -22,11 +22,11 @@ public class AnyMultiDynamic extends MultiDynamic {
 
 	@Override
 	public boolean matchOnEnter(@Nonnull CallStackFrame frame) {
-		return entries.stream().anyMatch(e -> e.matchOnEnter(frame));
+		return getEntries().stream().anyMatch(e -> e.matchOnEnter(frame));
 	}
 
 	@Override
 	public boolean matchOnExit(@Nonnull CallStackFrame frame) {
-		return entries.stream().anyMatch(e -> e.matchOnExit(frame));
+		return getEntries().stream().anyMatch(e -> e.matchOnExit(frame));
 	}
 }

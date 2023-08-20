@@ -17,8 +17,8 @@ import java.util.List;
 public abstract class MultiInstruction implements InstructionMatchEntry {
 	@JsonDeserialize(contentUsing = InstructionMatchEntryDeserializer.class)
 	@JsonSerialize(contentUsing = InstructionMatchEntrySerializer.class)
-	protected final List<InstructionMatchEntry> entries;
-	protected final MultiMatchMode mode;
+	private final List<InstructionMatchEntry> entries;
+	private final MultiMatchMode mode;
 
 	/**
 	 * @param mode

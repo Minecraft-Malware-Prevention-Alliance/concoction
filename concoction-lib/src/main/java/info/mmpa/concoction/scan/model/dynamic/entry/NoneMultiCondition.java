@@ -23,6 +23,6 @@ public class NoneMultiCondition extends MultiCondition {
 
 	@Override
 	public boolean match(@Nonnull CallStackFrame frame) {
-		return conditions.stream().noneMatch(e -> e.match(frame));
+		return getConditions().stream().noneMatch(e -> e.match(frame));
 	}
 }

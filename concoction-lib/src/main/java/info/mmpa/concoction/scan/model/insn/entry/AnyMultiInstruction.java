@@ -26,6 +26,6 @@ public class AnyMultiInstruction extends MultiInstruction {
 
 	@Override
 	public boolean match(@Nonnull MethodNode method, @Nonnull AbstractInsnNode insn) {
-		return entries.stream().anyMatch(e -> e.match(method, insn));
+		return getEntries().stream().anyMatch(e -> e.match(method, insn));
 	}
 }

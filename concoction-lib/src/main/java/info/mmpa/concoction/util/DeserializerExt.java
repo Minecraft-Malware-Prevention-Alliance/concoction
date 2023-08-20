@@ -14,10 +14,22 @@ import java.util.Iterator;
  * 		Target type to deserialize into.
  */
 public abstract class DeserializerExt<T> extends StdDeserializer<T> {
-	protected DeserializerExt(@Nonnull Class<?> vc) {
-		super(vc);
+	/**
+	 * @param valueClass
+	 * 		Type to deserialize.
+	 */
+	protected DeserializerExt(@Nonnull Class<?> valueClass) {
+		super(valueClass);
 	}
 
+	/**
+	 * @param root
+	 * 		Root to search in.
+	 * @param targetFieldName
+	 * 		Field name to search for.
+	 *
+	 * @return Matching field in the root by name, ignoring case.
+	 */
 	@Nullable
 	protected static JsonNode findCaseless(@Nonnull JsonNode root, @Nonnull String targetFieldName) {
 		Iterator<String> itr = root.fieldNames();

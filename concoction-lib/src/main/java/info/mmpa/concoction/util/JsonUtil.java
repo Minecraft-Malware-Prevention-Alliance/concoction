@@ -6,7 +6,22 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Common JSON utilities.
+ */
 public class JsonUtil {
+	/**
+	 * @param jp
+	 * 		Parser context, used for positioning when reporting errors.
+	 * @param input
+	 * 		String to break into section.
+	 *
+	 * @return {@code new String[2]} where {@code array[0]} is the first word,
+	 * and {@code array[1]} is the rest of the text after, excluding the space splitter.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When no space was found in the given input string.
+	 */
 	@Nonnull
 	public static String[] breakByFirstSpace(@Nonnull JsonParser jp, @Nonnull String input) throws JsonProcessingException {
 		String[] split = new String[2];

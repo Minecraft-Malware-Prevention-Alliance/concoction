@@ -141,7 +141,13 @@ public class StringParameterCondition implements Condition {
 	 * Extraction modes for pulling text from object values.
 	 */
 	public enum StringExtractionMode {
+		/**
+		 * Only types of {@link CharSequence} are checked.
+		 */
 		KNOWN_STRING_TYPES("known-types"),
+		/**
+		 * All types are checked via their {@link Object#toString()} implementation.
+		 */
 		ANY_TYPE_TOSTRING("any-type");
 
 		private final String display;

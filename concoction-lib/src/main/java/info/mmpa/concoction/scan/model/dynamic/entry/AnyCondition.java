@@ -8,6 +8,9 @@ import javax.annotation.Nonnull;
  * Condition that always matches.
  */
 public class AnyCondition implements Condition {
+	/**
+	 * Shared instance.
+	 */
 	public static final AnyCondition INSTANCE = new AnyCondition();
 
 	private AnyCondition() {

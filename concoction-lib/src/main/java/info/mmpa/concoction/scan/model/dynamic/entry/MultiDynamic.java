@@ -17,8 +17,8 @@ import java.util.List;
 public abstract class MultiDynamic implements DynamicMatchEntry {
 	@JsonDeserialize(contentUsing = DynamicMatchEntryDeserializer.class)
 	@JsonSerialize(contentUsing = DynamicMatchEntrySerializer.class)
-	protected final List<DynamicMatchEntry> entries;
-	protected final MultiMatchMode mode;
+	private final List<DynamicMatchEntry> entries;
+	private final MultiMatchMode mode;
 
 	/**
 	 * @param mode

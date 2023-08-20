@@ -7,6 +7,12 @@ import info.mmpa.concoction.scan.dynamic.CallStackFrame;
  * {@link DynamicMatchEntry#matchOnExit(CallStackFrame)}.
  */
 public enum When {
+	/**
+	 * The dynamic match is active upon method entry.
+	 */
 	ENTRY,
+	/**
+	 * The dynamic match is active upon method returning.
+	 */
 	RETURN
 }

@@ -28,11 +28,11 @@ public class NoneMultiDynamic extends MultiDynamic {
 
 	@Override
 	public boolean matchOnEnter(@Nonnull CallStackFrame frame) {
-		return entries.stream().noneMatch(e -> e.matchOnEnter(frame));
+		return getEntries().stream().noneMatch(e -> e.matchOnEnter(frame));
 	}
 
 	@Override
 	public boolean matchOnExit(@Nonnull CallStackFrame frame) {
-		return entries.stream().noneMatch(e -> e.matchOnExit(frame));
+		return getEntries().stream().noneMatch(e -> e.matchOnExit(frame));
 	}
 }

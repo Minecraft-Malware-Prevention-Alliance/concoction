@@ -44,6 +44,9 @@ public class Serialization {
 	 * 		Text representing an {@link ScanModel}.
 	 *
 	 * @return Deserialized value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the given text is not well-formed json, or cannot be mapped to the requested type.
 	 */
 	@Nonnull
 	public static ScanModel deserializeModel(@Nonnull String text) throws JsonProcessingException {
@@ -55,6 +58,9 @@ public class Serialization {
 	 * 		Text representing an {@link InstructionMatchEntry}.
 	 *
 	 * @return Deserialized value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the given text is not well-formed json, or cannot be mapped to the requested type.
 	 */
 	@Nonnull
 	public static InstructionMatchEntry deserializeInsnEntry(@Nonnull String text) throws JsonProcessingException {
@@ -66,6 +72,9 @@ public class Serialization {
 	 * 		Text representing an {@link DynamicMatchEntry}.
 	 *
 	 * @return Deserialized value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the given text is not well-formed json, or cannot be mapped to the requested type.
 	 */
 	@Nonnull
 	public static DynamicMatchEntry deserializeDynamicEntry(@Nonnull String text) throws JsonProcessingException {
@@ -77,6 +86,9 @@ public class Serialization {
 	 * 		Text representing an {@link MethodLocation}.
 	 *
 	 * @return Deserialized value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the given text is not well-formed json, or cannot be mapped to the requested type.
 	 */
 	@Nonnull
 	public static MethodLocation deserializeMethodLocation(@Nonnull String text) throws JsonProcessingException {
@@ -88,6 +100,9 @@ public class Serialization {
 	 * 		Text representing an {@link Condition}.
 	 *
 	 * @return Deserialized value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the given text is not well-formed json, or cannot be mapped to the requested type.
 	 */
 	@Nonnull
 	public static Condition deserializeCondition(@Nonnull String text) throws JsonProcessingException {
@@ -103,6 +118,9 @@ public class Serialization {
 	 * 		Target type to deserialize into.
 	 *
 	 * @return Deserialized value.
+	 *
+	 * @throws JsonProcessingException
+	 * 		When the given text is not well-formed json, or cannot be mapped to the requested type.
 	 */
 	@Nonnull
 	public static <T> T deserialize(@Nonnull Class<T> type, @Nonnull String text) throws JsonProcessingException {

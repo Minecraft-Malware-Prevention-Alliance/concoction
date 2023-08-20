@@ -8,6 +8,9 @@ import javax.annotation.Nonnull;
  * Condition that never matches.
  */
 public class NoneCondition implements Condition {
+	/**
+	 * Shared instance.
+	 */
 	public static final NoneCondition INSTANCE = new NoneCondition();
 
 	private NoneCondition() {

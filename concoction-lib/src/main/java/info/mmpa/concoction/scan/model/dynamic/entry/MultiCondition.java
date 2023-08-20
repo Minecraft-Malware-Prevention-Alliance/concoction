@@ -17,9 +17,16 @@ import java.util.List;
 public abstract class MultiCondition implements Condition {
 	@JsonSerialize(contentUsing = ConditionSerializer.class)
 	@JsonDeserialize(contentUsing = ConditionDeserializer.class)
-	protected final List<Condition> conditions;
-	protected final MultiMatchMode mode;
+	private final List<Condition> conditions;
+	private final MultiMatchMode mode;
 
+	/**
+	 * @param mode
+	 * 		Match mode of the condition implementation.
+	 * 		Concrete implementations should pass a constant value.
+	 * @param conditions
+	 * 		Conditions wrapped to match against.
+	 */
 	public MultiCondition(@Nonnull MultiMatchMode mode, @Nonnull List<Condition> conditions) {
 		this.mode = mode;
 		this.conditions = conditions;
