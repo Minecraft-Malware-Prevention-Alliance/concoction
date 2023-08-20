@@ -42,7 +42,7 @@ public class Main implements Callable<Integer> {
 	private Path inputDir;
 	@Option(names = {"-i", "--input"}, description = "Path to single file to scan (jar)")
 	private Path input;
-	@Option(names = {"-m", "--mode"}, description = "Mode to use when parsing jar/zip files.\n" +
+	@Option(names = {"-im", "--inputMode"}, description = "Mode to use when parsing jar/zip files.\n" +
 			" - RANDOM_ACCESS_JAR: Used when inputs are loaded dynamically via 'java.util.zip.ZipFile' or 'java.util.zip.JarFile'\n" +
 			" - RUNNABLE_JAR:      Used when inputs are treated as a program run via 'java -jar' or 'java -cp'\n" +
 			" - STREAMED_JAR:      Used when inputs are loaded dynamically via streaming such as with 'java.util.zip.ZipInputStream' or 'java.util.zip.JarInputStream'\n")
@@ -65,7 +65,10 @@ public class Main implements Callable<Integer> {
 	 * 		Arguments to parse.
 	 */
 	public static void main(String[] args) {
-		final int exitCode = new CommandLine(new Main()).execute(args);
+		CommandLine cmd = new CommandLine(new Main());
+		cmd.setPosixClusteredShortOptionsAllowed(false);
+		cmd.setHelpFactory(new NoIndentationHelpFactory());
+		int exitCode = cmd.execute(args);
 		System.exit(exitCode);
 	}
 
@@ -175,6 +178,7 @@ public class Main implements Callable<Integer> {
 					// Path,Detections
 					String detectionIds = detections.asNavigableSet().stream()
 							.map(d -> d.archetype().getIdentifier())
+							.distinct()
 							.collect(Collectors.joining(":"));
 					System.out.println(path.toAbsolutePath() + "," + detectionIds);
 					break;
