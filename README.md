@@ -62,3 +62,19 @@ Dynamic Shared Malware Scanner
   -v, --verbose             Enables more verbose logging and error details
   -V, --version             Print version information and exit.
 ```
+
+Upon scan completion, results are printed to the console based on the value provided by `--resultsConsoleMode`.
+Currently, the output format is CSV form. The first column is the file path, and the second column is the 
+detections matched, separated by `:`.
+
+An example of the CSV output would look like:
+```csv
+mods/Sample1.jar,detection1
+mods/Sample1and2.jar,detection2:detection2
+```
+
+The application's exit codes also indicate the scan status.
+
+- Negative values indicate errors reading inputs
+- Zero indicates no detections were found
+- Positive values indicate the number of files with detections found
