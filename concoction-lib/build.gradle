@@ -157,7 +157,7 @@ javadoc {
 
 // Hack to generate POM files for the output.
 tasks.named('generatePomFileForMavenPublication').configure {
-    onlyIf { project.gradle.startParameter.taskNames.contains('publish') }
+    onlyIf { project.gradle.startParameter.taskNames.stream().anyMatch { n -> n.contains('publish') } }
 
     destination = project.file('build/resources/META-INF/maven/info.mmpa/concoction/pom.xml')
     def properties = project.file('build/resources/META-INF/maven/info.mmpa/concoction/pom.properties')
