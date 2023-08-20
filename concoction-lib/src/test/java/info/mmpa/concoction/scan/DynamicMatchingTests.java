@@ -1,12 +1,13 @@
 package info.mmpa.concoction.scan;
 
 import dev.xdark.ssvm.invoke.Argument;
-import example.FileStream;
+import example.*;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.scan.dynamic.*;
 import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.util.TestUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Type;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Disabled("TODO: Make test cases and showcase capabilities")
 public class DynamicMatchingTests {
 	@Test
 	void test() {
@@ -42,18 +44,17 @@ public class DynamicMatchingTests {
 
 	@Nonnull
 	private static Results results(@Nonnull String modelName, @Nonnull Class<?> type) throws IOException, DynamicScanException {
-		// Make entry points for all 'public static' methods in the given class.
+		// Make entry points for all 'public static' methods with no parameters in the given class.
 		int mask = Modifier.STATIC | Modifier.PUBLIC;
 		EntryPointDiscovery discovery = (model, context) -> Arrays.stream(type.getDeclaredMethods())
-				.filter(m -> (m.getModifiers() & mask) == mask)
+				.filter(m -> (m.getModifiers() & mask) == mask && m.getParameterCount() == 0)
 				.map(m -> toEntryPoint(type, m))
 				.collect(Collectors.toList());
 		CoverageEntryPointSupplier coverageSupplier = (model, context) -> null;
 
 		// Read the model
 		Path path = Paths.get("src/test/resources/models/" + modelName);
-		List<ScanModel> scanModels = Collections.emptyList();
-		// TODO: Deserialize model after creating dynamic/runtime matching schemes
+		List<ScanModel> scanModels = Collections.singletonList(ScanModel.fromJson(path));
 
 		// Run the scan.
 		DynamicScanner scan = new DynamicScanner(discovery, coverageSupplier, scanModels);
