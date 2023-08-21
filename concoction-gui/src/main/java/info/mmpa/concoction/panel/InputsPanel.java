@@ -30,6 +30,16 @@ public class InputsPanel extends TableModelPanel<Path> {
 		initComponents();
 	}
 
+	@Override
+	public void onShown() {
+		// no-op
+	}
+
+	@Override
+	public void onHidden() {
+		// no-op
+	}
+
 	@Nonnull
 	@Override
 	protected String[] getTableColumnNames() {

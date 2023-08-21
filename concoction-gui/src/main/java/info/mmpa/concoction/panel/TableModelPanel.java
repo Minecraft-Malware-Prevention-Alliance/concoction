@@ -9,6 +9,7 @@ import com.jgoodies.common.collect.ObservableList;
 import com.jgoodies.common.collect.ObservableList2;
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
+import info.mmpa.concoction.ConcoctionStep;
 import info.mmpa.concoction.ConcoctionUxContext;
 import info.mmpa.concoction.util.ListDataListenerAdapter;
 import info.mmpa.concoction.util.UiUtils;
@@ -34,7 +35,7 @@ import static info.mmpa.concoction.util.UiUtils.icon;
  * @param <T>
  * 		Table row content type.
  */
-public abstract class TableModelPanel<T> extends JPanel {
+public abstract class TableModelPanel<T> extends JPanel implements ConcoctionStep {
 	private final ObservableList2<T> model = new ArrayListModel<>();
 	private final SelectionInList<T> selectionModel = new SelectionInList<>((List<T>) model);
 	private final ConcoctionUxContext context;
@@ -90,9 +91,10 @@ public abstract class TableModelPanel<T> extends JPanel {
 		FileDialog dialog = new FileDialog(context.getFrame(), bundle.getString("input.select-files"));
 		dialog.setMultipleMode(true);
 		dialog.setMode(FileDialog.LOAD);
-		dialog.setDirectory("C:\\Code\\Java\\concoction\\concoction-cli\\build\\libs");
 		JButton btnAdd = new JButton();
 		btnAdd.addActionListener(e -> {
+			// TODO: The option to do directory selection would be nice too
+
 			// We configure per-show because things like the file filter (at least the way we have to do it
 			// to bypass an implementation problem on windows) 'forgets' itself after you accept one input.
 			configureFileDialog(dialog);

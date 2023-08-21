@@ -36,6 +36,16 @@ public class ModelsPanel extends TableModelPanel<ModelsPanel.ScanModelWithPath> 
 		initComponents();
 	}
 
+	@Override
+	public void onShown() {
+		// no-op
+	}
+
+	@Override
+	public void onHidden() {
+		// no-op
+	}
+
 	@Nonnull
 	@Override
 	protected String[] getTableColumnNames() {
@@ -83,6 +93,22 @@ public class ModelsPanel extends TableModelPanel<ModelsPanel.ScanModelWithPath> 
 		private ScanModelWithPath(@Nonnull ScanModel model, @Nonnull Path source) {
 			this.model = model;
 			this.source = source;
+		}
+
+		/**
+		 * @return Path the model is loaded from.
+		 */
+		@Nonnull
+		public Path getSource() {
+			return source;
+		}
+
+		/**
+		 * @return Model at path.
+		 */
+		@Nonnull
+		public ScanModel getModel() {
+			return model;
 		}
 
 		@Nullable

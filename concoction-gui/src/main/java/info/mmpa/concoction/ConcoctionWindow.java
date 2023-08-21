@@ -13,7 +13,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Main window that allows navigation between panels.
@@ -76,23 +80,28 @@ public class ConcoctionWindow extends JFrame implements ConcoctionUxContext {
 
 	private void showInput() {
 		layout.show(getContentPane(), currentCard = CARD_INPUTS);
+		inputsPanel.onShown();
 	}
 
 	private void showModels() {
 		layout.show(getContentPane(), currentCard = CARD_MODELS);
+		modelsPanel.onShown();
 	}
 
 	private void showScan() {
 		layout.show(getContentPane(), currentCard = CARD_SCAN);
+		scanPanel.onShown();
 	}
 
 	@Override
 	public void gotoNext() {
 		switch (currentCard) {
 			case CARD_INPUTS:
+				inputsPanel.onHidden();
 				showModels();
 				break;
 			case CARD_MODELS:
+				modelsPanel.onHidden();
 				showScan();
 				break;
 			case CARD_SCAN:
@@ -108,12 +117,28 @@ public class ConcoctionWindow extends JFrame implements ConcoctionUxContext {
 				// no previous
 				break;
 			case CARD_MODELS:
+				modelsPanel.onHidden();
 				showInput();
 				break;
 			case CARD_SCAN:
+				scanPanel.onHidden();
 				showModels();
 				break;
 		}
+	}
+
+	@Nonnull
+	@Override
+	public List<Path> getInputPaths() {
+		return Collections.unmodifiableList(inputsPanel.getModel());
+	}
+
+	@Nonnull
+	@Override
+	public List<Path> getModelPaths() {
+		return modelsPanel.getModel().stream()
+				.map(ModelsPanel.ScanModelWithPath::getSource)
+				.collect(Collectors.toList());
 	}
 
 	@Nonnull
