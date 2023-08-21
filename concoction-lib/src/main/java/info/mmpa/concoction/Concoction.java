@@ -31,6 +31,8 @@ public class Concoction {
 	private ArchiveLoadContext supportingPathLoadContext = ArchiveLoadContext.RANDOM_ACCESS_JAR;
 	private EntryPointDiscovery entryPointDiscovery = EntryPointDiscovery.NOTHING;
 	private CoverageEntryPointSupplier coverageEntryPointSupplier = CoverageEntryPointSupplier.NO_COVERAGE;
+	private Predicate<Path> inputPathPredicate = Concoction::isJarPath;
+	private Predicate<Path> modelPathPredicate = Concoction::isJsonPath;
 	private int inputDepth = 3;
 	private boolean dynamicScanning;
 
@@ -61,6 +63,22 @@ public class Concoction {
 	public Concoction withMaxInputDirectoryDepth(int inputDepth) {
 		this.inputDepth = inputDepth;
 		return this;
+	}
+
+	/**
+	 * @param inputPathPredicate
+	 * 		Path checker for files to be loaded as inputs. Should match ZIP/JAR files.
+	 */
+	public void setInputPathPredicate(@Nonnull Predicate<Path> inputPathPredicate) {
+		this.inputPathPredicate = inputPathPredicate;
+	}
+
+	/**
+	 * @param modelPathPredicate
+	 * 		Path checker for files to be loaded as {@link ScanModel}. Should match JSON files.
+	 */
+	public void setModelPathPredicate(@Nonnull Predicate<Path> modelPathPredicate) {
+		this.modelPathPredicate = modelPathPredicate;
 	}
 
 	/**
@@ -209,7 +227,7 @@ public class Concoction {
 	@Nonnull
 	public Concoction addInputDirectory(@Nonnull ArchiveLoadContext context, @Nonnull Path directory,
 										@Nullable Path... commonSupportingPaths) throws IOException {
-		return addInputDirectory(context, directory, Concoction::isJarPath, listOptionalPaths(commonSupportingPaths));
+		return addInputDirectory(context, directory, inputPathPredicate, listOptionalPaths(commonSupportingPaths));
 	}
 
 	/**
@@ -311,7 +329,7 @@ public class Concoction {
 	public Concoction addScanModelDirectory(@Nonnull Path directory) throws IOException {
 		try (Stream<Path> stream = Files.walk(directory, inputDepth)) {
 			for (Path path : stream.collect(Collectors.toList()))
-				if (isJsonPath(path))
+				if (modelPathPredicate.test(path))
 					addScanModel(path);
 		}
 		return this;
