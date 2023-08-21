@@ -1,3 +1,4 @@
 rootProject.name = 'concoction'
 include('concoction-lib', 'concoction-cli')
 project(":concoction-lib").name = 'concoction'
+include 'concoction-gui'

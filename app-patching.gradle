@@ -1,0 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        classpath 'com.github.RaphiMC.JavaDowngrader:core:13e29798a8'
+    }
+}
+
+
+tasks.register('patchOutput') {
+    doLast {
+        // TODO: The UI currently uses Ikonli, which is compiled against Java 11
+        //  Nothing it does needs Java 11 so we'll downsample it after building.
+        //  This will let Java 8 users run the app as well.
+        //   - Also there's a bug in IntelliJ where classpath items are not recognized.
+        //     So stuff will *look* like it errors out, but at runtime its fine.
+    }
+}

@@ -1,0 +1,20 @@
+def compiler = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(8)
+}
+
+java {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    toolchain {
+        compiler
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = compiler
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.encoding = 'UTF-8'
+    options.incremental = true
+}

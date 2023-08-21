@@ -1,0 +1,28 @@
+dependencies {
+    implementation project(':concoction')
+    implementation ssvm_core
+    implementation ssvm_invoke
+    implementation ssvm_io
+    implementation jsr305
+}
+
+// Configure building the application jar
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+// Add snapshot suffix to version if not building a release.
+// To build a release, set the environment variable BUILD_RELEASE to true.
+def isRelease = System.getenv("BUILD_RELEASE") == "true"
+if (!isRelease && !version.contains('SNAPSHOT')) {
+    version += "-SNAPSHOT"
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'info.mmpa.concoction.Main'
+        )
+    }
+}
+build.finalizedBy(shadowJar)

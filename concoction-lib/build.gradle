@@ -8,6 +8,8 @@ plugins {
     id 'maven-publish'
 }
 
+apply from: rootProject.file('app-target-8.gradle')
+
 configurations {
     shaded
     shaded.transitive = false

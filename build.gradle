@@ -16,29 +16,6 @@ subprojects {
         maven { url 'https://jitpack.io' }
     }
 
-    // Configure Java version and compiler details
-    def compiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-    java {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-
-        withSourcesJar()
-        withJavadocJar()
-
-        toolchain {
-            compiler
-        }
-    }
-    tasks.withType(JavaCompile).configureEach {
-        javaCompiler = compiler
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-        options.encoding = 'UTF-8'
-        options.incremental = true
-    }
-
     // Test framework setup
     test {
         useJUnitPlatform()
