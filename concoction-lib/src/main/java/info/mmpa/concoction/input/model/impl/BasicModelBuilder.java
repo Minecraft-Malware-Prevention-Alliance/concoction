@@ -30,7 +30,7 @@ public class BasicModelBuilder implements ModelBuilder {
 	public ModelBuilder addSource(@Nonnull ArchiveLoadContext context, @Nonnull Path path) throws IOException {
 		ClassesAndFiles input = pathReader.from(context, path);
 		String identifier = path.getFileName().toString();
-		sources.add(new BasicModelSource(identifier, input.getClasses(), input.getFiles()));
+		sources.add(new PathModelSource(new BasicModelSource(identifier, input.getClasses(), input.getFiles()), path));
 		return this;
 	}
 

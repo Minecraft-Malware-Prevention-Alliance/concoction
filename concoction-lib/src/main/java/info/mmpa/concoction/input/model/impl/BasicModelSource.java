@@ -52,13 +52,13 @@ public class BasicModelSource implements ModelSource {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (!(o instanceof ModelSource)) return false;
 
 		BasicModelSource that = (BasicModelSource) o;
 
-		if (!identifier.equals(that.identifier)) return false;
-		if (!mapEquals(classes, that.classes)) return false;
-		return mapEquals(files, that.files);
+		if (!identifier.equals(that.identifier())) return false;
+		if (!mapEquals(classes, that.classes())) return false;
+		return mapEquals(files, that.files());
 	}
 
 	@Override
