@@ -1,6 +1,7 @@
 package info.mmpa.concoction.input.model.impl;
 
 import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.path.SourcePathElement;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -35,6 +36,12 @@ public class DelegatingModelSource implements ModelSource {
 	@Override
 	public Map<String, byte[]> files() {
 		return delegate.files();
+	}
+
+	@Nonnull
+	@Override
+	public SourcePathElement path() {
+		return delegate.path();
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package info.mmpa.concoction.input.model.impl;
 
 import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.path.SourcePathElement;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.Map;
  * Basic model source implementation.
  */
 public class BasicModelSource implements ModelSource {
+	private final SourcePathElement path = new SourcePathElement(this);
 	private final String identifier;
 	private final Map<String, byte[]> classes;
 	private final Map<String, byte[]> files;
@@ -47,6 +49,12 @@ public class BasicModelSource implements ModelSource {
 	@Override
 	public Map<String, byte[]> files() {
 		return files;
+	}
+
+	@Nonnull
+	@Override
+	public SourcePathElement path() {
+		return path;
 	}
 
 	@Override

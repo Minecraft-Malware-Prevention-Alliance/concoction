@@ -1,5 +1,7 @@
 package info.mmpa.concoction.input.model;
 
+import info.mmpa.concoction.input.model.path.SourcePathElement;
+
 import javax.annotation.Nonnull;
 import java.util.Map;
 
@@ -40,4 +42,10 @@ public interface ModelSource {
 	 */
 	@Nonnull
 	Map<String, byte[]> files();
+
+	/**
+	 * @return Path element to this source.
+	 */
+	@Nonnull
+	SourcePathElement path();
 }
