@@ -3,12 +3,12 @@ package info.mmpa.concoction.scan.model.dynamic;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import info.mmpa.concoction.input.model.path.MethodPathElement;
-import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.sink.ResultsSink;
 import info.mmpa.concoction.scan.dynamic.CallStackFrame;
 import info.mmpa.concoction.scan.model.dynamic.entry.DynamicMatchEntry;
+import info.mmpa.concoction.util.Unchecked;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class DynamicMatchingModel {
 							 @Nonnull MethodPathElement path, @Nonnull CallStackFrame frame) {
 		for (DynamicMatchEntry entry : variants.values())
 			if (entry.matchOnEnter(frame))
-				sink.onDetection(path, archetype, new Detection(archetype, path));
+				Unchecked.runSafe("dynamic-sink-feed", () -> sink.onDetection(path, archetype, new Detection(archetype, path)));
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class DynamicMatchingModel {
 							@Nonnull MethodPathElement path, @Nonnull CallStackFrame frame) {
 		for (DynamicMatchEntry entry : variants.values())
 			if (entry.matchOnExit(frame))
-				sink.onDetection(path, archetype, new Detection(archetype, path));
+				Unchecked.runSafe("insn-sink-feed", () -> sink.onDetection(path, archetype, new Detection(archetype, path)));
 	}
 
 	/**

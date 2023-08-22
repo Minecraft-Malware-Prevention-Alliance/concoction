@@ -14,6 +14,7 @@ import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.util.AsmUtil;
 import info.mmpa.concoction.util.ScanCancelException;
+import info.mmpa.concoction.util.Unchecked;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class InstructionScanner {
 				// This shouldn't be necessary as ASM crashes should be patched by this point, but we're going to
 				// take all the precautions we can.
 				if (classFeedbackSink != null)
-					classFeedbackSink.onScanError(t);
+					Unchecked.runSafe("insn-sink-feed", () -> classFeedbackSink.onScanError(t));
 			}
 		}
 
@@ -94,7 +95,7 @@ public class InstructionScanner {
 						   @Nonnull ClassNode classNode, @Nullable FeedbackSink.InstructionFeedbackItemSink classFeedbackSink) throws ScanCancelException {
 		// If given, tell the feedback listener the class has been parsed.
 		if (classFeedbackSink != null)
-			classFeedbackSink.onPreScan(classNode);
+			Unchecked.runSafe("insn-sink-feed", () -> classFeedbackSink.onPreScan(classNode));
 
 		// If we have a feedback listener, split off the results so things found within the class
 		// can be collected into a unique results map, while also being added to the aggregate.
@@ -102,7 +103,7 @@ public class InstructionScanner {
 			@Override
 			public void onDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
 				super.onDetection(path, type, detection);
-				classFeedbackSink.onDetection(path, type, detection);
+				Unchecked.runSafe("insn-sink-feed", () -> classFeedbackSink.onDetection(path, type, detection));
 			}
 		};
 
@@ -123,6 +124,6 @@ public class InstructionScanner {
 		// The sink from before will be the split sink, so we can tell our feedback sink
 		// about the detection results specific to this class.
 		if (classFeedbackSink != null)
-			classFeedbackSink.onCompletion(sink.buildResults());
+			Unchecked.runSafe("insn-sink-feed", () -> classFeedbackSink.onCompletion(sink.buildResults()));
 	}
 }

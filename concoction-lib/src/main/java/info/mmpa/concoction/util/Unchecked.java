@@ -1,11 +1,16 @@
 package info.mmpa.concoction.util;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
 
 /**
  * Unchecked operation utils.
  */
 public class Unchecked {
+	private static final Logger logger = LoggerFactory.getLogger(Unchecked.class);
+
 	/**
 	 * @param v
 	 * 		Value to cast.
@@ -35,7 +40,6 @@ public class Unchecked {
 		try {
 			return function.apply(in);
 		} catch (Throwable ex) {
-			fail(ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -52,7 +56,6 @@ public class Unchecked {
 		try {
 			return supplier.get();
 		} catch (Throwable ex) {
-			fail(ex);
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -65,8 +68,21 @@ public class Unchecked {
 		try {
 			runnable.run();
 		} catch (Throwable ex) {
-			fail(ex);
 			throw new IllegalStateException(ex);
+		}
+	}
+
+	/**
+	 * @param taskName
+	 * 		Name of task for logging purposes.
+	 * @param runnable
+	 * 		Throwing runnable.
+	 */
+	public static void runSafe(@Nonnull String taskName, @Nonnull UncheckedRunnable runnable) {
+		try {
+			runnable.run();
+		} catch (Throwable ex) {
+			logger.error("Task '{}' encountered an error", taskName, ex);
 		}
 	}
 

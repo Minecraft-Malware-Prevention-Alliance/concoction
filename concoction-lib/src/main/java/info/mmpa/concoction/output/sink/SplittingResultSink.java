@@ -4,6 +4,7 @@ import info.mmpa.concoction.input.model.path.PathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.Results;
+import info.mmpa.concoction.util.Unchecked;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +43,7 @@ public class SplittingResultSink extends DelegatingResultsSink {
 
 		// Copy detections to our own local sink so that we can later report only results specific to our instance
 		// rather than whatever the delegate sink given by the constructor has.
-		localSink.onDetection(path, type, detection);
+		Unchecked.runSafe("split-sink-feed", () -> localSink.onDetection(path, type, detection));
 	}
 
 	/**

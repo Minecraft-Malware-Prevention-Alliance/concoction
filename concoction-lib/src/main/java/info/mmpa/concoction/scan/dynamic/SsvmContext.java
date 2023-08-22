@@ -21,6 +21,7 @@ import info.mmpa.concoction.output.sink.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;
 import info.mmpa.concoction.util.Encapsulation;
 import info.mmpa.concoction.util.ScanCancelException;
+import info.mmpa.concoction.util.Unchecked;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class SsvmContext {
 				@Override
 				public void onDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
 					super.onDetection(path, type, detection);
-					dynamicFeedbackSink.onDetection(path, type, detection);
+					Unchecked.runSafe("dynamic-sink-feed", () -> dynamicFeedbackSink.onDetection(path, type, detection));
 				}
 			};
 		} else {
@@ -96,7 +97,7 @@ public class SsvmContext {
 			//   (this applies for method exit too)
 
 			if (dynamicFeedbackSink != null)
-				dynamicFeedbackSink.onMethodEnter(Collections.unmodifiableList(stack), frame);
+				Unchecked.runSafe("dynamic-sink-feed", () -> dynamicFeedbackSink.onMethodEnter(Collections.unmodifiableList(stack), frame));
 
 			MethodPathElement methodPath = sourcePath
 					.child(frame.getOwnerName())
@@ -114,7 +115,7 @@ public class SsvmContext {
 			CallStackFrame frame = stack.pop();
 
 			if (dynamicFeedbackSink != null)
-				dynamicFeedbackSink.onMethodExit(Collections.unmodifiableList(stack), frame);
+				Unchecked.runSafe("dynamic-sink-feed", () -> dynamicFeedbackSink.onMethodExit(Collections.unmodifiableList(stack), frame));
 
 			MethodPathElement methodPath = sourcePath
 					.child(frame.getOwnerName())
@@ -159,7 +160,7 @@ public class SsvmContext {
 	 */
 	public void onScanComplete(@Nonnull Results results) {
 		if (dynamicFeedbackSink != null)
-			dynamicFeedbackSink.onCompletion(results);
+			Unchecked.runSafe("dynamic-sink-feed", () -> dynamicFeedbackSink.onCompletion(results));
 	}
 
 	/**

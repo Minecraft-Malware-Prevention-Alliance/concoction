@@ -1,5 +1,7 @@
 package info.mmpa.concoction.output;
 
+import javax.annotation.Nullable;
+
 /**
  * Levels of suspicions for report items.
  */
@@ -24,5 +26,16 @@ public enum SusLevel {
 	/**
 	 * Incredibly unlikely to be malicious in any circumstance.
 	 */
-	NOTHING_BURGER
+	NOTHING_BURGER;
+
+	/**
+	 * @param other
+	 * 		Other level.
+	 *
+	 * @return {@code true} when other his more sus.
+	 */
+	public boolean isMoreSus(@Nullable SusLevel other) {
+		if (other == null) return true;
+		return other.ordinal() > ordinal();
+	}
 }
