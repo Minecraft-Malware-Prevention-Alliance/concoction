@@ -23,6 +23,7 @@ dependencies {
     api asm_util
     api lljzip
     api collections
+    api observables
     api jackson
     api slf4jLogging
 

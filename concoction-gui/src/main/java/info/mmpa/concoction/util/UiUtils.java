@@ -23,14 +23,15 @@ public class UiUtils {
 	private static final Logger logger = LoggerFactory.getLogger(UiUtils.class);
 	private static final String[] SIZE_UNITS = new String[]{"B", "kB", "MB", "GB", "TB"};
 	private static final DecimalFormat SIZE_FORMAT = new DecimalFormat("#,##0.#");
-	private static final ResourceBundle bundle = ResourceBundle.getBundle("strings");
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("strings");
+	private static final int MAX_CLASS_LEN = 80;
 
 	/**
 	 * @return Resource bundle for text translations.
 	 */
 	@Nonnull
 	public static ResourceBundle getBundle() {
-		return bundle;
+		return RESOURCE_BUNDLE;
 	}
 
 	/**
@@ -87,5 +88,20 @@ public class UiUtils {
 	 */
 	public static Icon icon(Ikon icon) {
 		return FontIcon.of(icon, 24, Color.LIGHT_GRAY);
+	}
+
+	/**
+	 * @param name
+	 * 		Class name.
+	 *
+	 * @return Filtered name.
+	 */
+	@Nonnull
+	public static String filterClassName(@Nonnull String name) {
+		if (name.indexOf('<') >= 0)
+			return "?";
+		if (name.length() > MAX_CLASS_LEN)
+			return name.substring(0, MAX_CLASS_LEN) + "...";
+		return name;
 	}
 }

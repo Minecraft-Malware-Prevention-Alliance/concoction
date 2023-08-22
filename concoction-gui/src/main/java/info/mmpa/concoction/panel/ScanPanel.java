@@ -6,28 +6,44 @@ import info.mmpa.concoction.Concoction;
 import info.mmpa.concoction.ConcoctionStep;
 import info.mmpa.concoction.ConcoctionUxContext;
 import info.mmpa.concoction.input.io.archive.ArchiveLoadContext;
+import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.impl.PathModelSource;
+import info.mmpa.concoction.input.model.path.ClassPathElement;
+import info.mmpa.concoction.input.model.path.PathElement;
+import info.mmpa.concoction.input.model.path.SourcedPath;
+import info.mmpa.concoction.output.Detection;
+import info.mmpa.concoction.output.DetectionArchetype;
+import info.mmpa.concoction.output.Results;
+import info.mmpa.concoction.output.sink.FeedbackSink;
+import info.mmpa.concoction.scan.dynamic.CallStackFrame;
+import info.mmpa.concoction.scan.dynamic.DynamicScanException;
 import info.mmpa.concoction.util.UiUtils;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
+import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.coley.observables.ObservableInteger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static info.mmpa.concoction.util.UiUtils.icon;
 
 /**
- * @author Matt
+ * Panel for executing scans.
  */
 public class ScanPanel extends JPanel implements ConcoctionStep {
 	private static final Logger logger = LoggerFactory.getLogger(ScanPanel.class);
+	private static final ResourceBundle bundle = UiUtils.getBundle();
 	private final ConcoctionUxContext context;
 	private final JLabel lblCurrentItem = new JLabel();
 	private final JLabel lblInputs = new JLabel();
@@ -39,22 +55,30 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	private final JButton btnStop = new JButton();
 	private final JProgressBar progressBar = new JProgressBar();
 	private final JButton btnExport = new JButton();
-	private CompletableFuture<?> scanFuture = CompletableFuture.completedFuture(null);
+	// Scan state
+	private final Map<Path, DetectionPanel> pathToDetectionPanels = new HashMap<>();
+	private final ObservableInteger inputsWithMatchesOb = new ObservableInteger(0);
+	private final ObservableInteger modelsMatchedOb = new ObservableInteger(0);
+	private final Set<Path> pathsMatched = new HashSet<>();
+	private final Set<DetectionArchetype> modelsMatched = new HashSet<>();
+	private int inputCount;
+	private int modelCount;
+	private boolean isCancelled;
+	private CompletableFuture<NavigableMap<Path, Results>> scanFuture = CompletableFuture.completedFuture(null);
 
 	public ScanPanel(@Nonnull ConcoctionUxContext context) {
 		this.context = context;
 		initComponents();
+
+		inputsWithMatchesOb.addChangeListener((observable, oldCount, count) -> lblInputsMatched.setText(String.format(bundle.getString("scan.input-match"), count, inputCount)));
+		modelsMatchedOb.addChangeListener((observable, oldCount, count) -> lblModelsMatched.setText(String.format(bundle.getString("scan.model-match"), count, modelCount)));
+
+		updateInputs();
 	}
 
 	@Override
 	public void onShown() {
-		ResourceBundle bundle = UiUtils.getBundle();
-		int inputCount = 0;
-		int modelCount = 0;
-		lblInputs.setText(bundle.getString("scan.input-prefix") + " " + inputCount);
-		lblModels.setText(bundle.getString("scan.model-prefix") + " " + modelCount);
-		lblInputsMatched.setText(String.format(bundle.getString("scan.input-match"), 0, inputCount));
-		lblModelsMatched.setText(String.format(bundle.getString("scan.model-match"), 0, modelCount));
+		// no-op
 	}
 
 	@Override
@@ -66,10 +90,27 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	 * Start a new scan.
 	 */
 	private void startScan() {
+		isCancelled = false;
+
+		// Reset observables.
+		modelsMatchedOb.setValue(0);
+
+		// Get input/model lists and update counts.
 		List<Path> inputPaths = context.getInputPaths();
 		List<Path> modelPaths = context.getModelPaths();
+		inputCount = inputPaths.size();
+		modelCount = modelPaths.size();
 
+		// Reset progress bar.
+		progressBar.setValue(0);
+		progressBar.setIndeterminate(true);
+
+		// Reset input match labels.
+		updateInputs();
+
+		// Create builder and load inputs/models.
 		Concoction builder = Concoction.builder();
+		setCurrent(bundle.getString("scan.loading-inputs"));
 
 		for (Path inputPath : inputPaths) {
 			try {
@@ -86,21 +127,136 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 			}
 		}
 
-		// TODO: Alternative scan call with progress reporting
-		//  - Create future of scan
-		//  - As items are completed, add a cell to 'contents' showing a summary of what was found per-path
-		//      - Scroll to bottom unless user has scrolled up to look at something when new items are added
-		//  - Enable btnExport when complete
-		//  - Update labels & progressBar:
-		//      lblInputsMatched.setText(String.format(bundle.getString("scan.input-match"), inputsWithDetections, inputCount));
-		//      lblModelsMatched.setText(String.format(bundle.getString("scan.model-match"), uniqueModelsDetected, modelCount));
+
+		// Set progress bar maximum to number of classes to scan.
+		int totalInputClasses = builder.getInputModels().values().stream()
+				.mapToInt(a -> a.primarySource().classes().size())
+				.sum();
+		progressBar.setMaximum(totalInputClasses);
+
+		// Setup feedback listener, which will update the UI with current info.
+		builder.withFeedbackSink(new FeedbackSink() {
+			@Override
+			public boolean isCancelRequested() {
+				return isCancelled;
+			}
+
+			@Override
+			public InstructionFeedbackItemSink openClassFeedbackSink(@Nonnull ClassPathElement classPath) {
+				return new InstructionFeedbackItemSink() {
+					@Override
+					public void onPreScan(@Nonnull ClassNode classNode) {
+						setCurrent(UiUtils.filterClassName(classNode.name));
+					}
+
+					@Override
+					public void onScanError(@Nonnull Throwable t) {
+						logger.error("Encountered scan error during instruction phase", t);
+					}
+
+					@Override
+					public void onDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
+						handleDetection(path, type, detection);
+					}
+
+					@Override
+					public void onCompletion(@Nonnull Results results) {
+						int size = results.size();
+						if (size > 0) {
+							logger.info("Insn scan for '{}' complete, found {} matches", classPath.getClassName(), size);
+						} else {
+							logger.info("Insn scan for '{}' complete, no matches", classPath.getClassName());
+						}
+						progressBar.setValue(progressBar.getValue() + 1);
+					}
+				};
+			}
+
+			@Override
+			public DynamicFeedbackItemSink openDynamicFeedbackSink() {
+				progressBar.setIndeterminate(true);
+				return new DynamicFeedbackItemSink() {
+					@Override
+					public void onMethodEnter(@Nonnull List<CallStackFrame> stack, @Nonnull CallStackFrame enteredMethodFrame) {
+						setCurrent(UiUtils.filterClassName(enteredMethodFrame.getOwnerName()));
+					}
+
+					@Override
+					public void onMethodExit(@Nonnull List<CallStackFrame> stack, @Nonnull CallStackFrame exitedMethodFrame) {
+						// no-op
+					}
+
+					@Override
+					public void onDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
+						handleDetection(path, type, detection);
+					}
+
+					@Override
+					public void onCompletion(@Nonnull Results results) {
+						logger.info("Dynamic scan for complete, found {} results", results.size());
+					}
+				};
+			}
+
+			private void handleDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
+				// Update the number of unique models matched.
+				if (modelsMatched.add(type))
+					modelsMatchedOb.setValue(modelsMatched.size());
+
+				// Update the number of unique input files matched.
+				Path associatedInput = null;
+				if (path instanceof SourcedPath) {
+					SourcedPath sourcedPath = (SourcedPath) path;
+					ModelSource source = sourcedPath.getSource();
+					if (source instanceof PathModelSource) {
+						PathModelSource pathModelSource = (PathModelSource) source;
+						associatedInput = pathModelSource.getSourcePath();
+						if (pathsMatched.add(associatedInput))
+							inputsWithMatchesOb.setValue(pathsMatched.size());
+					}
+				}
+
+				// Create or update display in contents scroll view indicating the file has been matched.
+				if (associatedInput != null) {
+					DetectionPanel panel = pathToDetectionPanels.get(associatedInput);
+					if (panel == null) {
+						panel = new DetectionPanel(associatedInput);
+						pathToDetectionPanels.put(associatedInput, panel);
+						contents.add(panel);
+					}
+					panel.updateWithDetection(path, type, detection);
+				}
+			}
+		});
+
+		btnStop.setEnabled(true);
+		scanFuture = CompletableFuture.supplyAsync(() -> {
+			try {
+				progressBar.setIndeterminate(false);
+				return builder.scan();
+			} catch (DynamicScanException ex) {
+				throw new CompletionException(ex);
+			}
+		});
+		scanFuture.whenComplete((results, error) -> {
+			btnExport.setEnabled(results != null);
+			onScanComplete();
+		});
+	}
+
+	private void onScanComplete() {
+		btnStop.setEnabled(false);
+		progressBar.setIndeterminate(false);
+		progressBar.setValue(progressBar.getMaximum());
 	}
 
 	/**
 	 * Stop the current scan.
 	 */
 	private void stopScan() {
-		scanFuture.cancel(true);
+		btnStop.setEnabled(false);
+		isCancelled = true;
+		scanFuture.cancel(false);
 	}
 
 	/**
@@ -116,7 +272,6 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	 * @return {@code true} when user is OK to leave the page.
 	 */
 	private boolean confirmLeave() {
-		ResourceBundle bundle = UiUtils.getBundle();
 		int result = JOptionPane.showConfirmDialog(context.getFrame(),
 				bundle.getString("scan.stop.warn-message"),
 				bundle.getString("scan.stop.warn-title"),
@@ -125,9 +280,25 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		return result == JOptionPane.YES_OPTION;
 	}
 
-	private void initComponents() {
-		ResourceBundle bundle = UiUtils.getBundle();
+	/**
+	 * Update input statistic labels.
+	 */
+	private void updateInputs() {
+		lblInputs.setText(bundle.getString("scan.input-prefix") + " " + inputCount);
+		lblModels.setText(bundle.getString("scan.model-prefix") + " " + modelCount);
+		lblInputsMatched.setText(String.format(bundle.getString("scan.input-match"), 0, inputCount));
+		lblModelsMatched.setText(String.format(bundle.getString("scan.model-match"), 0, modelCount));
+	}
 
+	/**
+	 * @param text
+	 * 		Text of center 'status' label to set.
+	 */
+	private void setCurrent(@Nullable String text) {
+		lblCurrentItem.setText(text);
+	}
+
+	private void initComponents() {
 		// Base layout
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new FormLayout(
@@ -151,8 +322,12 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		btnStop.setText(bundle.getString("scan.stop"));
 		btnScan.setIcon(icon(CarbonIcons.PLAY_FILLED));
 		btnStop.setIcon(icon(CarbonIcons.STOP_FILLED));
-		btnScan.addActionListener(e -> startScan());
+		btnScan.addActionListener(e -> CompletableFuture.runAsync(this::startScan));
 		btnStop.addActionListener(e -> stopScan());
+		btnStop.setEnabled(false);
+
+		// Progress bar
+		progressBar.setStringPainted(true);
 
 		// Exporting the results
 		btnExport.addActionListener(e -> {

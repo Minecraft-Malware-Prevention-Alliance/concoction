@@ -19,6 +19,7 @@ project.ext {
 
     // Misc utils
     collections = 'software.coley:extra-collections:1.2.3'
+    observables = 'software.coley:extra-observables:1.2.2'
     io = 'commons-io:commons-io:2.13.0'
     jackson = "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     deencapsulation = 'com.github.xxDark:deencapsulation:462873c7b3'
