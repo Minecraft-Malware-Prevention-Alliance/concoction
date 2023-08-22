@@ -1,0 +1,13 @@
+{
+  "archetype": {
+    "level": "MAXIMUM",
+    "identifier": "runtime-exec",
+    "description": "Runtime.getRuntime().exec(...) can be used to run applications on the system"
+  },
+  "code-behaviors": {
+    "println": {
+      "location": { "class": "EQUALS java/io/PrintStream", "mname": "STARTS_WITH print" },
+      "condition": { "index": 1, "match": "CONTAINS Hello World" }
+    }
+  }
+}

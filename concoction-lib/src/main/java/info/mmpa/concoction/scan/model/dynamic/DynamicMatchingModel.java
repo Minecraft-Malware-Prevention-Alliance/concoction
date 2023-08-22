@@ -6,7 +6,7 @@ import info.mmpa.concoction.input.model.path.MethodPathElement;
 import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
-import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.output.sink.ResultsSink;
 import info.mmpa.concoction.scan.dynamic.CallStackFrame;
 import info.mmpa.concoction.scan.model.dynamic.entry.DynamicMatchEntry;
 
@@ -37,20 +37,16 @@ public class DynamicMatchingModel {
 	 * 		Sink to feed match results into.
 	 * @param archetype
 	 * 		Information about what the signature being matched.
-	 * @param sourcePath
+	 * @param path
 	 * 		Current method path to the containing input source. SSVM holds the rest of the details.
 	 * @param frame
 	 * 		SSVM frame of method entered.
 	 */
 	public void matchOnEnter(@Nonnull ResultsSink sink, @Nonnull DetectionArchetype archetype,
-							 @Nonnull SourcePathElement sourcePath, @Nonnull CallStackFrame frame) {
+							 @Nonnull MethodPathElement path, @Nonnull CallStackFrame frame) {
 		for (DynamicMatchEntry entry : variants.values())
-			if (entry.matchOnEnter(frame)) {
-				MethodPathElement path = sourcePath
-						.child(frame.getOwnerName())
-						.child(frame.getMethodName(), frame.getMethodDesc());
-				sink.add(path, archetype, new Detection(archetype, path));
-			}
+			if (entry.matchOnEnter(frame))
+				sink.onDetection(path, archetype, new Detection(archetype, path));
 	}
 
 	/**
@@ -58,20 +54,16 @@ public class DynamicMatchingModel {
 	 * 		Sink to feed match results into.
 	 * @param archetype
 	 * 		Information about what the signature being matched.
-	 * @param sourcePath
+	 * @param path
 	 * 		Current method path to the containing input source. SSVM holds the rest of the details.
 	 * @param frame
 	 * 		SSVM frame of method exited.
 	 */
 	public void matchOnExit(@Nonnull ResultsSink sink, @Nonnull DetectionArchetype archetype,
-							@Nonnull SourcePathElement sourcePath, @Nonnull CallStackFrame frame) {
+							@Nonnull MethodPathElement path, @Nonnull CallStackFrame frame) {
 		for (DynamicMatchEntry entry : variants.values())
-			if (entry.matchOnExit(frame)) {
-				MethodPathElement path = sourcePath
-						.child(frame.getOwnerName())
-						.child(frame.getMethodName(), frame.getMethodDesc());
-				sink.add(path, archetype, new Detection(archetype, path));
-			}
+			if (entry.matchOnExit(frame))
+				sink.onDetection(path, archetype, new Detection(archetype, path));
 	}
 
 	/**

@@ -2,14 +2,17 @@ package info.mmpa.concoction.scan.dynamic;
 
 import dev.xdark.ssvm.execution.VMException;
 import info.mmpa.concoction.input.model.ApplicationModel;
-import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.output.Results;
-import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.output.sink.BasicResultsSink;
+import info.mmpa.concoction.output.sink.FeedbackSink;
+import info.mmpa.concoction.output.sink.NoopFeedbackSink;
+import info.mmpa.concoction.output.sink.ResultsSink;
 import info.mmpa.concoction.scan.model.ScanModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class DynamicScanner {
 	private final EntryPointDiscovery entryPointDiscovery;
 	private final CoverageEntryPointSupplier coverageEntryPointSupplier;
 	private final Collection<ScanModel> scanModels;
+	private final FeedbackSink feedbackSink;
 
 	/**
 	 * @param entryPointDiscovery
@@ -33,9 +37,27 @@ public class DynamicScanner {
 	public DynamicScanner(@Nonnull EntryPointDiscovery entryPointDiscovery,
 						  @Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier,
 						  @Nonnull Collection<ScanModel> scanModels) {
+		this(entryPointDiscovery, coverageEntryPointSupplier, scanModels, null);
+	}
+
+	/**
+	 * @param entryPointDiscovery
+	 * 		Supplier of initial entry points for known cases.
+	 * @param coverageEntryPointSupplier
+	 * 		Supplier to fill in additional entry points to maximize scanned code coverage.
+	 * @param scanModels
+	 * 		List of detection models to scan for.
+	 * @param feedbackSink
+	 * 		Optional sink for completion status / feedback.
+	 */
+	public DynamicScanner(@Nonnull EntryPointDiscovery entryPointDiscovery,
+						  @Nonnull CoverageEntryPointSupplier coverageEntryPointSupplier,
+						  @Nonnull Collection<ScanModel> scanModels,
+						  @Nullable FeedbackSink feedbackSink) {
 		this.entryPointDiscovery = entryPointDiscovery;
 		this.coverageEntryPointSupplier = coverageEntryPointSupplier;
 		this.scanModels = scanModels;
+		this.feedbackSink = feedbackSink == null ? new NoopFeedbackSink() : feedbackSink;
 	}
 
 	/**
@@ -50,8 +72,8 @@ public class DynamicScanner {
 	@Nonnull
 	@SuppressWarnings("UnnecessaryLocalVariable")
 	public Results accept(@Nonnull ApplicationModel model) throws DynamicScanException {
-		ResultsSink sink = new ResultsSink();
-		SsvmContext context = new SsvmContext(model, sink, new SourcePathElement(model.primarySource()), scanModels);
+		ResultsSink sink = new BasicResultsSink();
+		SsvmContext context = new SsvmContext(model, sink, model.primarySource().path(), scanModels, feedbackSink);
 
 		// Visit initial entry points
 		List<EntryPoint> initialEntryPoints = entryPointDiscovery.createEntryPoints(model, context);
@@ -75,7 +97,9 @@ public class DynamicScanner {
 		}
 
 		// Build results from what we found
-		return sink.buildResults();
+		Results results = sink.buildResults();
+		context.onScanComplete(results);
+		return results;
 	}
 
 	private void handle(@Nonnull EntryPoint entryPoint, @Nonnull ThrowingHandler handler) throws DynamicScanException {

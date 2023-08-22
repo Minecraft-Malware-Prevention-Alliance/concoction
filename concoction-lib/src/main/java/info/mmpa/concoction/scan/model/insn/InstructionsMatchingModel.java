@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import info.mmpa.concoction.input.model.path.MethodPathElement;
 import info.mmpa.concoction.output.Detection;
 import info.mmpa.concoction.output.DetectionArchetype;
-import info.mmpa.concoction.output.ResultsSink;
+import info.mmpa.concoction.output.sink.ResultsSink;
 import info.mmpa.concoction.scan.model.insn.entry.*;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -95,7 +95,7 @@ public class InstructionsMatchingModel {
 					// Check if the match is complete.
 					if (matchIndex >= matchTargetLength) {
 						// Report the detection
-						sink.add(path, archetype, new Detection(archetype, path));
+						sink.onDetection(path, archetype, new Detection(archetype, path));
 
 						// Match found, jump back to where the match began plus one index
 						// and reset the matcher index. This allows items matched by 'i > 0' to
