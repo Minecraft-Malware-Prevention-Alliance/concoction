@@ -62,7 +62,7 @@ public class BasicModelSource implements ModelSource {
 		if (this == o) return true;
 		if (!(o instanceof ModelSource)) return false;
 
-		BasicModelSource that = (BasicModelSource) o;
+		ModelSource that = (ModelSource) o;
 
 		if (!identifier.equals(that.identifier())) return false;
 		if (!mapEquals(classes, that.classes())) return false;

@@ -1,6 +1,8 @@
 package info.mmpa.concoction.scan.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.scan.model.dynamic.DynamicMatchingModel;
@@ -19,7 +21,9 @@ public class ScanModel {
 	@JsonProperty("archetype")
 	private final DetectionArchetype detectionArchetype;
 	@JsonProperty("code-patterns")
+	@JsonSetter(nulls = Nulls.AS_EMPTY)
 	private final InstructionsMatchingModel instructionsMatchingModel;
+	@JsonSetter(nulls = Nulls.AS_EMPTY)
 	@JsonProperty("code-behaviors")
 	private final DynamicMatchingModel dynamicMatchingModel;
 
@@ -32,8 +36,8 @@ public class ScanModel {
 	 * 		Dynamic/runtime based signatures.
 	 */
 	public ScanModel(@JsonProperty("archetype") @Nonnull DetectionArchetype detectionArchetype,
-					 @JsonProperty("code-patterns") @Nonnull InstructionsMatchingModel instructionsMatchingModel,
-					 @JsonProperty("code-behaviors") @Nonnull DynamicMatchingModel dynamicMatchingModel) {
+					 @JsonProperty("code-patterns") @JsonSetter(nulls = Nulls.AS_EMPTY) @Nonnull InstructionsMatchingModel instructionsMatchingModel,
+					 @JsonProperty("code-behaviors") @JsonSetter(nulls = Nulls.AS_EMPTY) @Nonnull DynamicMatchingModel dynamicMatchingModel) {
 		this.detectionArchetype = detectionArchetype;
 		this.instructionsMatchingModel = instructionsMatchingModel;
 		this.dynamicMatchingModel = dynamicMatchingModel;
