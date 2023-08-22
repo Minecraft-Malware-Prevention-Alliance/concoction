@@ -25,6 +25,10 @@ public class UiUtils {
 	private static final DecimalFormat SIZE_FORMAT = new DecimalFormat("#,##0.#");
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("strings");
 	private static final int MAX_CLASS_LEN = 80;
+	/**
+	 * Debug flag. Primarily used to enable extra logging.
+	 */
+	public static boolean debug;
 
 	/**
 	 * @return Resource bundle for text translations.

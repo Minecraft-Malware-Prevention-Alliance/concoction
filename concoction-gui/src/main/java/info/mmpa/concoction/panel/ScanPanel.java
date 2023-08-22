@@ -162,10 +162,12 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 					@Override
 					public void onCompletion(@Nonnull Results results) {
 						int size = results.size();
-						if (size > 0) {
-							logger.info("Insn scan for '{}' complete, found {} matches", classPath.getClassName(), size);
-						} else {
-							logger.info("Insn scan for '{}' complete, no matches", classPath.getClassName());
+						if (UiUtils.debug) {
+							if (size > 0) {
+								logger.info("Insn scan for '{}' complete, found {} matches", classPath.getClassName(), size);
+							} else {
+								logger.info("Insn scan for '{}' complete, no matches", classPath.getClassName());
+							}
 						}
 						progressBar.setValue(progressBar.getValue() + 1);
 					}
@@ -193,11 +195,23 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 
 					@Override
 					public void onCompletion(@Nonnull Results results) {
-						logger.info("Dynamic scan for complete, found {} results", results.size());
+						if (UiUtils.debug) {
+							logger.info("Dynamic scan for complete, found {} results", results.size());
+						}
 					}
 				};
 			}
 
+			/**
+			 * Updates the UI when detections are made.
+			 *
+			 * @param path
+			 * 		Path to detection's source.
+			 * @param type
+			 * 		Detection kind.
+			 * @param detection
+			 * 		Detection instance.
+			 */
 			private void handleDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
 				// Update the number of unique models matched.
 				if (modelsMatched.add(type))
@@ -244,6 +258,9 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		});
 	}
 
+	/**
+	 * Called when the scan ends.
+	 */
 	private void onScanComplete() {
 		btnStop.setEnabled(false);
 		progressBar.setIndeterminate(false);
