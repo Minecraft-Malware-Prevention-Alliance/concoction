@@ -4,7 +4,10 @@ import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.input.model.ModelSource;
 import info.mmpa.concoction.input.model.path.ClassPathElement;
 import info.mmpa.concoction.input.model.path.MethodPathElement;
+import info.mmpa.concoction.input.model.path.PathElement;
 import info.mmpa.concoction.input.model.path.SourcePathElement;
+import info.mmpa.concoction.output.Detection;
+import info.mmpa.concoction.output.DetectionArchetype;
 import info.mmpa.concoction.output.Results;
 import info.mmpa.concoction.output.sink.*;
 import info.mmpa.concoction.scan.model.ScanModel;
@@ -95,7 +98,13 @@ public class InstructionScanner {
 
 		// If we have a feedback listener, split off the results so things found within the class
 		// can be collected into a unique results map, while also being added to the aggregate.
-		ResultsSink sink = (classFeedbackSink == null) ? aggregateSink : new SplittingResultSink(aggregateSink);
+		ResultsSink sink = (classFeedbackSink == null) ? aggregateSink : new SplittingResultSink(aggregateSink) {
+			@Override
+			public void onDetection(@Nonnull PathElement path, @Nonnull DetectionArchetype type, @Nonnull Detection detection) {
+				super.onDetection(path, type, detection);
+				classFeedbackSink.onDetection(path, type, detection);
+			}
+		};
 
 		// TODO #4: Class structure matchers, then refactor this class name to 'StaticScanner'
 

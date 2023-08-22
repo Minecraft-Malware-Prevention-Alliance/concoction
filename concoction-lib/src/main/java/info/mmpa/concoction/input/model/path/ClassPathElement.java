@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * A path to a class within a {@link ModelSource}.
  */
-public class ClassPathElement extends AbstractPathElement {
+public class ClassPathElement extends AbstractPathElement implements SourcedPath {
 	private final Map<String, MethodPathElement> children = new HashMap<>();
 	private final SourcePathElement parent;
 	private final String className;
@@ -59,10 +59,8 @@ public class ClassPathElement extends AbstractPathElement {
 		return className;
 	}
 
-	/**
-	 * @return Model source path element value.
-	 */
 	@Nonnull
+	@Override
 	public ModelSource getSource() {
 		return parent.getSource();
 	}
