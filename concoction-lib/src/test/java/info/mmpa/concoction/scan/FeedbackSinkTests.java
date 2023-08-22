@@ -108,7 +108,7 @@ public class FeedbackSinkTests {
 			assertTrue(visitedMethods.contains("example/HelloWorld.print(Ljava/lang/String;)V"));
 			assertTrue(visitedMethods.contains("java/io/PrintStream.println(Ljava/lang/String;)V"));
 			assertNotNull(results);
-			assertEquals(1, results.size());
+			assertTrue(results.size() >= 1); // Different JVM's may delegate calls differently, resulting in 1 or 2 results
 		} catch (IOException | DynamicScanException ex) {
 			fail(ex);
 		}
