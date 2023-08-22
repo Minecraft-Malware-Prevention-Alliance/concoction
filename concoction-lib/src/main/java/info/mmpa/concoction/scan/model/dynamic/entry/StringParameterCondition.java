@@ -101,7 +101,7 @@ public class StringParameterCondition implements Condition {
 					break;
 				case KNOWN_STRING_TYPES:
 					JavaClass valueType = vm.getMemoryManager().readClass(value);
-					if (valueType.isAssignableFrom(vm.getCharSequence()))
+					if (vm.getCharSequence().isAssignableFrom(valueType))
 						matchTarget = vm.getOperations().toString(value);
 					break;
 			}
