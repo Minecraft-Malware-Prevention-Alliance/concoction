@@ -71,25 +71,34 @@ public class Concoction {
 	/**
 	 * @param inputPathPredicate
 	 * 		Path checker for files to be loaded as inputs. Should match ZIP/JAR files.
+	 *
+	 * @return Self.
 	 */
-	public void setInputPathPredicate(@Nonnull Predicate<Path> inputPathPredicate) {
+	public Concoction withInputPathPredicate(@Nonnull Predicate<Path> inputPathPredicate) {
 		this.inputPathPredicate = inputPathPredicate;
+		return this;
 	}
 
 	/**
 	 * @param modelPathPredicate
 	 * 		Path checker for files to be loaded as {@link ScanModel}. Should match JSON files.
+	 *
+	 * @return Self.
 	 */
-	public void setModelPathPredicate(@Nonnull Predicate<Path> modelPathPredicate) {
+	public Concoction withModelPathPredicate(@Nonnull Predicate<Path> modelPathPredicate) {
 		this.modelPathPredicate = modelPathPredicate;
+		return this;
 	}
 
 	/**
 	 * @param feedbackSink
 	 * 		Feedback sink to receive updated on scan process, and signal when a scan should be aborted.
+	 *
+	 * @return Self.
 	 */
-	public void setFeedbackSink(@Nonnull FeedbackSink feedbackSink) {
+	public Concoction withFeedbackSink(@Nonnull FeedbackSink feedbackSink) {
 		this.feedbackSink = feedbackSink;
+		return this;
 	}
 
 	/**
@@ -396,7 +405,7 @@ public class Concoction {
 		List<ScanModel> dynamicModels = dynamicScanning ? scanModels.values().stream()
 				.filter(ScanModel::hasDynamicModel)
 				.collect(Collectors.toList()) : Collections.emptyList();
-		if (!insnModels.isEmpty()) {
+		if (!dynamicModels.isEmpty()) {
 			DynamicScanner scan = new DynamicScanner(entryPointDiscovery, coverageEntryPointSupplier,
 					dynamicModels, feedbackSink);
 			for (Map.Entry<Path, ApplicationModel> entry : inputModels.entrySet()) {
