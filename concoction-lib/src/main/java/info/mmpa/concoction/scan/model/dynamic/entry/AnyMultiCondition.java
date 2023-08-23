@@ -21,6 +21,9 @@ public class AnyMultiCondition extends MultiCondition {
 
 	@Override
 	public boolean match(@Nonnull CallStackFrame frame) {
-		return getConditions().stream().anyMatch(e -> e.match(frame));
+		for (Condition condition : getConditions())
+			if (condition.match(frame))
+				return true;
+		return false;
 	}
 }
