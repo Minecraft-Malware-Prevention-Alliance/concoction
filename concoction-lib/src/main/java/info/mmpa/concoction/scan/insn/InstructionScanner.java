@@ -15,6 +15,7 @@ import info.mmpa.concoction.scan.model.insn.InstructionsMatchingModel;
 import info.mmpa.concoction.util.AsmUtil;
 import info.mmpa.concoction.util.ScanCancelException;
 import info.mmpa.concoction.util.Unchecked;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
@@ -70,7 +71,8 @@ public class InstructionScanner {
 			ClassPathElement classPath = sourcePath.child(className);
 			FeedbackSink.InstructionFeedbackItemSink classFeedbackSink = feedbackSink.openClassFeedbackSink(classPath);
 			try {
-				ClassNode classNode = AsmUtil.node(classEntry.getValue());
+				// We can skip debug since instructions won't be referencing any of that data.
+				ClassNode classNode = AsmUtil.node(classEntry.getValue(), ClassReader.SKIP_DEBUG);
 				scanClass(sink, classPath, classNode, classFeedbackSink);
 			} catch (ScanCancelException cancel) {
 				// Stop and yield current results.
