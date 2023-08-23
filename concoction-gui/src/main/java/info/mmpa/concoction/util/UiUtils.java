@@ -25,6 +25,8 @@ public class UiUtils {
 	private static final DecimalFormat SIZE_FORMAT = new DecimalFormat("#,##0.#");
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("strings");
 	private static final int MAX_CLASS_LEN = 80;
+	private static final int DEFAULT_ICON_SIZE = 20;
+
 	/**
 	 * Debug flag. Primarily used to enable extra logging.
 	 */
@@ -90,8 +92,50 @@ public class UiUtils {
 	 *
 	 * @return Swing icon of item.
 	 */
-	public static Icon icon(Ikon icon) {
-		return FontIcon.of(icon, 24, Color.LIGHT_GRAY);
+	@Nonnull
+	public static Icon icon(@Nonnull Ikon icon) {
+		return FontIcon.of(icon, DEFAULT_ICON_SIZE, Color.LIGHT_GRAY);
+	}
+
+	/**
+	 * @param icon
+	 * 		Icon graphic.
+	 * @param color
+	 * 		Icon color.
+	 *
+	 * @return Swing icon of item.
+	 */
+	@Nonnull
+	public static Icon icon(@Nonnull Ikon icon, @Nonnull Color color) {
+		return FontIcon.of(icon, DEFAULT_ICON_SIZE, color);
+	}
+
+	/**
+	 * @param icon
+	 * 		Icon graphic.
+	 * @param size
+	 * 		Icon size.
+	 *
+	 * @return Swing icon of item.
+	 */
+	@Nonnull
+	public static Icon icon(@Nonnull Ikon icon, int size) {
+		return FontIcon.of(icon, size, Color.LIGHT_GRAY);
+	}
+
+	/**
+	 * @param icon
+	 * 		Icon graphic.
+	 * @param size
+	 * 		Icon size.
+	 * @param color
+	 * 		Icon color.
+	 *
+	 * @return Swing icon of item.
+	 */
+	@Nonnull
+	public static Icon icon(@Nonnull Ikon icon, int size, @Nonnull Color color) {
+		return FontIcon.of(icon, size, color);
 	}
 
 	/**

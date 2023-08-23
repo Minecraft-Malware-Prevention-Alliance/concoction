@@ -18,6 +18,7 @@ import info.mmpa.concoction.output.sink.FeedbackSink;
 import info.mmpa.concoction.scan.dynamic.CallStackFrame;
 import info.mmpa.concoction.scan.dynamic.DynamicScanException;
 import info.mmpa.concoction.util.UiUtils;
+import info.mmpa.concoction.util.VerticalFlowLayout;
 import org.kordamp.ikonli.carbonicons.CarbonIcons;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	private final ObservableInteger inputsWithMatchesOb = new ObservableInteger(0);
 	private final ObservableInteger modelsMatchedOb = new ObservableInteger(0);
 	private final Set<Path> pathsMatched = new HashSet<>();
-	private final Set<DetectionArchetype> modelsMatched = new HashSet<>();
+	private final Set<DetectionArchetype> modelsMatched = Collections.newSetFromMap(new IdentityHashMap<>());
 	private int inputCount;
 	private int modelCount;
 	private boolean isCancelled;
@@ -91,19 +92,32 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	 */
 	private void startScan() {
 		isCancelled = false;
+		btnScan.setEnabled(false);
+		progressBar.setValue(0);
 
-		// Reset observables.
+		// Clear old results.
+		for (Component component : contents.getComponents()) {
+			if (component instanceof DetectionPanel) {
+				DetectionPanel detectionPanel = (DetectionPanel) component;
+				detectionPanel.onClear();
+			}
+		}
+		contents.removeAll();
+		contents.repaint();
+
+		// Reset observables and data tracking.
 		modelsMatchedOb.setValue(0);
+		inputsWithMatchesOb.setValue(0);
+		modelsMatchedOb.setValue(0);
+		pathToDetectionPanels.clear();
+		pathsMatched.clear();
+		modelsMatched.clear();
 
 		// Get input/model lists and update counts.
 		List<Path> inputPaths = context.getInputPaths();
 		List<Path> modelPaths = context.getModelPaths();
 		inputCount = inputPaths.size();
 		modelCount = modelPaths.size();
-
-		// Reset progress bar.
-		progressBar.setValue(0);
-		progressBar.setIndeterminate(true);
 
 		// Reset input match labels.
 		updateInputs();
@@ -112,19 +126,25 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		Concoction builder = Concoction.builder();
 		setCurrent(bundle.getString("scan.loading-inputs"));
 
+		progressBar.setMaximum(inputCount);
 		for (Path inputPath : inputPaths) {
 			try {
 				builder.addInput(ArchiveLoadContext.RANDOM_ACCESS_JAR, inputPath);
 			} catch (IOException ex) {
 				logger.error("Failed loading input from '{}' - Skipped", inputPath.getFileName(), ex);
 			}
+			progressBar.setValue(progressBar.getValue() + 1);
 		}
+
+		progressBar.setValue(0);
+		progressBar.setMaximum(modelCount);
 		for (Path modelPath : modelPaths) {
 			try {
 				builder.addScanModel(modelPath);
 			} catch (IOException ex) {
 				logger.error("Failed loading model from '{}' - Skipped", modelPath.getFileName(), ex);
 			}
+			progressBar.setValue(progressBar.getValue() + 1);
 		}
 
 
@@ -132,6 +152,7 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		int totalInputClasses = builder.getInputModels().values().stream()
 				.mapToInt(a -> a.primarySource().classes().size())
 				.sum();
+		progressBar.setValue(0);
 		progressBar.setMaximum(totalInputClasses);
 
 		// Setup feedback listener, which will update the UI with current info.
@@ -234,11 +255,11 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 				if (associatedInput != null) {
 					DetectionPanel panel = pathToDetectionPanels.get(associatedInput);
 					if (panel == null) {
-						panel = new DetectionPanel(associatedInput);
+						panel = new DetectionPanel(associatedInput, false);
 						pathToDetectionPanels.put(associatedInput, panel);
 						contents.add(panel);
 					}
-					panel.updateWithDetection(path, type, detection);
+					panel.addDetectionOfType(type);
 				}
 			}
 		});
@@ -252,25 +273,34 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 				throw new CompletionException(ex);
 			}
 		});
-		scanFuture.whenComplete((results, error) -> {
-			btnExport.setEnabled(results != null);
-			onScanComplete();
-		});
+		scanFuture.whenComplete(this::onScanComplete);
 	}
 
 	/**
 	 * Called when the scan ends.
+	 *
+	 * @param results
+	 * 		Results of scan was successful.
+	 * @param error
+	 * 		Error if scan failed.
 	 */
-	private void onScanComplete() {
+	private void onScanComplete(@Nullable NavigableMap<Path, Results> results, @Nullable Throwable error) {
+		btnExport.setEnabled(results != null);
+		btnScan.setEnabled(true);
 		btnStop.setEnabled(false);
 		progressBar.setIndeterminate(false);
 		progressBar.setValue(progressBar.getMaximum());
+		if (error != null)
+			logger.error("Scan encountered error", error);
+		else if (results != null)
+			logger.info("Scan completed, {}/{} matched", results.size(), inputCount);
 	}
 
 	/**
 	 * Stop the current scan.
 	 */
 	private void stopScan() {
+		btnScan.setEnabled(true);
 		btnStop.setEnabled(false);
 		isCancelled = true;
 		scanFuture.cancel(false);
@@ -328,11 +358,15 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		lblTitle.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
+		// Current item
+		lblCurrentItem.setMinimumSize(new Dimension(0, 12));
+
 		// Will contain visual output
-		JScrollPane scrollWrapper = new JScrollPane();
-		scrollWrapper.setViewportView(contents);
+		JScrollPane scrollWrapper = new JScrollPane(contents);
+		VerticalFlowLayout contentLayout = new VerticalFlowLayout(VerticalFlowLayout.TOP);
+		contents.setBorder(new EmptyBorder(15, 15, 15, 15));
 		contents.setBackground(new Color(0x333333));
-		contents.setLayout(new BoxLayout(contents, BoxLayout.Y_AXIS));
+		contents.setLayout(contentLayout);
 
 		// Scan buttons
 		btnScan.setText(bundle.getString("scan.run"));
@@ -384,15 +418,12 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 
 		add(scrollWrapper, CC.xywh(1, 5, 5, 1));
 
-		add(progressBar, CC.xy(3, 7));
-
 		JPanel scanActions = new JPanel();
 		scanActions.setLayout(new FormLayout(
 				"default, $lcgap, default",
 				"default"));
 		scanActions.add(btnScan, CC.xy(1, 1));
 		scanActions.add(btnStop, CC.xy(3, 1));
-		add(scanActions, CC.xy(1, 7));
 
 		JPanel inputActions = new JPanel();
 		inputActions.setLayout(new FormLayout(
@@ -400,6 +431,19 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 				"default"));
 		inputActions.add(btnPrevious, CC.xy(1, 1));
 		inputActions.add(btnExport, CC.xy(3, 1));
-		add(inputActions, CC.xy(5, 7));
+
+		// Wrap bottom bar to align buttons with the layout
+		// used in 'TableModelPanel'
+		JPanel actionsWrapper = new JPanel();
+		actionsWrapper.setBorder(new EmptyBorder(5, 5, 5, 5));
+		actionsWrapper.setLayout(new FormLayout(
+				"left:default, $lcgap, default:grow:fill, $lcgap, right:default",
+				"default"));
+
+		actionsWrapper.add(scanActions, CC.xy(1, 1));
+		actionsWrapper.add(progressBar, CC.xy(3, 1));
+		actionsWrapper.add(inputActions, CC.xy(5, 1));
+
+		add(actionsWrapper, CC.xywh(1, 7, 5, 1));
 	}
 }
