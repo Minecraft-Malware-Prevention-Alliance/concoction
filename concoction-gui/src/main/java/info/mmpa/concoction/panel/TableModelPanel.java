@@ -72,7 +72,7 @@ public abstract class TableModelPanel<T> extends JPanel implements ConcoctionSte
 
 		// Table for visualizing inputs
 		String[] columnNames = getTableColumnNames();
-		AbstractTableAdapter<T> tableAdapter = new AbstractTableAdapter<>(model, columnNames) {
+		AbstractTableAdapter<T> tableAdapter = new AbstractTableAdapter<T>(model, columnNames) {
 			@Override
 			public Object getValueAt(int rowIndex, int columnIndex) {
 				T element = model.get(rowIndex);

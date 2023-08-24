@@ -1,21 +1,95 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'https://jitpack.io' }
     }
 
     dependencies {
-        classpath 'com.github.RaphiMC.JavaDowngrader:core:13e29798a8'
+        // Some funky problems with gradle classpath management prevent us from compiling against the normal ASM dependency.
+        // So we use their old '-all' shaded version since that is technically a different artifact to get access
+        // to the ASM classes we need for patching.
+        // 
+        // When gradle is used at runtime, we use the appropriate dependency as specified in 'settings.gradle' which is
+        // an up-to-date version of ASM.
+        //
+        // I know, gradle is dumb.
+        classpath 'org.ow2.asm:asm-all:5.2'
     }
 }
 
+import org.objectweb.asm.*
+import org.objectweb.asm.tree.*
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.util.Collections
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
 
 tasks.register('patchOutput') {
     doLast {
-        // TODO: The UI currently uses Ikonli, which is compiled against Java 11
-        //  Nothing it does needs Java 11 so we'll downsample it after building.
-        //  This will let Java 8 users run the app as well.
-        //   - Also there's a bug in IntelliJ where classpath items are not recognized.
-        //     So stuff will *look* like it errors out, but at runtime its fine.
+        try {
+            // We're gonna take the '-all' file and fix classes in it to be 8 compliant, and save the updated file as '-shaded'.
+            // The '-all' file will be deleted when we're done.
+            File file = new File(projectDir.getPath() + '/build/libs/concoction-gui-' + project.version + '-all.jar');
+            File fileOut = new File(projectDir.getPath() + '/build/libs/concoction-gui-' + project.version + '-shaded.jar');
+            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(fileOut)));
+            ZipFile zipFile = new ZipFile(file);
+            for (ZipEntry entry : Collections.list(zipFile.entries())) {
+                // Skip dirs, we don't need them
+                if (entry.isDirectory()) continue;
+
+                // Copy entry, downgrading Java 9+ classes when found.
+                String zipEntryName = entry.getName();
+                zos.putNextEntry(new ZipEntry(zipEntryName));
+                byte[] zipEntryBytes = zipFile.getInputStream(entry).readAllBytes();
+                if (zipEntryName.endsWith('.class') && zipEntryBytes.length > 22) {
+                    // Check if version is beyond Java 8
+                    byte version = zipEntryBytes[7];
+                    if (version > Opcodes.V1_8) {
+                        // This class uses modules for some goofy reason, even though there's no reason to.
+                        // We'll rewrite the method that does this so its compliant with Java 8.
+                        if (zipEntryName.contains('AbstractIkonResolver')) {
+                            // Read class, patch bytes
+                            ClassNode node = new ClassNode();
+                            ClassReader reader = new ClassReader(zipEntryBytes);
+                            reader.accept(node, ClassReader.SKIP_DEBUG);
+
+                            // Lets rewrite this for Java 8
+                            MethodNode resolveServiceLoader = node.methods.stream()
+                                    .filter(m -> m.name.equals('resolveServiceLoader'))
+                                    .findFirst().get();
+                            InsnList i = resolveServiceLoader.instructions;
+                            i.clear();
+                            i.add(new LdcInsnNode(Type.getObjectType('org/kordamp/ikonli/IkonHandler')));
+                            i.add(new InsnNode(Opcodes.DUP));
+                            i.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, 'java/lang/Class', 'getClassLoader', '()Ljava/lang/ClassLoader;', false));
+                            i.add(new MethodInsnNode(Opcodes.INVOKESTATIC, 'java/util/ServiceLoader', 'load', '(Ljava/lang/Class;Ljava/lang/ClassLoader;)Ljava/util/ServiceLoader;', false));
+                            i.add(new InsnNode(Opcodes.ARETURN));
+
+                            // Write back patched bytes
+                            ClassWriter writer = new ClassWriter(0);
+                            node.accept(writer);
+                            zipEntryBytes = writer.toByteArray();
+                        }
+                        
+                        // Simple version swap will suffice
+                        zipEntryBytes[7] = Opcodes.V1_8;
+                    }
+                    zos.write(zipEntryBytes);
+                } else {
+                    // Not a class, write as-is.
+                    zos.write(zipEntryBytes);
+                }
+                zos.closeEntry();
+            }
+            zos.close();
+            zipFile.close();
+            
+            // Original shaded jar no longer needed.
+            file.delete();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
