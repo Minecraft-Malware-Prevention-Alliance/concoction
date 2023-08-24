@@ -19,13 +19,24 @@ project.ext {
 
     // Misc utils
     collections = 'software.coley:extra-collections:1.2.3'
+    observables = 'software.coley:extra-observables:1.2.2'
     io = 'commons-io:commons-io:2.13.0'
     jackson = "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     deencapsulation = 'com.github.xxDark:deencapsulation:462873c7b3'
-
     slf4jLogging = 'org.slf4j:slf4j-jdk14:2.0.7'
     jsr305 = 'com.google.code.findbugs:jsr305:3.0.2'
     lljzip = 'software.coley:lljzip:2.1.3'
+
+    // CLI
+    picocli = 'info.picocli:picocli:4.7.4'
+    picocli_processor = 'info.picocli:picocli-codegen:4.7.4'
+
+    // GUI
+    jgoodies_forms = 'com.jgoodies:jgoodies-forms:1.9.0'
+    jgoodies_binds = 'com.jgoodies:jgoodies-binding:2.13.0'
+    darklaf = 'com.github.weisj:darklaf-core:3.0.2'
+    ikonli_swing = 'org.kordamp.ikonli:ikonli-swing:12.3.1'
+    ikonli_pack = 'org.kordamp.ikonli:ikonli-carbonicons-pack:12.3.1'
 
     // Testing
     junit_api = "org.junit.jupiter:junit-jupiter-api:$junitVersion"

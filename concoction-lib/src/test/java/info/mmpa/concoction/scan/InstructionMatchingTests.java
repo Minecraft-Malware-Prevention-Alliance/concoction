@@ -34,8 +34,8 @@ public class InstructionMatchingTests {
 			// We should have one match in each of these methods.
 			Set<String> remainingMatches = Sets.ofVar("calc1", "calc2", "calc3", "calc4");
 			for (Detection detection : detections) {
-				MethodPathElement path = cast(detection.path());
-				String detectionMethodName = path.getMethodName();
+				MethodPathElement methodPath = cast(detection.path());
+				String detectionMethodName = methodPath.getMethodName();
 				if (!remainingMatches.remove(detectionMethodName))
 					fail("Match in unexpected method: " + detectionMethodName);
 			}

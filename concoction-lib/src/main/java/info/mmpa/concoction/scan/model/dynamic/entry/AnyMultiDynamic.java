@@ -2,7 +2,6 @@ package info.mmpa.concoction.scan.model.dynamic.entry;
 
 import info.mmpa.concoction.scan.dynamic.CallStackFrame;
 import info.mmpa.concoction.scan.model.MultiMatchMode;
-import info.mmpa.concoction.scan.model.TextMatchMode;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -22,11 +21,17 @@ public class AnyMultiDynamic extends MultiDynamic {
 
 	@Override
 	public boolean matchOnEnter(@Nonnull CallStackFrame frame) {
-		return getEntries().stream().anyMatch(e -> e.matchOnEnter(frame));
+		for (DynamicMatchEntry entry : getEntries())
+			if (entry.matchOnEnter(frame))
+				return true;
+		return false;
 	}
 
 	@Override
 	public boolean matchOnExit(@Nonnull CallStackFrame frame) {
-		return getEntries().stream().anyMatch(e -> e.matchOnExit(frame));
+		for (DynamicMatchEntry entry : getEntries())
+			if (entry.matchOnExit(frame))
+				return true;
+		return false;
 	}
 }

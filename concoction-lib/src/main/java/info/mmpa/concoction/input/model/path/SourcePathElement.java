@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * A path to a {@link ModelSource} in an {@link ApplicationModel}.
  */
-public class SourcePathElement extends AbstractPathElement {
+public class SourcePathElement extends AbstractPathElement implements SourcedPath {
 	private final Map<String, ClassPathElement> children = new HashMap<>();
 	private final ModelSource source;
 
@@ -35,10 +35,8 @@ public class SourcePathElement extends AbstractPathElement {
 		return children.computeIfAbsent(className, n -> new ClassPathElement(this, n));
 	}
 
-	/**
-	 * @return Model source path element value.
-	 */
 	@Nonnull
+	@Override
 	public ModelSource getSource() {
 		return source;
 	}

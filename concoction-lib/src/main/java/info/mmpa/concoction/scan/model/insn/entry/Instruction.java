@@ -59,9 +59,16 @@ public final class Instruction implements InstructionMatchEntry {
 	@Override
 	public boolean match(@Nonnull MethodNode method, @Nonnull AbstractInsnNode insn) {
 		String opcodeName = InstructionStrings.opcodeToString(insn.getOpcode());
+
+		// Skip if opcode mismatch
 		if (!opcodeMatching.matches(opcode, opcodeName)) return false;
+
+		// Match early if we have no argument matching set
+		if (argumentsMatching == null || arguments == null) return true;
+
+		// Get the argument text and match it
 		String argumentText = InstructionStrings.insnToArgsString(insn);
-		if (argumentText == null || argumentsMatching == null || arguments == null) return true;
+		if (argumentText == null) return true;
 		return argumentsMatching.matches(arguments, argumentText);
 	}
 

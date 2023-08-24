@@ -28,6 +28,9 @@ public class NoneMultiInstruction extends MultiInstruction {
 
 	@Override
 	public boolean match(@Nonnull MethodNode method, @Nonnull AbstractInsnNode insn) {
-		return getEntries().stream().noneMatch(e -> e.match(method, insn));
+		for (InstructionMatchEntry entry : getEntries())
+			if (entry.match(method, insn))
+				return false;
+		return true;
 	}
 }

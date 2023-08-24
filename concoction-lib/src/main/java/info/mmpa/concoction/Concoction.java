@@ -5,6 +5,8 @@ import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.input.model.InvalidModelException;
 import info.mmpa.concoction.input.model.ModelBuilder;
 import info.mmpa.concoction.output.Results;
+import info.mmpa.concoction.output.sink.FeedbackSink;
+import info.mmpa.concoction.output.sink.NoopFeedbackSink;
 import info.mmpa.concoction.scan.dynamic.CoverageEntryPointSupplier;
 import info.mmpa.concoction.scan.dynamic.DynamicScanException;
 import info.mmpa.concoction.scan.dynamic.DynamicScanner;
@@ -31,6 +33,9 @@ public class Concoction {
 	private ArchiveLoadContext supportingPathLoadContext = ArchiveLoadContext.RANDOM_ACCESS_JAR;
 	private EntryPointDiscovery entryPointDiscovery = EntryPointDiscovery.NOTHING;
 	private CoverageEntryPointSupplier coverageEntryPointSupplier = CoverageEntryPointSupplier.NO_COVERAGE;
+	private FeedbackSink feedbackSink = new NoopFeedbackSink();
+	private Predicate<Path> inputPathPredicate = Concoction::isJarPath;
+	private Predicate<Path> modelPathPredicate = Concoction::isJsonPath;
 	private int inputDepth = 3;
 	private boolean dynamicScanning;
 
@@ -60,6 +65,39 @@ public class Concoction {
 	@Nonnull
 	public Concoction withMaxInputDirectoryDepth(int inputDepth) {
 		this.inputDepth = inputDepth;
+		return this;
+	}
+
+	/**
+	 * @param inputPathPredicate
+	 * 		Path checker for files to be loaded as inputs. Should match ZIP/JAR files.
+	 *
+	 * @return Self.
+	 */
+	public Concoction withInputPathPredicate(@Nonnull Predicate<Path> inputPathPredicate) {
+		this.inputPathPredicate = inputPathPredicate;
+		return this;
+	}
+
+	/**
+	 * @param modelPathPredicate
+	 * 		Path checker for files to be loaded as {@link ScanModel}. Should match JSON files.
+	 *
+	 * @return Self.
+	 */
+	public Concoction withModelPathPredicate(@Nonnull Predicate<Path> modelPathPredicate) {
+		this.modelPathPredicate = modelPathPredicate;
+		return this;
+	}
+
+	/**
+	 * @param feedbackSink
+	 * 		Feedback sink to receive updated on scan process, and signal when a scan should be aborted.
+	 *
+	 * @return Self.
+	 */
+	public Concoction withFeedbackSink(@Nonnull FeedbackSink feedbackSink) {
+		this.feedbackSink = feedbackSink;
 		return this;
 	}
 
@@ -209,7 +247,7 @@ public class Concoction {
 	@Nonnull
 	public Concoction addInputDirectory(@Nonnull ArchiveLoadContext context, @Nonnull Path directory,
 										@Nullable Path... commonSupportingPaths) throws IOException {
-		return addInputDirectory(context, directory, Concoction::isJarPath, listOptionalPaths(commonSupportingPaths));
+		return addInputDirectory(context, directory, inputPathPredicate, listOptionalPaths(commonSupportingPaths));
 	}
 
 	/**
@@ -311,7 +349,7 @@ public class Concoction {
 	public Concoction addScanModelDirectory(@Nonnull Path directory) throws IOException {
 		try (Stream<Path> stream = Files.walk(directory, inputDepth)) {
 			for (Path path : stream.collect(Collectors.toList()))
-				if (isJsonPath(path))
+				if (modelPathPredicate.test(path))
 					addScanModel(path);
 		}
 		return this;
@@ -350,7 +388,7 @@ public class Concoction {
 				.filter(ScanModel::hasInstructionModel)
 				.collect(Collectors.toList());
 		if (!insnModels.isEmpty()) {
-			InstructionScanner scan = new InstructionScanner(insnModels);
+			InstructionScanner scan = new InstructionScanner(insnModels, feedbackSink);
 			for (Map.Entry<Path, ApplicationModel> entry : inputModels.entrySet()) {
 				Path scannedFilePath = entry.getKey();
 				ApplicationModel inputModel = entry.getValue();
@@ -359,12 +397,17 @@ public class Concoction {
 			}
 		}
 
-		// Then dynamic scanning
+		// Check if cancelled from instruction scanning step, and yield early.
+		if (feedbackSink.isCancelRequested())
+			return allResults;
+
+		// Then dynamic scanning.
 		List<ScanModel> dynamicModels = dynamicScanning ? scanModels.values().stream()
 				.filter(ScanModel::hasDynamicModel)
 				.collect(Collectors.toList()) : Collections.emptyList();
-		if (!insnModels.isEmpty()) {
-			DynamicScanner scan = new DynamicScanner(entryPointDiscovery, coverageEntryPointSupplier, dynamicModels);
+		if (!dynamicModels.isEmpty()) {
+			DynamicScanner scan = new DynamicScanner(entryPointDiscovery, coverageEntryPointSupplier,
+					dynamicModels, feedbackSink);
 			for (Map.Entry<Path, ApplicationModel> entry : inputModels.entrySet()) {
 				Path scannedFilePath = entry.getKey();
 				ApplicationModel inputModel = entry.getValue();

@@ -1,0 +1,17 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+apply from: rootProject.file('compile-target-8-via-11.gradle')
+apply from: rootProject.file('app-common.gradle')
+apply from: rootProject.file('app-patching.gradle') // will patch to target 8 after compilation
+
+shadowJar.finalizedBy(patchOutput)
+
+dependencies {
+    implementation jgoodies_forms
+    implementation jgoodies_binds
+    implementation darklaf
+    implementation ikonli_swing
+    implementation ikonli_pack
+}

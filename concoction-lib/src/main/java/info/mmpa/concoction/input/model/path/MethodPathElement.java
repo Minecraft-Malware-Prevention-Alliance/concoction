@@ -9,7 +9,7 @@ import java.util.Collections;
 /**
  * A path to a method within a class.
  */
-public class MethodPathElement extends AbstractPathElement {
+public class MethodPathElement extends AbstractPathElement implements SourcedPath {
 	private final ClassPathElement parent;
 	private final String methodName;
 	private final String methodDesc;
@@ -52,10 +52,8 @@ public class MethodPathElement extends AbstractPathElement {
 		return parent.getClassName();
 	}
 
-	/**
-	 * @return Model source path element value.
-	 */
 	@Nonnull
+	@Override
 	public ModelSource getSource() {
 		return parent.getSource();
 	}

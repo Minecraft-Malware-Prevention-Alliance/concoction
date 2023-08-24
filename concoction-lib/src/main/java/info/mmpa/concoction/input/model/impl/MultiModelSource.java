@@ -2,6 +2,7 @@ package info.mmpa.concoction.input.model.impl;
 
 import info.mmpa.concoction.input.model.ApplicationModel;
 import info.mmpa.concoction.input.model.ModelSource;
+import info.mmpa.concoction.input.model.path.SourcePathElement;
 import info.mmpa.concoction.util.SplitMap;
 
 import javax.annotation.Nonnull;
@@ -13,6 +14,7 @@ import java.util.Map;
  * multiple model sources in a flat representation.
  */
 public class MultiModelSource implements ModelSource {
+	private final SourcePathElement path = new SourcePathElement(this);
 	private final String identifier;
 	private final Map<String, byte[]> classes;
 	private final Map<String, byte[]> files;
@@ -66,5 +68,11 @@ public class MultiModelSource implements ModelSource {
 	@Override
 	public Map<String, byte[]> files() {
 		return files;
+	}
+
+	@Nonnull
+	@Override
+	public SourcePathElement path() {
+		return path;
 	}
 }

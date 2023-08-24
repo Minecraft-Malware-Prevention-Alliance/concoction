@@ -2,33 +2,10 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+apply from: rootProject.file('app-common.gradle')
+apply from: rootProject.file('compile-target-8.gradle')
+
 dependencies {
-    implementation project(':concoction')
-    implementation 'info.picocli:picocli:4.7.4'
-    implementation ssvm_core
-    implementation ssvm_invoke
-    implementation ssvm_io
-    implementation jsr305
-    annotationProcessor 'info.picocli:picocli-codegen:4.7.4'
+    implementation picocli
+    annotationProcessor picocli_processor
 }
-
-// Configure building the application jar
-tasks.withType(AbstractArchiveTask).configureEach {
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
-}
-
-// Add snapshot suffix to version if not building a release.
-// To build a release, set the environment variable BUILD_RELEASE to true.
-def isRelease = System.getenv("BUILD_RELEASE") == "true"
-if (!isRelease) {
-    version += "-SNAPSHOT"
-}
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'info.mmpa.concoction.Main'
-        )
-    }
-}
-build.finalizedBy(shadowJar)
