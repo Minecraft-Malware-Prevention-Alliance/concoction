@@ -4,11 +4,10 @@ plugins {
     // Plugin generates version info class.
     id 'com.peterabeles.gversion' version '1.10'
     id 'java-library'
-    id 'java-test-fixtures'
     id 'maven-publish'
 }
 
-apply from: rootProject.file('app-target-8.gradle')
+apply from: rootProject.file('compile-target-8.gradle')
 
 configurations {
     shaded
@@ -73,6 +72,14 @@ sourceSets {
     main {
         java {
             srcDirs 'src/generated/java', 'src/main/java'
+        }
+    }
+    // Gradle publishing isn't compatible with test-fixtures plugin,
+    // so we instead treat the fixtures src dir as an extra source set
+    // rather than a fixture module.
+    test {
+        java {
+            srcDirs 'src/test/java', 'src/testFixtures/java'
         }
     }
 }

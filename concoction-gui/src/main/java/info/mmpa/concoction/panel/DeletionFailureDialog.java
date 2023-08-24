@@ -65,7 +65,7 @@ public class DeletionFailureDialog extends JDialog {
 				"pref"));
 		JButton okButton = new JButton();
 		okButton.addActionListener(e -> setVisible(false));
-		okButton.setText("OK");
+		okButton.setText(bundle.getString("scan.delete.ok"));
 		buttonBar.add(okButton, CC.xy(2, 1));
 
 		JPanel dialogPane = new JPanel();

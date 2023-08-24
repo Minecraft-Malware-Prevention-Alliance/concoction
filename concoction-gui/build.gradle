@@ -2,17 +2,16 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-apply from: rootProject.file('app-target-11.gradle')
+apply from: rootProject.file('compile-target-11.gradle')
 apply from: rootProject.file('app-common.gradle')
 apply from: rootProject.file('app-patching.gradle') // will patch to target 8 after compilation
 
 shadowJar.finalizedBy(patchOutput)
 
 dependencies {
-    implementation 'com.jgoodies:jgoodies-forms:1.9.0'
-    implementation 'com.jgoodies:jgoodies-binding:2.13.0'
-    implementation 'com.jgoodies:jgoodies-validation:2.5.1'
-    implementation 'com.github.weisj:darklaf-core:3.0.2'
-    implementation 'org.kordamp.ikonli:ikonli-swing:12.3.1'
-    implementation 'org.kordamp.ikonli:ikonli-carbonicons-pack:12.3.1'
+    implementation jgoodies_forms
+    implementation jgoodies_binds
+    implementation darklaf
+    implementation ikonli_swing
+    implementation ikonli_pack
 }

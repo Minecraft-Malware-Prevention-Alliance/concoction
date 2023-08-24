@@ -37,16 +37,16 @@ public class DynamicMatchingModel {
 	 * 		Sink to feed match results into.
 	 * @param archetype
 	 * 		Information about what the signature being matched.
-	 * @param path
+	 * @param methodPath
 	 * 		Current method path to the containing input source. SSVM holds the rest of the details.
 	 * @param frame
 	 * 		SSVM frame of method entered.
 	 */
 	public void matchOnEnter(@Nonnull ResultsSink sink, @Nonnull DetectionArchetype archetype,
-							 @Nonnull MethodPathElement path, @Nonnull CallStackFrame frame) {
+							 @Nonnull MethodPathElement methodPath, @Nonnull CallStackFrame frame) {
 		for (DynamicMatchEntry entry : variants.values())
 			if (entry.matchOnEnter(frame))
-				Unchecked.runSafe("dynamic-sink-feed", () -> sink.onDetection(path, archetype, new Detection(archetype, path)));
+				Unchecked.runSafe("dynamic-sink-feed", () -> sink.onDetection(methodPath, archetype, new Detection(archetype, methodPath)));
 	}
 
 	/**
@@ -54,16 +54,16 @@ public class DynamicMatchingModel {
 	 * 		Sink to feed match results into.
 	 * @param archetype
 	 * 		Information about what the signature being matched.
-	 * @param path
+	 * @param methodPath
 	 * 		Current method path to the containing input source. SSVM holds the rest of the details.
 	 * @param frame
 	 * 		SSVM frame of method exited.
 	 */
 	public void matchOnExit(@Nonnull ResultsSink sink, @Nonnull DetectionArchetype archetype,
-							@Nonnull MethodPathElement path, @Nonnull CallStackFrame frame) {
+							@Nonnull MethodPathElement methodPath, @Nonnull CallStackFrame frame) {
 		for (DynamicMatchEntry entry : variants.values())
 			if (entry.matchOnExit(frame))
-				Unchecked.runSafe("insn-sink-feed", () -> sink.onDetection(path, archetype, new Detection(archetype, path)));
+				Unchecked.runSafe("insn-sink-feed", () -> sink.onDetection(methodPath, archetype, new Detection(archetype, methodPath)));
 	}
 
 	/**

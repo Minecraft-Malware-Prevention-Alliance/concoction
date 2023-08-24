@@ -44,26 +44,26 @@ public class InstructionsMatchingModel {
 	 * 		Sink to feed match results into.
 	 * @param archetype
 	 * 		Information about what the signature being matched.
-	 * @param path
+	 * @param methodPath
 	 * 		Current method path to pass into the sink.
 	 * @param classNode
 	 * 		Class defining the method.
 	 * @param methodNode
 	 * 		The method being scanned.
 	 */
-	public void match(@Nonnull ResultsSink sink, DetectionArchetype archetype, @Nonnull MethodPathElement path,
+	public void match(@Nonnull ResultsSink sink, DetectionArchetype archetype, @Nonnull MethodPathElement methodPath,
 					  @Nonnull ClassNode classNode, @Nonnull MethodNode methodNode) {
 		// Skip methods without code
 		if (methodNode.instructions == null) return;
 
 		// Scan with each variant
 		for (List<InstructionMatchEntry> entries : variants.values())
-			matchVariant(sink, archetype, path, methodNode, entries);
+			matchVariant(sink, archetype, methodPath, methodNode, entries);
 	}
 
 	private void matchVariant(@Nonnull ResultsSink sink,
 							  @Nonnull DetectionArchetype archetype,
-							  @Nonnull MethodPathElement path,
+							  @Nonnull MethodPathElement methodPath,
 							  @Nonnull MethodNode methodNode,
 							  @Nonnull List<InstructionMatchEntry> entries) {
 		// Iterate over instructions and match against the matcher entries.
@@ -96,7 +96,7 @@ public class InstructionsMatchingModel {
 					// Check if the match is complete.
 					if (matchIndex >= matchTargetLength) {
 						// Report the detection
-						Unchecked.runSafe("insn-sink-feed", () -> sink.onDetection(path, archetype, new Detection(archetype, path)));
+						Unchecked.runSafe("insn-sink-feed", () -> sink.onDetection(methodPath, archetype, new Detection(archetype, methodPath)));
 
 						// Match found, jump back to where the match began plus one index
 						// and reset the matcher index. This allows items matched by 'i > 0' to

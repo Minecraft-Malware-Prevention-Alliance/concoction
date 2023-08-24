@@ -3,9 +3,9 @@ plugins {
 }
 
 apply from: rootProject.file('app-common.gradle')
-apply from: rootProject.file('app-target-8.gradle')
+apply from: rootProject.file('compile-target-8.gradle')
 
 dependencies {
-    implementation 'info.picocli:picocli:4.7.4'
-    annotationProcessor 'info.picocli:picocli-codegen:4.7.4'
+    implementation picocli
+    annotationProcessor picocli_processor
 }
