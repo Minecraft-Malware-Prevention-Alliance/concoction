@@ -35,12 +35,7 @@ public class DetectionPanel extends JPanel {
 	private static final Color COLOR_WEAK = Color.decode("#efd349");
 	private static final Color COLOR_WEAKEST = Color.decode("#c4b774");
 	private static final ResourceBundle bundle = UiUtils.getBundle();
-	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2, r -> {
-		Thread thread = new Thread(r);
-		thread.setName("Detection-Panel-UI:" + thread.hashCode());
-		thread.setDaemon(true);
-		return thread;
-	});
+	private final ScheduledExecutorService executorService;
 	private final Map<DetectionArchetype, Counter> detectionCountByType = new IdentityHashMap<>();
 	private final Path associatedPath;
 	private int lastDetectionTypeCount;
@@ -52,9 +47,9 @@ public class DetectionPanel extends JPanel {
 	private final JLabel lblTotalDetections = new JLabel();
 	private final JLabel lblModelsMatched = new JLabel();
 	private final JLabel lblHighestThreatLevel = new JLabel();
+	private SelectionListener selectionListener;
 	private JCheckBox chkSelected;
 	private Runnable runLabels;
-	private Runnable runThreat;
 
 	/**
 	 * New detection entry panel.
@@ -73,11 +68,30 @@ public class DetectionPanel extends JPanel {
 		// Initial level
 		updateThreatLevel(SusLevel.NOTHING_BURGER);
 
-		// Schedule UI updates on interval
-		//
-		// This keeps our listener delay affect on the scanning process low by making 'to-do' tasks
-		// for updating the UI, rather than doing them immediately.
-		executorService.scheduleAtFixedRate(this::updateDisplay, 0, 100, TimeUnit.MILLISECONDS);
+		// When 'with-check' is false, this panel represents updatable content for use in the scanning panel.
+		// When 'with-check' is true, this panel represents the non-changing display in the final results panel.
+		if (!withCheck) {
+			// Schedule UI updates on interval
+			//
+			// This keeps our listener delay affect on the scanning process low by making 'to-do' tasks
+			// for updating the UI, rather than doing them immediately.
+			executorService = Executors.newScheduledThreadPool(2, r -> {
+				Thread thread = new Thread(r);
+				thread.setName("Detection-Panel-UI:" + thread.hashCode());
+				thread.setDaemon(true);
+				return thread;
+			});
+			executorService.scheduleAtFixedRate(this::updateDisplay, 0, 100, TimeUnit.MILLISECONDS);
+		} else {
+			// UI is not going to receive updates, so there is no need to schedule an update loop.
+			executorService = null;
+
+			// Add selection listener delegation
+			chkSelected.addActionListener(e -> {
+				if (selectionListener != null)
+					selectionListener.onSelectionChanged(associatedPath, chkSelected.isSelected());
+			});
+		}
 	}
 
 	/**
@@ -92,7 +106,7 @@ public class DetectionPanel extends JPanel {
 		panel.detectionCountByType.putAll(detectionCountByType);
 		panel.maxLevel = maxLevel;
 		panel.lastDetectionTypeCount = lastDetectionTypeCount;
-		if (withCheck)
+		if (withCheck && chkSelected != null)
 			panel.chkSelected.setSelected(chkSelected.isSelected());
 		panel.lblThreatIcon.setIcon(lblThreatIcon.getIcon());
 		panel.lblTotalDetections.setText(lblTotalDetections.getText());
@@ -102,11 +116,21 @@ public class DetectionPanel extends JPanel {
 	}
 
 	/**
+	 * @param selectionListener
+	 * 		Listener for receiving selection updates of this panel's associated path.
+	 */
+	public void setSelectionListener(@Nonnull SelectionListener selectionListener) {
+		this.selectionListener = selectionListener;
+	}
+
+	/**
 	 * Clear UI for closure.
 	 */
 	public void onClear() {
+		selectionListener = null;
 		detectionCountByType.clear();
-		executorService.shutdownNow();
+		if (executorService != null)
+			executorService.shutdownNow();
 	}
 
 	/**
@@ -114,6 +138,14 @@ public class DetectionPanel extends JPanel {
 	 */
 	public boolean isChecked() {
 		return chkSelected != null && chkSelected.isSelected();
+	}
+
+	/**
+	 * @return Associated input file path with the detections shown in this panel.
+	 */
+	@Nonnull
+	public Path getAssociatedPath() {
+		return associatedPath;
 	}
 
 	/**
@@ -208,11 +240,18 @@ public class DetectionPanel extends JPanel {
 		}
 	}
 
-	private void initComponents(boolean withCheck) {
+	/**
+	 * @param color Color of {@link LineBorder} to set.
+	 */
+	public void setBorderWithColor(@Nonnull Color color) {
 		setBorder(new CompoundBorder(
-				new LineBorder(Color.lightGray, 1, true),
+				new LineBorder(color, 1, true),
 				new EmptyBorder(5, 5, 10, 5)
 		));
+	}
+
+	private void initComponents(boolean withCheck) {
+		setBorderWithColor(Color.lightGray);
 		setLayout(new FormLayout(
 				"left:default, $lcgap, left:default, 10px, 3*([120px,default], 35px), default:grow",
 				"top:default, 15px, top:default"));
@@ -220,6 +259,7 @@ public class DetectionPanel extends JPanel {
 		// Only show checkbox is requested
 		if (withCheck) {
 			chkSelected = new JCheckBox();
+			chkSelected.setSelected(true);
 			add(chkSelected, CC.xywh(1, 1, 1, 2, CC.DEFAULT, CC.CENTER));
 		}
 
@@ -237,5 +277,20 @@ public class DetectionPanel extends JPanel {
 	 */
 	private static class Counter {
 		private int count;
+	}
+
+	/**
+	 * Outline of listener for handling selection updates of this panel's {@link #chkSelected}.
+	 */
+	public interface SelectionListener {
+		/**
+		 * Called when this {@link DetectionPanel} updates its selection.
+		 *
+		 * @param path
+		 * 		Path relevant to selection.
+		 * @param selected
+		 * 		Up-to-date selection state.
+		 */
+		void onSelectionChanged(@Nonnull Path path, boolean selected);
 	}
 }

@@ -1,5 +1,6 @@
 package info.mmpa.concoction;
 
+import info.mmpa.concoction.panel.EndPanel;
 import info.mmpa.concoction.panel.InputsPanel;
 import info.mmpa.concoction.panel.ModelsPanel;
 import info.mmpa.concoction.panel.ScanPanel;
@@ -31,10 +32,12 @@ public class ConcoctionWindow extends JFrame implements ConcoctionUxContext {
 	private static final String CARD_INPUTS = "inputs";
 	private static final String CARD_MODELS = "models";
 	private static final String CARD_SCAN = "scan";
+	private static final String CARD_END = "end";
 	private final CardLayout layout = new CardLayout();
 	private final InputsPanel inputsPanel = new InputsPanel(this);
 	private final ModelsPanel modelsPanel = new ModelsPanel(this);
 	private final ScanPanel scanPanel = new ScanPanel(this);
+	private final EndPanel endPanel = new EndPanel(this);
 	private String currentCard;
 
 	/**
@@ -73,6 +76,7 @@ public class ConcoctionWindow extends JFrame implements ConcoctionUxContext {
 		contentPane.add(inputsPanel, CARD_INPUTS);
 		contentPane.add(modelsPanel, CARD_MODELS);
 		contentPane.add(scanPanel, CARD_SCAN);
+		contentPane.add(endPanel, CARD_END);
 
 		// Centers window on screen when shown
 		setLocationRelativeTo(getOwner());
@@ -93,38 +97,64 @@ public class ConcoctionWindow extends JFrame implements ConcoctionUxContext {
 		scanPanel.onShown();
 	}
 
+	private void showEnd() {
+		layout.show(getContentPane(), currentCard = CARD_END);
+		endPanel.onShown();
+	}
+
+	@Nonnull
+	private ConcoctionStep getCurrentStep() {
+		for (Component child : getLayeredPane().getComponents())
+			if (child.isVisible())
+				if (child instanceof ConcoctionStep)
+					return (ConcoctionStep) child;
+		throw new IllegalStateException("No current concoction step displayed");
+	}
+
+	@Nonnull
 	@Override
-	public void gotoNext() {
+	public ConcoctionStep gotoNext() {
 		switch (currentCard) {
 			case CARD_INPUTS:
 				inputsPanel.onHidden();
 				showModels();
-				break;
+				return modelsPanel;
 			case CARD_MODELS:
 				modelsPanel.onHidden();
 				showScan();
-				break;
+				return scanPanel;
 			case CARD_SCAN:
+				scanPanel.onHidden();
+				showEnd();
+				return endPanel;
+			case CARD_END:
 				// no next
-				break;
+				return endPanel;
 		}
+		return getCurrentStep();
 	}
 
+	@Nonnull
 	@Override
-	public void gotoPrevious() {
+	public ConcoctionStep gotoPrevious() {
 		switch (currentCard) {
 			case CARD_INPUTS:
 				// no previous
-				break;
+				return inputsPanel;
 			case CARD_MODELS:
 				modelsPanel.onHidden();
 				showInput();
-				break;
+				return inputsPanel;
 			case CARD_SCAN:
 				scanPanel.onHidden();
 				showModels();
-				break;
+				return modelsPanel;
+			case CARD_END:
+				endPanel.onHidden();
+				showScan();
+				return scanPanel;
 		}
+		return getCurrentStep();
 	}
 
 	@Nonnull

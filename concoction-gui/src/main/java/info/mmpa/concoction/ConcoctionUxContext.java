@@ -11,13 +11,19 @@ import java.util.List;
 public interface ConcoctionUxContext {
 	/**
 	 * Go to next panel.
+	 *
+	 * @return The next step. If there is no next step, then the current step.
 	 */
-	void gotoNext();
+	@Nonnull
+	ConcoctionStep gotoNext();
 
 	/**
 	 * Goto previous panel.
+	 *
+	 * @return The previous step. If there is no previous step, then the current step.
 	 */
-	void gotoPrevious();
+	@Nonnull
+	ConcoctionStep gotoPrevious();
 
 	/**
 	 * @return List of input paths to scan.

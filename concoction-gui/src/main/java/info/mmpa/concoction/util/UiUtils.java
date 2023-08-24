@@ -76,10 +76,15 @@ public class UiUtils {
 	 * @param dialog
 	 * 		Dialog to update.
 	 * @param extensions
-	 * 		Extensions to filter with.
+	 * 		Extensions to filter with. Strings must include the '.' prefix.
 	 */
 	public static void setFileDialogExtensions(@Nonnull FileDialog dialog, @Nonnull List<String> extensions) {
-		dialog.setFile(extensions.stream().map(ext -> "*" + ext).collect(Collectors.joining(";")));
+		// This is a work-around for windows which does not support 'setFilenameFilter'
+		// Gotta love ol' fashion swing...
+		if (System.getProperty("os.name").toLowerCase().contains("win"))
+			dialog.setFile(extensions.stream().map(ext -> "*" + ext).collect(Collectors.joining(";")));
+
+		// For sane operating systems, this works.
 		dialog.setFilenameFilter((dir, name) -> {
 			String lower = name.toLowerCase();
 			return extensions.stream().anyMatch(lower::endsWith);

@@ -3,6 +3,7 @@ package info.mmpa.concoction.panel;
 import com.jgoodies.forms.factories.CC;
 import com.jgoodies.forms.layout.FormLayout;
 import info.mmpa.concoction.Concoction;
+import info.mmpa.concoction.ConcoctionEndStep;
 import info.mmpa.concoction.ConcoctionStep;
 import info.mmpa.concoction.ConcoctionUxContext;
 import info.mmpa.concoction.input.io.archive.ArchiveLoadContext;
@@ -29,6 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -55,9 +57,9 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	private final JButton btnScan = new JButton();
 	private final JButton btnStop = new JButton();
 	private final JProgressBar progressBar = new JProgressBar();
-	private final JButton btnExport = new JButton();
+	private final JButton btnNext = new JButton();
 	// Scan state
-	private final Map<Path, DetectionPanel> pathToDetectionPanels = new HashMap<>();
+	private final NavigableMap<Path, DetectionPanel> pathToDetectionPanels = new TreeMap<>();
 	private final ObservableInteger inputsWithMatchesOb = new ObservableInteger(0);
 	private final ObservableInteger modelsMatchedOb = new ObservableInteger(0);
 	private final Set<Path> pathsMatched = new HashSet<>();
@@ -66,6 +68,7 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	private int modelCount;
 	private boolean isCancelled;
 	private CompletableFuture<NavigableMap<Path, Results>> scanFuture = CompletableFuture.completedFuture(null);
+	private NavigableMap<Path, Results> lastResults;
 
 	public ScanPanel(@Nonnull ConcoctionUxContext context) {
 		this.context = context;
@@ -91,6 +94,7 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	 * Start a new scan.
 	 */
 	private void startScan() {
+		lastResults = null;
 		isCancelled = false;
 		btnScan.setEnabled(false);
 		progressBar.setValue(0);
@@ -285,7 +289,8 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 	 * 		Error if scan failed.
 	 */
 	private void onScanComplete(@Nullable NavigableMap<Path, Results> results, @Nullable Throwable error) {
-		btnExport.setEnabled(results != null);
+		lastResults = results;
+		btnNext.setEnabled(results != null);
 		btnScan.setEnabled(true);
 		btnStop.setEnabled(false);
 		progressBar.setIndeterminate(false);
@@ -364,6 +369,7 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		// Will contain visual output
 		JScrollPane scrollWrapper = new JScrollPane(contents);
 		VerticalFlowLayout contentLayout = new VerticalFlowLayout(VerticalFlowLayout.TOP);
+		scrollWrapper.setBorder(new LineBorder(Color.decode("#1c1c1c"), 1));
 		contents.setBorder(new EmptyBorder(15, 15, 15, 15));
 		contents.setBackground(new Color(0x333333));
 		contents.setLayout(contentLayout);
@@ -381,14 +387,20 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 		progressBar.setStringPainted(true);
 
 		// Exporting the results
-		btnExport.addActionListener(e -> {
-			// TODO: Write results to file.
-			//  - The UI is for the end-user
-			//  - The result file is for us, so probably JSON representation of the final results map
+		btnNext.addActionListener(e -> {
+			if (lastResults != null) {
+				ConcoctionStep nextStep = context.gotoNext();
+				if (nextStep instanceof ConcoctionEndStep) {
+					ConcoctionEndStep endStep = (ConcoctionEndStep) nextStep;
+					endStep.setResults(lastResults);
+					endStep.cloneResultDisplays(Collections.unmodifiableNavigableMap(pathToDetectionPanels));
+				}
+			} else
+				logger.info("Cannot proceed, no results to operate on");
 		});
-		btnExport.setIcon(icon(CarbonIcons.DOCUMENT_EXPORT));
-		btnExport.setText(bundle.getString("scan.export"));
-		btnExport.setEnabled(false);
+		btnNext.setIcon(icon(CarbonIcons.NEXT_FILLED));
+		btnNext.setText(bundle.getString("input.next"));
+		btnNext.setEnabled(false);
 
 		// Going to the previous panel
 		JButton btnPrevious = new JButton();
@@ -430,7 +442,7 @@ public class ScanPanel extends JPanel implements ConcoctionStep {
 				"default, $lcgap, default",
 				"default"));
 		inputActions.add(btnPrevious, CC.xy(1, 1));
-		inputActions.add(btnExport, CC.xy(3, 1));
+		inputActions.add(btnNext, CC.xy(3, 1));
 
 		// Wrap bottom bar to align buttons with the layout
 		// used in 'TableModelPanel'
