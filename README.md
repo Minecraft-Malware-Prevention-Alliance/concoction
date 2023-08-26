@@ -28,6 +28,17 @@ implementation "info.mmpa:concoction:${version}"
 
 For code examples on using Concoction as a library, see [the test cases](concoction-lib/src/test/java/info/mmpa/concoction).
 
+### As a GUI application
+
+![GUI usage demo](docs/media/concoction-gui.gif)
+
+Concoction is available as a Java application, requiring at least Java 8, that allows you to:
+- Choose files to scan
+- Choose models to match against
+- Act on detections in provided files
+  - Export detection reports as a ZIP archive
+  - Delete files with detections, with the option to exclude certain entries
+
 ### As a command line application
 
 Usage as shown from `--help`:
